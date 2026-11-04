@@ -466,7 +466,7 @@ namespace T6_Workbench
             {
                 type = type.Trim().ToLowerInvariant();
                 name = name.Trim();
-                if (type.Length > 0 && name.Length > 0 && seen.Add(type + "\0" + name))
+                if (type.Length > 0 && type != "mapents" && name.Length > 0 && seen.Add(type + "\0" + name))
                     found.Add(new AssetRef(type, name));
             }
         }

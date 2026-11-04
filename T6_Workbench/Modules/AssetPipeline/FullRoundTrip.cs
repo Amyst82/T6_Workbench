@@ -59,7 +59,6 @@ namespace T6_Workbench
             }
             var original = Path.Combine(exported.Directory, "dump");
             var editedByRelative = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            var looseMapEntsByRelative = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             var addedModelFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var addedModelNames = new List<string>();
             if (!string.IsNullOrWhiteSpace(request.EditedAssetsRoot))
@@ -115,18 +114,6 @@ namespace T6_Workbench
                 foreach (var edit in Directory.GetFiles(editRoot, "*", SearchOption.AllDirectories))
                 {
                     var relative = Helpers.GetRelativePath(editRoot, edit).Replace('\\', '/');
-                    if (TryGetLooseMapEntsBaseRelative(relative, out var baseEntityRelative))
-                    {
-                        var baseEntity = Path.Combine(original, baseEntityRelative.Replace('/', Path.DirectorySeparatorChar));
-                        if (!File.Exists(baseEntity))
-                        {
-                            throw new FileNotFoundException(EnglishText.Text("For loose MapEnts the project has no original .ents from the corresponding map."), baseEntityRelative);
-                        }
-                        var validation = LooseMapEnts.ValidateAdditive(File.ReadAllText(baseEntity), File.ReadAllText(edit));
-                        looseMapEntsByRelative.Add(relative, edit);
-                        _log?.Invoke(EnglishText.Format("Loose MapEnts {0}: {1} original + {2} added entity.", relative, validation.OriginalEntityCount, validation.EditedEntityCount - validation.OriginalEntityCount));
-                        continue;
-                    }
                     var existsInSource = File.Exists(Path.Combine(original, relative));
                     if (relative.StartsWith("zone_source/", StringComparison.OrdinalIgnoreCase) || (!existsInSource && !addedModelFiles.Contains(relative) && !IsAllowedAddedAsset(relative)))
                     {
@@ -134,17 +121,16 @@ namespace T6_Workbench
                     }
                     editedByRelative.Add(relative, edit);
                 }
-                if (editedByRelative.Count == 0 && looseMapEntsByRelative.Count == 0)
+                if (editedByRelative.Count == 0)
                 {
                     throw new InvalidDataException(EnglishText.Text("The edits folder contains no files."));
                 }
-                _log?.Invoke(EnglishText.Format("Asset edits: {0}; loose MapEnts: {1}.", editedByRelative.Count, looseMapEntsByRelative.Count));
+                _log?.Invoke(EnglishText.Format("Asset edits: {0}.", editedByRelative.Count));
             }
             var sourceCopy = Path.Combine(exported.Directory, "input", Path.GetFileName(request.Fastfile));
             var definition = Directory.GetFiles(Path.Combine(original, "zone_source"), "*.zone").Single();
-            var overriddenMapEntsEntries = looseMapEntsByRelative.Keys.Select(relative => "mapents," + relative.Substring("mapents/".Length).Substring(0, (relative.Substring("mapents/".Length).Length - (".mapents".Length)) - (0))).ToHashSet(StringComparer.OrdinalIgnoreCase);
             var entries = File.ReadAllLines(definition).Select(AssetNameNormalizer.NormalizeZoneLine)
-                .Where(l => l.Length > 0 && !l.StartsWith('>') && !l.StartsWith("//") && !overriddenMapEntsEntries.Contains(l.Trim()))
+                .Where(l => l.Length > 0 && !l.StartsWith('>') && !l.StartsWith("//"))
                 .Concat(addedModelNames.Select(name => "xmodel," + name))
                 .Distinct(StringComparer.Ordinal).ToArray();
             var modelEntries = entries.Where(l => l.StartsWith("xmodel,", StringComparison.Ordinal)).ToArray();
@@ -296,7 +282,6 @@ namespace T6_Workbench
                 var comparisonFiles = Directory.GetFiles(original, "*", SearchOption.AllDirectories)
                     .Select(file => Helpers.GetRelativePath(original, file).Replace('\\', '/'))
                     .Concat(comparisonOverrides.Keys)
-                    .Where(relative => !looseMapEntsByRelative.Keys.Any(mapents => TryGetLooseMapEntsBaseRelative(mapents, out var baseEntity) && relative.Equals(baseEntity, StringComparison.OrdinalIgnoreCase)))
                     .Where(relative => !relative.StartsWith("zone_source/", StringComparison.OrdinalIgnoreCase))
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
                 fullComparison = CompareDirectories(original, fullDump, comparisonOverrides, comparisonFiles);
@@ -307,19 +292,6 @@ namespace T6_Workbench
                 }
                 var release = Path.Combine(run, "release");
                 CopyFile(Path.GetDirectoryName(rebuilt), Path.Combine(release, "zone", "redacted"), Path.GetFileName(rebuilt));
-                var looseMapEntsChecks = new List<ComparisonEntry>();
-                foreach (var mapents in looseMapEntsByRelative)
-                {
-                    var looseRelative = mapents.Key.Substring("mapents/".Length);
-                    var destination = Path.Combine(release, "data", looseRelative.Replace('/', Path.DirectorySeparatorChar));
-                    Directory.CreateDirectory(Path.GetDirectoryName(destination));
-                    File.Copy(mapents.Value, destination, overwrite: true);
-                    var baseRelative = looseRelative.Substring(0, (looseRelative.Length - (".mapents".Length)) - (0)) + ".ents";
-                    var baseEntity = Path.Combine(original, baseRelative.Replace('/', Path.DirectorySeparatorChar));
-                    var validation = LooseMapEnts.ValidateAdditive(File.ReadAllText(baseEntity), File.ReadAllText(destination));
-                    var passed = Workspace.Hash(mapents.Value) == Workspace.Hash(destination) && validation.OriginalEntitiesPreserved;
-                    looseMapEntsChecks.Add(new ComparisonEntry(looseRelative, passed ? "PASS" : "FAIL", $"Loose MapEnts SHA-256 preserved; {validation.OriginalEntityCount} base entities preserved, {validation.EditedEntityCount - validation.OriginalEntityCount} added."));
-                }
                 var sourceIwiRoots = request.SearchPaths.Select(path => Path.Combine(path, "images")).Where(Directory.Exists).ToArray();
                 foreach (var iwi in Directory.GetFiles(Path.Combine(fullAssets, "images"), "*.iwi", SearchOption.AllDirectories))
                 {
@@ -350,7 +322,7 @@ namespace T6_Workbench
                         var passed = File.Exists(releaseIwi) && Workspace.Hash(item.Value) == Workspace.Hash(releaseIwi);
                         return new ComparisonEntry(item.Key, passed ? "PASS" : "FAIL", passed ? "Loose IWI SHA-256 preserved in release." : "Loose IWI is missing or changed in release.");
                     });
-                fullComparison = fullComparison.Concat(looseIwiChecks).Concat(looseMapEntsChecks).ToArray();
+                fullComparison = fullComparison.Concat(looseIwiChecks).ToArray();
                 Workspace.WriteJson(Path.Combine(selectedDir, "comparison.json"), new
                 {
                     files = fullComparison
@@ -428,7 +400,7 @@ namespace T6_Workbench
                 exportDirectory = exported.Directory,
                 allModelsDirectory = modelDir,
                 modelAssetCount = modelEntries.Length,
-                editedAssets = editedByRelative.Select(item => new { file = item.Key, sha256 = Workspace.Hash(item.Value) }).Concat(looseMapEntsByRelative.Select(item => new { file = item.Key, sha256 = Workspace.Hash(item.Value) })).ToArray(),
+                editedAssets = editedByRelative.Select(item => new { file = item.Key, sha256 = Workspace.Hash(item.Value) }).ToArray(),
                 addedAssets = editedByRelative.Where(item => !File.Exists(Path.Combine(original, item.Key))).Select(item => new { file = item.Key, sha256 = Workspace.Hash(item.Value) }).ToArray(),
                 modelComparison = models,
                 fullPatchMode = buildMode,
@@ -440,7 +412,6 @@ namespace T6_Workbench
                 rebuiltDirectory = selectedDir,
                 binaryComparison = binary,
                 fullComparison,
-                looseMapEnts = looseMapEntsByRelative.Select(item => new { source = item.Key, releasePath = "data/" + item.Key.Substring("mapents/".Length), sha256 = Workspace.Hash(item.Value) }).ToArray(),
                 releaseDirectory = selectedDir == null ? null : Path.Combine(run, "release"),
                 looseIwi = new
                 {
@@ -693,23 +664,6 @@ namespace T6_Workbench
         }
 
         /// <summary>
-        /// Resolves or reads the LooseMapEntsBaseRelative value. Rebuild, re-export and compare a full staged asset set.
-        /// </summary>
-        static bool TryGetLooseMapEntsBaseRelative(string relative, out string baseEntityRelative)
-        {
-            const string prefix = "mapents/";
-            baseEntityRelative = "";
-            var normalized = relative.Replace('\\', '/');
-            if (!normalized.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) || !normalized.EndsWith(".d3dbsp.mapents", StringComparison.OrdinalIgnoreCase))
-                return false;
-            var mapRelative = normalized.Substring(prefix.Length);
-            if (mapRelative.Split('/').Any(part => ((part == "") || (part == ".")) || (part == "..")))
-                return false;
-            baseEntityRelative = mapRelative.Substring(0, (mapRelative.Length - (".mapents".Length)) - (0)) + ".ents";
-            return true;
-        }
-
-        /// <summary>
         /// Resolves or reads the ModelBaseZones value. Rebuild, re-export and compare a full staged asset set.
         /// </summary>
         static string[] FindModelBaseZones(ExportRequest request, bool requireCommon = true)
@@ -720,15 +674,6 @@ namespace T6_Workbench
             var bases = new List<string>();
             if (common != null)
                 bases.Add(common);
-            // Map-specific stock materials (for example glass reflection materials) may only
-            // exist in the map FF. Loading the FF as a Linker base is safe here because the
-            // overridden MapEnts record is explicitly omitted from the output zone.
-            if (!string.IsNullOrWhiteSpace(request.EditedAssetsRoot) && File.Exists(Path.Combine(request.EditedAssetsRoot, "mapents", "maps", "mp", "mp_raid.d3dbsp.mapents")))
-            {
-                var map = request.SearchPaths.Select(path => Path.Combine(path, "mp_raid.ff")).FirstOrDefault(File.Exists);
-                if (map != null)
-                    bases.Add(map);
-            }
             return bases.ToArray();
         }
 

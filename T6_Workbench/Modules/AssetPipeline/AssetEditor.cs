@@ -26,29 +26,7 @@ namespace T6_Workbench
                 throw new FileNotFoundException(EnglishText.Text("Edit file not found."), sourceFile);
             string extension = Path.GetExtension(sourceFile).ToLowerInvariant();
             string target;
-            if (asset.Type == "mapents")
-            {
-                if (extension != ".mapents")
-                    throw new InvalidDataException(EnglishText.Text("A loose .mapents file is required."));
-                var text = File.ReadAllText(sourceFile, new UTF8Encoding(false, true));
-                var originalPath = project.AssetPath(asset.Name + ".ents");
-                if (!File.Exists(originalPath))
-                    throw new FileNotFoundException(EnglishText.Text("The project has no original MapEnts entity string."), originalPath);
-                var original = File.ReadAllText(originalPath, new UTF8Encoding(false, true));
-                LooseMapEnts.ValidateAdditive(original, text);
-                target = project.EditPath("mapents/" + (asset.Name + ".mapents").Replace('/', Path.DirectorySeparatorChar));
-                if (Path.GetFullPath(sourceFile).Equals(Path.GetFullPath(target), StringComparison.OrdinalIgnoreCase))
-                    return target;
-                if (File.Exists(target))
-                {
-                    var relative = Helpers.GetRelativePath(project.Edits, target);
-                    var backup = Path.Combine(project.Builds, "backups", relative + ".bak-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmssfff"));
-                    Directory.CreateDirectory(Path.GetDirectoryName(backup));
-                    File.Copy(target, backup);
-                    _log?.Invoke(EnglishText.Text("Previous MapEnts edit saved: ") + backup);
-                }
-            }
-            else if (asset.Type == "image")
+            if (asset.Type == "image")
             {
                 target = project.EditPath(Helpers.GetRelativePath(project.Assets, FindImage(project, asset.Name)));
                 if (extension == ".png")
@@ -147,16 +125,6 @@ namespace T6_Workbench
         async Task<int> ExportOneAsync(WorkbenchProject project, AssetRef asset, string destination,
                     string modelFormat, string imageFormat, WorkbenchPaths paths, CancellationToken token)
         {
-            if (asset.Type == "mapents")
-            {
-                var source = project.AssetPath(asset.Name + ".ents");
-                if (!File.Exists(source))
-                    throw new FileNotFoundException(EnglishText.Text("OAT did not export the MapEnts entity string."), source);
-                var target = Path.Combine(destination, (asset.Name + ".mapents").Replace('/', Path.DirectorySeparatorChar));
-                Directory.CreateDirectory(Path.GetDirectoryName(target));
-                Copy(Effective(project, source), target);
-                return 1;
-            }
             if (asset.Type == "image")
             {
                 var original = FindImage(project, asset.Name);
