@@ -39,7 +39,9 @@ namespace T6_Workbench
         private void ToolBarHead_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (e.ClickCount == 2 && e.ChangedButton == System.Windows.Input.MouseButton.Left)
+            {
                 this.WindowState = this.WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+            }
         }
 
         private void MainTabGrid_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -48,6 +50,7 @@ namespace T6_Workbench
             double minFactor = this.WindowState == WindowState.Maximized ? 0.15d : 0.3d;
             LeftColumn.MinWidth = 300;
             LeftColumn.MaxWidth = availableWidth * 0.5;
+            FooterRow.Height = this.WindowState == WindowState.Maximized ? new GridLength(50) : new GridLength(0);
         }
     }
 }
