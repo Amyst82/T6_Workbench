@@ -7,6 +7,7 @@
         xmlns:svg="https://github.com/dotnetprojects/SVGImage"
         xmlns:AMUI="clr-namespace:AMUI;assembly=AMUI"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:sys2="clr-namespace:System;assembly=System"
         mc:Ignorable="d"
         Title="MainWindow" Height="650" Width="1000" MinHeight="650" MinWidth="1000" AllowsTransparency="True" WindowStyle="None" Background="Transparent" Foreground="{Binding UIColors.Foreground}" FontSize="16" 
         FontFamily="./Resources/#SF Pro Rounded Regular" x:Name="T6WorkbenchMainWindow" DataContext="{x:Static local:MainViewModel.WorkbenchViewModel}">
@@ -144,7 +145,7 @@
                 </Grid.ColumnDefinitions>
                 <Grid Background="Transparent" Grid.Column="0">
                     <StackPanel Orientation="Horizontal" Margin="10,0,0,0" Visibility="{AMUI:ConditionME IF={Binding SelectedIndex, ElementName=TabsControl}, ComparingMode=NotEquals, TO=0, Then={StaticResource Visible}, Else={StaticResource Collapsed}}">
-                        <AMUI:Button82 x:Name="HideDockButton" Accent82="{Binding UIColors.Gray0}" Width="35" Height="35" Margin="5" Click="HideDockButton_Click">
+                        <AMUI:Button82 x:Name="HideDockButton" Accent82="{Binding UIColors.Gray0}" Width="35" Height="35" Margin="5">
                             <svg:SVGImage UriSource="./Resources/dock-left-svgrepo-com.svg" Width="18" Height="18" Margin="0,5,0,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </AMUI:Button82>
                         <Border x:Name="ProjCardBorder" CornerRadius="8" Margin="5" Height="35" VerticalAlignment="Center">
@@ -225,17 +226,17 @@
                                                 <TextBlock Text="Workbench" Foreground="{Binding UIColors.Gray6}" FontSize="13" Margin="5"/>
                                                 <MenuItem Header="Home screen" Foreground="{Binding UIColors.Foreground}">
                                                     <MenuItem.Icon>
-                                                        <svg:SVGImage UriSource="./Resources/blender-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        <svg:SVGImage UriSource="./Resources/house-chimney-floor-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.Gray6Color}"/>
                                                     </MenuItem.Icon>
                                                 </MenuItem>
                                                 <MenuItem Header="Logs" Foreground="{Binding UIColors.Foreground}">
                                                     <MenuItem.Icon>
-                                                        <svg:SVGImage UriSource="./Resources/search-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        <svg:SVGImage UriSource="./Resources/refresh-ccw-clock-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.Gray6Color}"/>
                                                     </MenuItem.Icon>
                                                 </MenuItem>
                                                 <MenuItem Header="About" Foreground="{Binding UIColors.Foreground}">
                                                     <MenuItem.Icon>
-                                                        <svg:SVGImage UriSource="./Resources/search-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        <svg:SVGImage UriSource="./Resources/circle-information-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.Gray6Color}"/>
                                                     </MenuItem.Icon>
                                                 </MenuItem>
                                                
@@ -258,8 +259,47 @@
                 <Grid Grid.Column="2" Background="Transparent">
                     <AMUI:Button82 x:Name="BuildButton" Width="35" Height="35" HorizontalAlignment="Left" Margin="5" 
                                    Visibility="{AMUI:ConditionME IF={Binding SelectedIndex, ElementName=TabsControl}, ComparingMode=NotEquals, TO=0, Then={StaticResource Visible}, Else={StaticResource Collapsed}}" 
-                                   EdgeRoundness="8" Accent82="{Binding UIColors.Gray1}" Border82="{Binding UIColors.Gray3}" OutlineThickness="1" ScaleUpOnHover="True" ScaleDownOnPress="True">
-                        <svg:SVGImage UriSource="./Resources/hammer-svgrepo-com.svg" Width="18" Height="18" Margin="0,2,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{Binding UIColors.AccentColor}"/>
+                                   EdgeRoundness="8" Accent82="{Binding UIColors.Gray1}" Border82="{Binding UIColors.Gray3}" OutlineThickness="1" ScaleUpOnHover="True" ScaleDownOnPress="True" ToolTipService.ShowOnDisabled="True" ToolTip="{AMUI:ConditionME IF={Binding CurrentProject.ProjectChangeCount, FallbackValue=0, TargetNullValue=0}, ComparingMode=Greater, TO=0, Then={Binding CurrentProject.ProjectChangeCount, FallbackValue=0, TargetNullValue=0, StringFormat='Changes: {0}'}, ThenType={x:Type sys:String}, Else='No changes made', ElseType={x:Type sys:String}}">
+                        <AMUI:Button82.IsEnabled>
+                            <MultiBinding Converter="{AMUI:ConvertersME Converter=Expression}" ConverterParameter="A &gt; 0">
+                                <Binding Path="CurrentProject.ProjectChangeCount" FallbackValue="0" TargetNullValue="0" />
+                                <Binding>
+                                    <Binding.Source>
+                                        <sys:Boolean>True</sys:Boolean>
+                                    </Binding.Source>
+                                </Binding>
+                                <Binding>
+                                    <Binding.Source>
+                                        <sys:Boolean>False</sys:Boolean>
+                                    </Binding.Source>
+                                </Binding>
+                            </MultiBinding>
+                        </AMUI:Button82.IsEnabled>
+                        <AMUI:Button82.Content>
+                            <svg:SVGImage Width="18" Height="18" Margin="0,2,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <svg:SVGImage.UriSource>
+                                    <MultiBinding Converter="{AMUI:ConvertersME Converter=Expression}" ConverterParameter="A &gt; 0">
+                                        <Binding Path="CurrentProject.ProjectChangeCount" FallbackValue="0" TargetNullValue="0" />
+                                        <Binding>
+                                            <Binding.Source>
+                                                <sys2:Uri>./Resources/hammer-svgrepo-com.svg</sys2:Uri>
+                                            </Binding.Source>
+                                        </Binding>
+                                        <Binding>
+                                            <Binding.Source>
+                                                <AMUI:RandomME>
+                                                    <sys2:Uri>./Resources/thinking-face-svgrepo-com.svg</sys2:Uri>
+                                                    <sys2:Uri>./Resources/face-with-symbols-on-mouth-svgrepo-com.svg</sys2:Uri>
+                                                    <sys2:Uri>./Resources/face-with-tears-of-joy-svgrepo-com.svg</sys2:Uri>
+                                                    <sys2:Uri>./Resources/fire-svgrepo-com.svg</sys2:Uri>
+                                                    <sys2:Uri>./Resources/beer-mug-svgrepo-com.svg</sys2:Uri>
+                                                </AMUI:RandomME>
+                                            </Binding.Source>
+                                        </Binding>
+                                    </MultiBinding>
+                                </svg:SVGImage.UriSource>
+                            </svg:SVGImage>
+                        </AMUI:Button82.Content>
                     </AMUI:Button82>
                     <Popup Placement="Bottom" IsOpen="{Binding ElementName=BuildButton, Path=IsChecked, Mode=TwoWay}" VerticalOffset="5" HorizontalAlignment="Center" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade" StaysOpen="False">
                         <Grid SnapsToDevicePixels="True" MinWidth="220" MinHeight="70" MaxHeight="520">
@@ -384,7 +424,7 @@
                             <!--Splitter-->
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Grid x:Name="TreeViewDock" Background="{Binding UIColors.Gray1}" Grid.Column="0">
+                        <Grid x:Name="TreeViewDock" Background="{Binding UIColors.Gray1}" Grid.Column="0" Visibility="{Binding ElementName=HideDockButton, Path=IsChecked, Converter={AMUI:ConvertersME Converter=BoolToOppositeVisibility}}">
                             <!--Tree view-->
                         </Grid>
                         <GridSplitter x:Name="MainTabGridSplitter" Visibility="{Binding ElementName=TreeViewDock, Path=Visibility}" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{Binding UIColors.Gray1}" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" />
@@ -395,8 +435,12 @@
                                 <RowDefinition/>
                                 <RowDefinition Height="50"/>
                             </Grid.RowDefinitions>
-                            <Border Margin="5,5,20,5" HorizontalAlignment="Right" Grid.Row="2" Background="{Binding UIColors.Gray4}" BorderBrush="{Binding UIColors.Gray5}" BorderThickness="1" MinWidth="100" CornerRadius="8">
-                                <TextBlock Text="Status: Ready" Foreground="{Binding UIColors.Foreground}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
+                            <Border Margin="5,5,20,5" HorizontalAlignment="Right" Grid.Row="2" Background="{Binding UIColors.Gray4}" BorderBrush="{Binding UIColors.Gray5}" BorderThickness="1" MinWidth="90" CornerRadius="8">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" ToolTip="{Binding Status.State}">
+                                    <AMUI:ArcProgressBar82 Width="16" Height="16" Margin="5" DoneCheckMark="False" Border82="{Binding UIColors.Gray5}" Accent82="{Binding UIColors.Accent}" StrokeWidth="65" Value="26" IsIndeterminate="True"/>
+                                    <TextBlock Text="{Binding Status.Message}" Foreground="{Binding UIColors.Foreground}" FontSize="14" VerticalAlignment="Center" Margin="5,5,5,5"/>
+                                </StackPanel>
+                                
                             </Border>
                         </Grid>
                     </Grid>

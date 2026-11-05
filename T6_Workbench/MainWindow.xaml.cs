@@ -47,11 +47,6 @@ namespace T6_Workbench
                 this.WindowState = this.WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
             }
         }
-
-        private void HideDockButton_Click(object sender, RoutedEventArgs e)
-        {
-            TreeViewDock.Visibility = TreeViewDock.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
-        }
         #endregion
         #region Project operations
         private void OpenProjButton_Click(object sender, RoutedEventArgs e)

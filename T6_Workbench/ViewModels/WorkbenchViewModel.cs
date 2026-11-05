@@ -230,8 +230,6 @@ namespace T6_Workbench
 
         internal void BeginOperation(WorkbenchOperationState state, string message)
         {
-            LastResult = null;
-            LastError = null;
             CanOpenResult = false;
             SetStatus(state, message);
         }
@@ -239,6 +237,7 @@ namespace T6_Workbench
         internal void CompleteOperation(OperationResult result, string message, bool built)
         {
             LastResult = result;
+            LastError = null;
             SetStatus(built ? result.Warnings.Length > 0 ? WorkbenchOperationState.BuiltWithWarnings : WorkbenchOperationState.Built : WorkbenchOperationState.Ready, message);
             CanOpenResult = true;
         }

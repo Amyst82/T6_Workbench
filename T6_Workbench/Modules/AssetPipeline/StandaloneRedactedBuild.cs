@@ -103,20 +103,22 @@ namespace T6_Workbench
             }
             await Helpers.WriteAllTextAsync(Path.Combine(run, "conversion.log"), converterLog.ToString(), cancellation);
             var baseZones = new List<string>();
-            if (roots.Any(root => root.Type.Equals("xmodel", StringComparison.OrdinalIgnoreCase)))
+            bool hasXModels = roots.Any(root => root.Type.Equals("xmodel", StringComparison.OrdinalIgnoreCase));
+            bool hasWeapons = roots.Any(root => root.Type.Equals("weapon", StringComparison.OrdinalIgnoreCase));
+            if (hasXModels)
             {
                 // Stock XModel materials may be present in common_mp.ff but absent from the raw export.
                 // Load that zone only as a build-time dependency; the standalone output zone still lists only edits.
                 var commonMp = new[]
                 {
-                Path.Combine(paths.GameDirectory, "zone", "all", "common_mp.ff"),
-                Path.Combine(paths.GameDirectory, "zone", "english", "common_mp.ff")
-            }.FirstOrDefault(File.Exists);
+                    Path.Combine(paths.GameDirectory, "zone", "all", "common_mp.ff"),
+                    Path.Combine(paths.GameDirectory, "zone", "english", "common_mp.ff")
+                }.FirstOrDefault(File.Exists);
                 if (commonMp == null)
                     throw new FileNotFoundException(EnglishText.Text("A standalone XModel build requires common_mp.ff in the game folder."));
                 baseZones.Add(commonMp);
             }
-            if (roots.Any(root => root.Type.Equals("weapon", StringComparison.OrdinalIgnoreCase)))
+            if (hasWeapons)
             {
                 // Weapon UI icons can be references in common_mp and absent from
                 // patch_mp; their stock definitions are in code_post_gfx_mp.
@@ -130,9 +132,18 @@ namespace T6_Workbench
                 {
                     _log?.Invoke(EnglishText.Text("Zone code_post_gfx_mp.ff was not found for weapon dependencies; some icon materials may be missing."));
                 }
+            }
+            if (hasXModels || hasWeapons)
+            {
+                // Stock model and weapon dependencies can be supplied by the MP patch zone.
                 var patchMp = new[] { Path.Combine(paths.GameDirectory, "zone", "all", "patch_mp.ff"), Path.Combine(paths.GameDirectory, "zone", "english", "patch_mp.ff") }.FirstOrDefault(File.Exists);
                 if (patchMp == null)
-                    throw new FileNotFoundException(EnglishText.Text("Building weapons requires patch_mp.ff in the game folder."));
+                {
+                    string error = hasWeapons
+                        ? "Building weapons requires patch_mp.ff in the game folder."
+                        : "A standalone XModel build requires patch_mp.ff in the game folder.";
+                    throw new FileNotFoundException(EnglishText.Text(error));
+                }
                 baseZones.Add(patchMp);
             }
             // Native project zones can provide references that OAT exported without payload.

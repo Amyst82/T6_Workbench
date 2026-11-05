@@ -6,49 +6,83 @@ namespace T6_Workbench
     public class UIColors : BaseViewModel
     {
         #region Gray shades
-        private SolidColorBrush _gray0 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#151515"));
+        private Color _gray0 = (Color)ColorConverter.ConvertFromString("#151515");
         public SolidColorBrush Gray0
+        {
+            get => new SolidColorBrush(_gray0);
+            set => SetProperty(ref _gray0, value.Color);
+        }
+        public Color Gray0Color
         {
             get => _gray0;
             set => SetProperty(ref _gray0, value);
         }
-        private SolidColorBrush _gray1 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#171717"));
+        private Color _gray1 = (Color)ColorConverter.ConvertFromString("#171717");
         public SolidColorBrush Gray1
         {
+            get => new SolidColorBrush(_gray1);
+            set => SetProperty(ref _gray1, value.Color);
+        }
+        private Color Gray1Color
+        {             
             get => _gray1;
             set => SetProperty(ref _gray1, value);
         }
-        private SolidColorBrush _gray2 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1A1A1A"));
+        private Color _gray2 = (Color)ColorConverter.ConvertFromString("#1A1A1A");
         public SolidColorBrush Gray2
+        {
+            get => new SolidColorBrush(_gray2);
+            set => SetProperty(ref _gray2, value.Color);
+        }
+        public Color Gray2Color
         {
             get => _gray2;
             set => SetProperty(ref _gray2, value);
         }
-        private SolidColorBrush _gray3 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#212121"));
+        private Color _gray3 = (Color)ColorConverter.ConvertFromString("#212121");
         public SolidColorBrush Gray3
+        {
+            get => new SolidColorBrush(_gray3);
+            set => SetProperty(ref _gray3, value.Color);
+        }
+        public Color Gray3Color
         {
             get => _gray3;
             set => SetProperty(ref _gray3, value);
         }
-        private SolidColorBrush _gray4 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#232323"));
+        private Color _gray4 = (Color)ColorConverter.ConvertFromString("#232323");
         public SolidColorBrush Gray4
+        {
+            get => new SolidColorBrush(_gray4);
+            set => SetProperty(ref _gray4, value.Color);
+        }
+        public Color Gray4Color
         {
             get => _gray4;
             set => SetProperty(ref _gray4, value);
         }
-        private SolidColorBrush _gray5 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2F2F2F"));
+        private Color _gray5 = (Color)ColorConverter.ConvertFromString("#2F2F2F");
         public SolidColorBrush Gray5
+        {
+            get => new SolidColorBrush(_gray5);
+            set => SetProperty(ref _gray5, value.Color);
+        }
+        public Color Gray5Color
         {
             get => _gray5;
             set => SetProperty(ref _gray5, value);
         }
-        private SolidColorBrush _gray6 = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#808080"));
+        private Color _gray6 = (Color)ColorConverter.ConvertFromString("#808080");
         public SolidColorBrush Gray6
+        {
+            get => new SolidColorBrush(_gray6);
+            set => SetProperty(ref _gray6, value.Color);
+        }
+        public Color Gray6Color
         {
             get => _gray6;
             set => SetProperty(ref _gray6, value);
         }
-
         #endregion
 
 

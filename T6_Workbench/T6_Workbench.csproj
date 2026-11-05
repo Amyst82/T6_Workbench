@@ -177,6 +177,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="resources\hammer-svgrepo-com.svg" />
+    <Resource Include="resources\github-142-svgrepo-com.svg" />
+    <Resource Include="resources\code-alt-svgrepo-com.svg" />
+    <Resource Include="resources\file-svgrepo-com.svg" />
+    <Resource Include="resources\file-arrow-up-alt-1-svgrepo-com.svg" />
+    <Resource Include="resources\file-arrow-down-alt-1-svgrepo-com.svg" />
+    <Resource Include="resources\circle-information-svgrepo-com.svg" />
+    <Resource Include="resources\image-square-svgrepo-com.svg" />
+    <Resource Include="resources\house-chimney-floor-svgrepo-com.svg" />
+    <Resource Include="resources\face-with-tears-of-joy-svgrepo-com.svg" />
+    <Resource Include="resources\face-with-symbols-on-mouth-svgrepo-com.svg" />
+    <Resource Include="resources\fire-svgrepo-com.svg" />
+    <Resource Include="resources\beer-mug-svgrepo-com.svg" />
     <Content Include="resources\images\c_chn_mp_pla_lower_n.dds" />
     <Content Include="resources\images\c_mul_mp_pmc_glasses_n.dds" />
     <Content Include="resources\images\c_usa_mp_fbi_armor_vest_n.dds" />
@@ -199,6 +211,9 @@
     <Content Include="resources\images\~-gc_usa_mp_fbi_lmg_gear_c.dds" />
     <Content Include="resources\images\~-gc_usa_mp_fbi_lower1_c.dds" />
     <Content Include="resources\images\~-gc_usa_mp_fbi_sleeve_c.dds" />
+    <Resource Include="resources\refresh-ccw-clock-svgrepo-com.svg" />
+    <Resource Include="resources\message-square-info-svgrepo-com.svg" />
+    <Resource Include="resources\thinking-face-svgrepo-com.svg" />
     <Content Include="Resources\XAnim\*" Link="resources/xanim/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Resources\images\*" Link="resources/images/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="resources\XAnim\workbench_ik.py" />

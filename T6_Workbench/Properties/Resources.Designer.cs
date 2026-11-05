@@ -93,6 +93,16 @@ namespace T6_Workbench.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] beer_mug_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("beer_mug_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] blender_svgrepo_com {
             get {
                 object obj = ResourceManager.GetObject("blender_svgrepo_com", resourceCulture);
@@ -103,9 +113,29 @@ namespace T6_Workbench.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] circle_information_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("circle_information_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] clone_svgrepo_com {
             get {
                 object obj = ResourceManager.GetObject("clone_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] code_alt_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("code_alt_svgrepo_com", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -143,6 +173,66 @@ namespace T6_Workbench.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] face_with_symbols_on_mouth_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("face_with_symbols_on_mouth_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] face_with_tears_of_joy_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("face_with_tears_of_joy_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] file_arrow_down_alt_1_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("file_arrow_down_alt_1_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] file_arrow_up_alt_1_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("file_arrow_up_alt_1_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] file_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("file_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] fire_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("fire_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] folder_open_svgrepo_com {
             get {
                 object obj = ResourceManager.GetObject("folder_open_svgrepo_com", resourceCulture);
@@ -173,9 +263,59 @@ namespace T6_Workbench.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] github_142_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("github_142_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] hammer_svgrepo_com {
             get {
                 object obj = ResourceManager.GetObject("hammer_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] house_chimney_floor_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("house_chimney_floor_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] image_square_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("image_square_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] message_square_info_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("message_square_info_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] refresh_ccw_clock_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("refresh_ccw_clock_svgrepo_com", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -206,6 +346,16 @@ namespace T6_Workbench.Properties {
         internal static byte[] SF_Pro_Rounded_Regular {
             get {
                 object obj = ResourceManager.GetObject("SF_Pro_Rounded_Regular", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] thinking_face_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("thinking_face_svgrepo_com", resourceCulture);
                 return ((byte[])(obj));
             }
         }
