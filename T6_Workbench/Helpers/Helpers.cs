@@ -24,7 +24,9 @@ namespace T6_Workbench
             var b = to.Split(new[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries);
             int common = 0;
             while (common < a.Length && common < b.Length && a[common].Equals(b[common], StringComparison.OrdinalIgnoreCase))
+            {
                 common++;
+            }
             var parts = Enumerable.Repeat("..", a.Length - common).Concat(b.Skip(common)).ToArray();
             return parts.Length == 0 ? "." : string.Join(Path.DirectorySeparatorChar.ToString(), parts);
         }
@@ -44,10 +46,15 @@ namespace T6_Workbench
         /// Performs the Finite is operation. Small .NET Framework API compatibility implementations used at call sites.
         /// </summary>
         internal static bool IsFinite(double value) => !double.IsNaN(value) && !double.IsInfinity(value);
+
         internal static int Clamp(int value, int min, int max) => Math.Min(max, Math.Max(min, value));
+
         internal static float Clamp(float value, float min, float max) => Math.Min(max, Math.Max(min, value));
+
         internal static double Clamp(double value, double min, double max) => Math.Min(max, Math.Max(min, value));
+
         internal static float Sqrt(float value) => (float)Math.Sqrt(value);
+
         internal static int TrailingZeroCount(uint value)
         {
             if (value == 0)
@@ -60,8 +67,11 @@ namespace T6_Workbench
             }
             return result;
         }
+
         internal static float Int32BitsToSingle(int bits) => BitConverter.ToSingle(BitConverter.GetBytes(bits), 0);
+
         internal static int SingleToInt32Bits(float value) => BitConverter.ToInt32(BitConverter.GetBytes(value), 0);
+
         internal static byte[] Sha256(byte[] data)
         {
             using (var hash = SHA256.Create())
@@ -69,6 +79,7 @@ namespace T6_Workbench
                 return hash.ComputeHash(data);
             }
         }
+
         internal static byte[] Sha256(Stream stream)
         {
             using (var hash = SHA256.Create())
@@ -76,6 +87,7 @@ namespace T6_Workbench
                 return hash.ComputeHash(stream);
             }
         }
+
         internal static byte[] Sha1(byte[] data)
         {
             using (var hash = SHA1.Create())
@@ -83,6 +95,7 @@ namespace T6_Workbench
                 return hash.ComputeHash(data);
             }
         }
+
         internal static string ToHexString(byte[] bytes) => BitConverter.ToString(bytes).Replace("-", "");
 
         internal static IEnumerable<T[]> Chunk<T>(this IEnumerable<T> source, int size)
@@ -102,18 +115,23 @@ namespace T6_Workbench
             if (batch.Count != 0)
                 yield return batch.ToArray();
         }
+
         internal static IOrderedEnumerable<T> Order<T>(this IEnumerable<T> source, IComparer<T> comparer = null) => source.OrderBy(value => value, comparer);
+
         internal static void Clear<T>(this System.Collections.Concurrent.ConcurrentQueue<T> queue)
         {
             while (queue.TryDequeue(out var removedItem))
             {
             }
         }
+
         internal static int IndexOfAnyInRange(this Span<byte> bytes, byte low, byte high)
         {
             for (int i = 0; i < bytes.Length; i++)
+            {
                 if (bytes[i] >= low && bytes[i] <= high)
                     return i;
+            }
             return -1;
         }
         /// <summary>
@@ -132,6 +150,7 @@ namespace T6_Workbench
             }
             buffer.AsSpan().CopyTo(destination);
         }
+
         internal static int Read(this Stream stream, Span<byte> destination)
         {
             byte[] buffer = new byte[destination.Length];
@@ -159,23 +178,34 @@ namespace T6_Workbench
         /// Resolves or reads the String value. Small .NET Framework API compatibility implementations used at call sites.
         /// </summary>
         internal static string GetString(this Encoding encoding, Span<byte> bytes) => encoding.GetString(bytes.ToArray());
+
         internal static int IndexOfAnyExcept(this Span<byte> bytes, byte value)
         {
             for (int i = 0; i < bytes.Length; i++)
+            {
                 if (bytes[i] != value)
                     return i;
+            }
             return -1;
         }
+
         internal static bool Contains(this string value, string text, StringComparison comparison) => value.IndexOf(text, comparison) >= 0;
+
         internal static bool Contains(this string value, char character) => value.IndexOf(character) >= 0;
+
         internal static bool StartsWith(this string value, char character) => value.Length > 0 && value[0] == character;
+
         internal static bool EndsWith(this string value, char character) => value.Length > 0 && value[value.Length - 1] == character;
+
         internal static string[] Split(this string value, char separator, StringSplitOptions options) => value.Split(new[] { separator }, options);
+
         internal static string[] Split(this string value, char separator, int count, StringSplitOptions options) => value.Split(new[] { separator }, count, options);
+
         internal static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, TValue defaultValue = default)
         {
             return source.TryGetValue(key, out var value) ? value : defaultValue;
         }
+
         internal static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, TValue value)
         {
             if (source.ContainsKey(key))
@@ -183,6 +213,7 @@ namespace T6_Workbench
             source.Add(key, value);
             return true;
         }
+
         internal static IEnumerable<(TFirst First, TSecond Second)> Zip<TFirst, TSecond>(this IEnumerable<TFirst> first, IEnumerable<TSecond> second)
         {
             return Enumerable.Zip(first, second, (a, b) => (a, b));
@@ -215,9 +246,13 @@ namespace T6_Workbench
         internal static void MoveFile(string source, string destination, bool overwrite)
         {
             if (overwrite && File.Exists(destination))
+            {
                 File.Replace(source, destination, null);
+            }
             else
+            {
                 File.Move(source, destination);
+            }
         }
 
         /// <summary>
@@ -264,12 +299,14 @@ namespace T6_Workbench
                 process.EnableRaisingEvents = true;
                 // Close the race where the process exits just before the event subscription.
                 if (process.HasExited)
+                {
                     completed.TrySetResult(true);
+                }
                 await completed.Task.ConfigureAwait(false);
             }
-            finally 
-            { 
-                process.Exited -= handler; 
+            finally
+            {
+                process.Exited -= handler;
             }
         }
     }

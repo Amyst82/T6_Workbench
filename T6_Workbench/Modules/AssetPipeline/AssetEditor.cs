@@ -16,10 +16,12 @@ namespace T6_Workbench
     internal sealed class AssetEditor
     {
         private readonly Action<string> _log;
+
         internal AssetEditor(Action<string> log = null)
         {
             this._log = log;
         }
+
         internal string Import(WorkbenchProject project, AssetRef asset, string sourceFile, int lodIndex = 0)
         {
             if (!File.Exists(sourceFile))
@@ -50,7 +52,9 @@ namespace T6_Workbench
                 Directory.CreateDirectory(Path.GetDirectoryName(target));
                 File.WriteAllBytes(target, normalized.Bytes);
                 foreach (var change in normalized.Changes)
+                {
                     _log?.Invoke(change);
+                }
                 return target;
             }
             else if ((asset.Type == "rawfile") || (asset.Type == "stringtable"))
@@ -68,9 +72,11 @@ namespace T6_Workbench
                 if (!extension.Equals(Path.GetExtension(original), StringComparison.OrdinalIgnoreCase))
                     throw new InvalidDataException(EnglishText.Text("The edit file extension must match the original."));
                 if (extension == ".json")
+                {
                     using (var parsedDocument = JsonDocument.Parse(File.ReadAllText(sourceFile)))
                     {
                     }
+                }
                 if (!File.Exists(Effective(project, original)))
                     throw new FileNotFoundException(EnglishText.Text("OAT did not export asset data."), original);
                 target = project.EditPath(Helpers.GetRelativePath(project.Assets, original));
@@ -78,6 +84,7 @@ namespace T6_Workbench
             Copy(sourceFile, target);
             return target;
         }
+
         internal string PreviewFile(WorkbenchProject project, AssetRef asset)
         {
             if (asset.Type == "image")
@@ -92,6 +99,7 @@ namespace T6_Workbench
             }
             return null;
         }
+
         internal async Task<OperationResult> ExportAsync(WorkbenchProject project, IReadOnlyList<AssetRef> assets, string destination, string modelFormat, string imageFormat, WorkbenchPaths paths, CancellationToken cancellation = default)
         {
             Workspace.RejectGameOutput(destination);
@@ -111,19 +119,19 @@ namespace T6_Workbench
                 {
                     copied += await ExportOneAsync(project, asset, destination, modelFormat, imageFormat, paths, cancellation);
                 }
-                catch (FileNotFoundException error) 
-                { 
-                    warnings.Add(asset.Type + "," + asset.Name + ": " + error.Message); 
+                catch (FileNotFoundException error)
+                {
+                    warnings.Add(asset.Type + "," + asset.Name + ": " + error.Message);
                 }
-                catch (DirectoryNotFoundException error) 
-                { 
-                    warnings.Add(asset.Type + "," + asset.Name + ": " + error.Message); 
+                catch (DirectoryNotFoundException error)
+                {
+                    warnings.Add(asset.Type + "," + asset.Name + ": " + error.Message);
                 }
             }
             return new OperationResult(destination, EnglishText.Format("Files exported: {0}", copied), warnings.ToArray());
         }
-        async Task<int> ExportOneAsync(WorkbenchProject project, AssetRef asset, string destination,
-                    string modelFormat, string imageFormat, WorkbenchPaths paths, CancellationToken token)
+
+        async Task<int> ExportOneAsync(WorkbenchProject project, AssetRef asset, string destination, string modelFormat, string imageFormat, WorkbenchPaths paths, CancellationToken token)
         {
             if (asset.Type == "image")
             {
@@ -189,7 +197,11 @@ namespace T6_Workbench
             {
                 originalFile = (asset.Type == "rawfile") || (asset.Type == "stringtable") ? project.AssetPath(asset.Name) : FindGeneric(project, asset);
             }
-            catch (FileNotFoundException) { _log?.Invoke(EnglishText.Text("No export for ") + asset.Type + "," + asset.Name); return 0; }
+            catch (FileNotFoundException)
+            {
+                _log?.Invoke(EnglishText.Text("No export for ") + asset.Type + "," + asset.Name);
+                return 0;
+            }
             if (!File.Exists(Effective(project, originalFile)))
             {
                 _log?.Invoke(EnglishText.Text("No export for ") + asset.Type + "," + asset.Name);
@@ -198,6 +210,7 @@ namespace T6_Workbench
             Copy(Effective(project, originalFile), Path.Combine(destination, Helpers.GetRelativePath(project.Assets, originalFile)));
             return 1;
         }
+
         static string Folder(string type)
         {
             switch (type)
@@ -212,6 +225,7 @@ namespace T6_Workbench
                     return type;
             }
         }
+
         static string FindGeneric(WorkbenchProject project, AssetRef asset)
         {
             var folder = Folder(asset.Type);
@@ -226,11 +240,13 @@ namespace T6_Workbench
                 return matches[0];
             throw new FileNotFoundException(EnglishText.Text("No unique OAT file for ") + asset.Type + "," + asset.Name);
         }
+
         static string Effective(WorkbenchProject project, string original)
         {
             var edited = project.EditPath(Helpers.GetRelativePath(project.Assets, original));
             return File.Exists(edited) ? edited : original;
         }
+
         static string FindImage(WorkbenchProject project, string name)
         {
             var relative = name.Replace('\\', '/').Replace('*', '_') + ".dds";
@@ -243,6 +259,7 @@ namespace T6_Workbench
                 return matches[0];
             throw new FileNotFoundException(EnglishText.Text("DDS for image not found or name is ambiguous: ") + name);
         }
+
         static List<string> FindLods(WorkbenchProject project, string name)
         {
             var folder = project.AssetPath("model_export");
@@ -256,9 +273,10 @@ namespace T6_Workbench
                     var stem = Path.GetFileNameWithoutExtension(file);
                     var marker = stem.LastIndexOf("_lod", StringComparison.OrdinalIgnoreCase);
                     if (marker >= 0 && int.TryParse(stem.Substring((marker + 4)), out var lodNumber))
+                    {
                         stem = stem.Substring(0, (marker) - (0));
-                    return stem.Equals(name, StringComparison.OrdinalIgnoreCase) ||
-                        stem.Equals(normalized, StringComparison.OrdinalIgnoreCase);
+                    }
+                    return stem.Equals(name, StringComparison.OrdinalIgnoreCase) || stem.Equals(normalized, StringComparison.OrdinalIgnoreCase);
                 })
                 .OrderBy(file =>
                 {
@@ -267,11 +285,13 @@ namespace T6_Workbench
                     return marker >= 0 && int.TryParse(stem.Substring((marker + 4)), out var lod) ? lod : -1;
                 }).ToList();
         }
+
         static void Copy(string source, string destination)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(destination));
             File.Copy(source, destination, true);
         }
+
         static void WritePng(string dds, string png)
         {
             var encoder = new PngBitmapEncoder();
@@ -282,6 +302,7 @@ namespace T6_Workbench
                 encoder.Save(output);
             }
         }
+
         static void WriteDds(string png, string dds)
         {
             using (var input = File.OpenRead(png))
@@ -295,7 +316,9 @@ namespace T6_Workbench
                 bitmap.CopyPixels(pixels, width * 4, 0);
                 // OAT's T6 IWI writer accepts R8_G8_B8_A8, so emit RGBA byte order and masks.
                 for (int i = 0; i < pixels.Length; i += 4)
+                {
                     (pixels[i], pixels[i + 2]) = (pixels[i + 2], pixels[i]);
+                }
                 var header = new byte[128];
                 using (var writer = new BinaryWriter(new MemoryStream(header), Encoding.ASCII, true))
                 {

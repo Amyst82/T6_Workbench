@@ -9,59 +9,79 @@ namespace T6_Workbench
     public class ProjectSessionViewModel : BaseViewModel
     {
         string name = "";
+
         string projectPath = "";
+
         string manifestPath = "";
+
         DateTime lastOpenedAt;
+
         string lastActiveAssetType = "";
+
         string lastActiveAssetName = "";
+
         int selectedLodIndex;
+
         int projectChangeCount;
+
         bool previewUsesShaders = true;
+
         WorkbenchSettingsViewModel settings = new WorkbenchSettingsViewModel();
+
         PreviewCameraState previewCamera;
 
-        public ProjectSessionViewModel() { }
+        public ProjectSessionViewModel()
+        {
+        }
 
         public string Name 
         { 
             get => name; 
             set => SetProperty(ref name, value ?? ""); 
         }
+
         public string ProjectPath 
         { 
             get => projectPath; 
             set => SetProperty(ref projectPath, value ?? ""); 
         }
+
         public string ManifestPath 
         { 
             get => manifestPath; 
             set => SetProperty(ref manifestPath, value ?? ""); 
         }
+
         public DateTime LastOpenedAt 
         { 
             get => lastOpenedAt; 
             set => SetProperty(ref lastOpenedAt, value); 
         }
+
         public string LastActiveAssetType 
         { 
             get => lastActiveAssetType; 
             set => SetProperty(ref lastActiveAssetType, value ?? ""); 
         }
+
         public string LastActiveAssetName 
         { 
             get => lastActiveAssetName; 
             set => SetProperty(ref lastActiveAssetName, value ?? ""); 
         }
+
         public int SelectedLodIndex 
         { 
             get => selectedLodIndex; 
             set => SetProperty(ref selectedLodIndex, Math.Max(0, value)); 
         }
+
         public int ProjectChangeCount 
         { 
             get => projectChangeCount; 
             set => SetProperty(ref projectChangeCount, Math.Max(0, value)); 
         }
+
         public bool PreviewUsesShaders
         {
             get => previewUsesShaders;
@@ -72,11 +92,13 @@ namespace T6_Workbench
                 NotifyProperty(nameof(PreviewUsesShaders));
             }
         }
+
         public WorkbenchSettingsViewModel Settings 
         { 
             get => settings; 
             set => SetProperty(ref settings, value ?? new WorkbenchSettingsViewModel()); 
         }
+
         public PreviewCameraState PreviewCamera 
         { 
             get => previewCamera; 

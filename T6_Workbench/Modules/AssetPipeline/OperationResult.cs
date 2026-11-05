@@ -7,7 +7,9 @@ namespace T6_Workbench
     public sealed class OperationResult
     {
         public string Directory { get; set; }
+
         public string Message { get; set; }
+
         public string[] Warnings { get; set; }
 
         public OperationResult(string Directory, string Message, string[] Warnings)

@@ -15,17 +15,16 @@ namespace T6_Workbench
     internal sealed class T6MaterialTextureResolver
     {
         readonly string[] roots;
+
         readonly int maxTextureDimension;
+
         readonly Dictionary<string, BitmapSource> textureCache = new Dictionary<string, BitmapSource>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>Initialize the lookup with project or dump roots containing materials/ and images/.</summary>
         public T6MaterialTextureResolver(IEnumerable<string> assetRoots, int maxTextureDimension = 0)
         {
             this.maxTextureDimension = Math.Max(0, maxTextureDimension);
-            roots = assetRoots.Where(Directory.Exists)
-                .Select(Path.GetFullPath)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToArray();
+            roots = assetRoots.Where(Directory.Exists).Select(Path.GetFullPath).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
         }
 
         /// <summary>Resolve a GLB material name such as "mc/mtl_c_usa_mp_fbi_helmet" to its T6 color map.</summary>
@@ -36,7 +35,6 @@ namespace T6_Workbench
                 return null;
             if (textureCache.TryGetValue(materialName, out var cached))
                 return cached;
-
             BitmapSource bitmap = null;
             string materialFile = FindMaterialFile(materialName);
             if (materialFile != null)
@@ -52,14 +50,18 @@ namespace T6_Workbench
                                 if (!texture.TryGetProperty("semantic", out var semantic) ||
                                     !string.Equals(semantic.GetString(), "colorMap", StringComparison.OrdinalIgnoreCase) ||
                                     !texture.TryGetProperty("image", out var imageElement))
+                                {
                                     continue;
+                                }
                                 string imageName = imageElement.GetString();
                                 string imageFile = FindImageFile(imageName);
                                 if (imageFile != null)
                                 {
                                     bitmap = TextureModule.LoadDds(imageFile).Image;
                                     if (maxTextureDimension > 0)
+                                    {
                                         bitmap = ResizeForPreview(bitmap, maxTextureDimension);
+                                    }
                                 }
                                 break;
                             }
@@ -68,10 +70,9 @@ namespace T6_Workbench
                 }
                 catch (Exception error) when ((((((error is System.IO.IOException) || (error is System.UnauthorizedAccessException)) || (error is System.Text.Json.JsonException)) || (error is System.InvalidOperationException)) || (error is System.NotSupportedException)) || (error is System.ArgumentException))
                 {
-                    // A preview should remain usable if one optional material or DDS is malformed.
+                // A preview should remain usable if one optional material or DDS is malformed.
                 }
             }
-
             textureCache[materialName] = bitmap;
             return bitmap;
         }
@@ -105,27 +106,32 @@ namespace T6_Workbench
             string[] variants = relative == relative.Replace('*', '_')
                 ? new string[] { relative } : System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(new string[] { relative }, new string[] { relative.Replace('*', '_') }));
             foreach (string root in roots)
+            {
                 foreach (string variant in variants)
                 {
                     string candidate = SafeChild(root, Path.Combine("images", variant.Replace('/', Path.DirectorySeparatorChar) + ".dds"));
                     if (candidate != null && File.Exists(candidate))
                         return candidate;
                 }
-
+            }
             // Older dumps occasionally flatten or rename image paths. Use a unique filename match as a fallback.
             string leaf = Path.GetFileName(relative.Replace('*', '_')) + ".dds";
             foreach (string root in roots)
             {
                 string folder = Path.Combine(root, "images");
                 if (!Directory.Exists(folder))
+                {
                     continue;
+                }
                 string[] matches;
                 try
                 {
-                    matches = Directory.EnumerateFiles(folder, leaf, SearchOption.AllDirectories)
-                        .Take(2).ToArray();
+                    matches = Directory.EnumerateFiles(folder, leaf, SearchOption.AllDirectories).Take(2).ToArray();
                 }
-                catch (Exception error) when ((error is System.IO.IOException) || (error is System.UnauthorizedAccessException)) { continue; }
+                catch (Exception error) when ((error is System.IO.IOException) || (error is System.UnauthorizedAccessException))
+                {
+                    continue;
+                }
                 if (matches.Length == 1)
                     return matches[0];
             }
@@ -141,8 +147,7 @@ namespace T6_Workbench
             double scale = (double)maxDimension / largest;
             int width = Math.Max(1, (int)Math.Round(source.PixelWidth * scale));
             int height = Math.Max(1, (int)Math.Round(source.PixelHeight * scale));
-            var transform = new TransformedBitmap(source, new ScaleTransform((double)width / source.PixelWidth,
-                (double)height / source.PixelHeight));
+            var transform = new TransformedBitmap(source, new ScaleTransform((double)width / source.PixelWidth, (double)height / source.PixelHeight));
             var converted = new FormatConvertedBitmap(transform, PixelFormats.Bgra32, null, 0);
             int stride = checked(width * 4);
             var pixels = new byte[checked(stride * height)];
@@ -151,10 +156,10 @@ namespace T6_Workbench
             resized.Freeze();
             return resized;
         }
+
         static string SafeChild(string root, string relative)
         {
-            string prefix = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-                + Path.DirectorySeparatorChar;
+            string prefix = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
             string candidate = Path.GetFullPath(Path.Combine(prefix, relative));
             return candidate.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) ? candidate : null;
         }

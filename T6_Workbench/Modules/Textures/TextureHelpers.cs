@@ -28,8 +28,7 @@ namespace T6_Workbench
         /// <summary>Replace explicitly selected texture semantics; empty values retain the template maps.</summary>
         public static string Create(string template, IReadOnlyDictionary<string, string> images)
         {
-            var root = JsonNode.Parse(File.ReadAllText(template))?.AsObject()
-                ?? throw new InvalidDataException(EnglishText.Text("Material template is empty."));
+            var root = JsonNode.Parse(File.ReadAllText(template))?.AsObject() ?? throw new InvalidDataException(EnglishText.Text("Material template is empty."));
             if (string.IsNullOrWhiteSpace(root["techniqueSet"]?.GetValue<string>()))
                 throw new InvalidDataException(EnglishText.Text("Template does not contain techniqueSet."));
             var textures = root["textures"] as JsonArray ?? throw new InvalidDataException(EnglishText.Text("Template is missing textures."));
@@ -56,15 +55,13 @@ namespace T6_Workbench
         /// <summary>
         /// Updates, serializes or converts the Async value. PNG/DDS/IWI conversion, mip creation and managed block-compression encoding.
         /// </summary>
-        public static async Task<OperationResult> ConvertAsync(IReadOnlyCollection<string> files, string binDirectory,
-            string outputDirectory, string outputFormat, string compression, Action<string> log, CancellationToken cancellation)
+        public static async Task<OperationResult> ConvertAsync(IReadOnlyCollection<string> files, string binDirectory, string outputDirectory, string outputFormat, string compression, Action<string> log, CancellationToken cancellation)
         {
             if (files.Count == 0)
                 throw new InvalidDataException(EnglishText.Text("Add PNG, DDS or IWI files first."));
             string outputRoot = Path.GetFullPath(outputDirectory);
             Workspace.RejectGameOutput(outputRoot);
             Directory.CreateDirectory(outputRoot);
-
             string extension;
             switch (outputFormat)
             {
@@ -98,13 +95,13 @@ namespace T6_Workbench
                 if (File.Exists(pair.Second))
                     throw new IOException(EnglishText.Text("Output file already exists; choose another folder: ") + pair.Second);
             }
-
             string converter = Path.Combine(Path.GetFullPath(binDirectory), "ImageConverter.exe");
             if (sources.Any(file => Path.GetExtension(file).Equals(".iwi", StringComparison.OrdinalIgnoreCase)) ||
                 outputFormat == "IWI v27 (T6)")
+            {
                 if (!File.Exists(converter))
                     throw new FileNotFoundException(EnglishText.Text("OAT's standard ImageConverter.exe was not found."), converter);
-
+            }
             string tempRoot = Path.Combine(Path.GetTempPath(), "RedactedWorkbench-Texture-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempRoot);
             try
@@ -122,7 +119,6 @@ namespace T6_Workbench
                     }
                     var bitmap = await LoadAsync(source, stem, tempRoot, converter, runner, cancellation);
                     cancellation.ThrowIfCancellationRequested();
-
                     if (outputFormat == "PNG")
                     {
                         SavePng(bitmap, target);
@@ -154,10 +150,13 @@ namespace T6_Workbench
                 {
                     Directory.Delete(tempRoot, recursive: true);
                 }
-                catch (IOException) { }
-                catch (UnauthorizedAccessException) { }
+                catch (IOException)
+                {
+                }
+                catch (UnauthorizedAccessException)
+                {
+                }
             }
-
             return new OperationResult(outputRoot, EnglishText.Format("Textures converted: {0} → {1}.", sources.Length, extension.ToUpperInvariant()), new string[0]);
         }
 
@@ -190,7 +189,6 @@ namespace T6_Workbench
                 File.Copy(source, target);
                 return true;
             }
-
             string ddsInput;
             if (sourceExtension == ".dds")
             {
@@ -224,8 +222,7 @@ namespace T6_Workbench
             using (var input = File.OpenRead(path))
             {
                 Span<byte> header = stackalloc byte[4];
-                return input.Read(header) == header.Length && header[0] == (byte)'I' && header[1] == (byte)'W' &&
-                    header[2] == (byte)'i' && header[3] == 27;
+                return input.Read(header) == header.Length && header[0] == (byte)'I' && header[1] == (byte)'W' && header[2] == (byte)'i' && header[3] == 27;
             }
         }
 
@@ -307,7 +304,6 @@ namespace T6_Workbench
             int blockBytes = bc1 ? 8 : 16;
             int linearSize = checked(blocksX * blocksY * blockBytes);
             var levels = BuildMipChain(pixels, width, height);
-
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             using (var output = File.Create(path))
             {
@@ -351,7 +347,6 @@ namespace T6_Workbench
                     writer.Write(0);
                     writer.Write(0);
                     writer.Write(0);
-
                     var block = new Rgba[16];
                     var channel = new byte[16];
                     foreach (var level in levels)
@@ -375,24 +370,32 @@ namespace T6_Workbench
                                 {
                                     ulong alpha = 0;
                                     for (int i = 0; i < 16; i++)
+                                    {
                                         alpha |= (ulong)((block[i].A + 8) / 17) << (i * 4);
+                                    }
                                     writer.Write(alpha);
                                     EncodeColorBlock(block, false, writer);
                                 }
                                 else if (bc3)
                                 {
                                     for (int i = 0; i < 16; i++)
+                                    {
                                         channel[i] = block[i].A;
+                                    }
                                     EncodeBc4(channel, writer);
                                     EncodeColorBlock(block, false, writer);
                                 }
                                 else
                                 {
                                     for (int i = 0; i < 16; i++)
+                                    {
                                         channel[i] = block[i].R;
+                                    }
                                     EncodeBc4(channel, writer);
                                     for (int i = 0; i < 16; i++)
+                                    {
                                         channel[i] = block[i].G;
+                                    }
                                     EncodeBc4(channel, writer);
                                 }
                             }
@@ -447,12 +450,14 @@ namespace T6_Workbench
         static void ReadBlock(byte[] pixels, int width, int height, int bx, int by, Rgba[] block)
         {
             for (int py = 0; py < 4; py++)
+            {
                 for (int px = 0; px < 4; px++)
                 {
                     int x = Math.Min(width - 1, bx * 4 + px), y = Math.Min(height - 1, by * 4 + py);
                     int at = (y * width + x) * 4, index = py * 4 + px;
                     block[index] = new TextureFileConverter.Rgba(pixels[at + 2], pixels[at + 1], pixels[at], pixels[at + 3]);
                 }
+            }
         }
 
         /// <summary>
@@ -463,7 +468,9 @@ namespace T6_Workbench
             bool transparent = allowTransparent && pixels.Any(pixel => pixel.A < 128);
             var eligible = transparent ? pixels.Where(pixel => pixel.A >= 128).ToArray() : pixels;
             if (eligible.Length == 0)
+            {
                 eligible = new TextureFileConverter.Rgba[] { new Rgba(0, 0, 0, 255) };
+            }
             var low = eligible[0];
             var high = eligible[0];
             long farthest = -1;
@@ -497,9 +504,13 @@ namespace T6_Workbench
                 if (c0 == c1)
                 {
                     if (c0 < ushort.MaxValue)
+                    {
                         c0++;
+                    }
                     else
+                    {
                         c1--;
+                    }
                 }
             }
             var palette = ColorPalette(c0, c1, transparent);
@@ -508,7 +519,9 @@ namespace T6_Workbench
             {
                 int chosen = 0;
                 if (transparent && pixels[i].A < 128)
+                {
                     chosen = 3;
+                }
                 else
                 {
                     long best = long.MaxValue;
@@ -517,10 +530,10 @@ namespace T6_Workbench
                     {
                         long distance = ColorDistance(pixels[i], palette[p]);
                         if (distance < best)
-                        {
-                            best = distance;
-                            chosen = p;
-                        }
+        {
+            best = distance;
+            chosen = p;
+        }
                     }
                 }
                 selectors |= (uint)chosen << (i * 2);
@@ -573,10 +586,13 @@ namespace T6_Workbench
                 selectors |= (ulong)bestIndex << (i * 3);
             }
             for (int i = 0; i < 6; i++)
+            {
                 writer.Write((byte)(selectors >> (i * 8)));
+            }
         }
 
         static ushort Pack565(Rgba c) => (ushort)(((c.R * 31 + 127) / 255 << 11) | ((c.G * 63 + 127) / 255 << 5) | ((c.B * 31 + 127) / 255));
+
         static long ColorDistance(Rgba a, Rgba b)
         {
             long r = a.R - b.R, g = a.G - b.G, bl = a.B - b.B;
@@ -593,17 +609,51 @@ namespace T6_Workbench
             }
             return Enumerable.ToArray(Enumerable.Concat(Enumerable.ToArray(Enumerable.Concat(Enumerable.ToArray(Enumerable.Concat(new TextureFileConverter.Rgba[] { a }, new TextureFileConverter.Rgba[] { b })), new TextureFileConverter.Rgba[] { Mix(a, b, 2, 1, 3) })), new TextureFileConverter.Rgba[] { Mix(a, b, 1, 2, 3) }));
         }
+
         static Rgba Unpack565(ushort value) => new TextureFileConverter.Rgba((byte)(((value >> 11) & 31) * 255 / 31), (byte)(((value >> 5) & 63) * 255 / 63), (byte)((value & 31) * 255 / 31), 255);
+
         static Rgba Mix(Rgba a, Rgba b, int wa, int wb, int d) => new TextureFileConverter.Rgba((byte)((a.R * wa + b.R * wb) / d), (byte)((a.G * wa + b.G * wb) / d), (byte)((a.B * wa + b.B * wb) / d), 255);
+
         static uint FourCc(string text) => BinaryPrimitives.ReadUInt32LittleEndian(Encoding.ASCII.GetBytes(text));
         /// <summary>
         /// MipLevel. PNG/DDS/IWI conversion, mip creation and managed block-compression encoding.
         /// </summary>
-        sealed class MipLevel { public byte[] Pixels { get; set; } public int Width { get; set; } public int Height { get; set; } public MipLevel(byte[] Pixels, int Width, int Height) { this.Pixels = Pixels; this.Width = Width; this.Height = Height; } }
+        sealed class MipLevel
+        {
+            public byte[] Pixels { get; set; }
+
+            public int Width { get; set; }
+
+            public int Height { get; set; }
+
+            public MipLevel(byte[] Pixels, int Width, int Height)
+            {
+                this.Pixels = Pixels;
+                this.Width = Width;
+                this.Height = Height;
+            }
+        }
         /// <summary>
         /// Rgba. PNG/DDS/IWI conversion, mip creation and managed block-compression encoding.
         /// </summary>
-        struct Rgba { public byte R { get; set; } public byte G { get; set; } public byte B { get; set; } public byte A { get; set; } public Rgba(byte R, byte G, byte B, byte A) { this.R = R; this.G = G; this.B = B; this.A = A; } }
+        struct Rgba
+        {
+            public byte R { get; set; }
+
+            public byte G { get; set; }
+
+            public byte B { get; set; }
+
+            public byte A { get; set; }
+
+            public Rgba(byte R, byte G, byte B, byte A)
+            {
+                this.R = R;
+                this.G = G;
+                this.B = B;
+                this.A = A;
+            }
+        }
     }
     #endregion
 
@@ -617,6 +667,7 @@ namespace T6_Workbench
         }
 
         internal static DdsPreviewResult LoadDds(string path) => DdsPreviewLoader.Load(path);
+
         internal static DdsPreviewResult LoadDds(byte[] data) => DdsPreviewLoader.Load(data);
 
         internal static Func<string, BitmapSource> CreateMaterialResolver(IEnumerable<string> assetRoots, int maxTextureDimension)
@@ -626,6 +677,7 @@ namespace T6_Workbench
         }
 
         internal static void ValidateMaterialName(string name) => MaterialTemplateDocument.ValidateName(name);
+
         internal static string CreateMaterial(string template, IReadOnlyDictionary<string, string> images) => MaterialTemplateDocument.Create(template, images);
     }
     #endregion

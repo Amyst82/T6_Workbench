@@ -16,6 +16,7 @@ namespace T6_Workbench
     internal sealed class StandaloneRedactedBuild
     {
         private readonly Action<string> _log;
+
         private readonly ToolRunner _runner;
 
         internal StandaloneRedactedBuild(Action<string> log = null)
@@ -23,12 +24,10 @@ namespace T6_Workbench
             _log = log;
             _runner = new ToolRunner(log);
         }
-
         /// <summary>
         /// Builds an isolated compact Redacted package from project edits and their linked dependencies.
         /// </summary>
-        public async Task<OperationResult> RunAsync(WorkbenchProject project, WorkbenchPaths paths,
-            CancellationToken cancellation = default)
+        public async Task<OperationResult> RunAsync(WorkbenchProject project, WorkbenchPaths paths, CancellationToken cancellation = default)
         {
             var edits = Directory.GetFiles(project.Edits, "*", SearchOption.AllDirectories);
             if (edits.Length == 0)
@@ -40,9 +39,13 @@ namespace T6_Workbench
             // template is separate and is used only to produce the output container.
             string authTemplate = paths.RedactedTemplateFile.Trim();
             if (authTemplate.Length == 0 && project.FastfileName.Equals("patch_redacted.ff", StringComparison.OrdinalIgnoreCase) && Workspace.IsRedacted(project.Fastfile))
+            {
                 authTemplate = project.Fastfile;
+            }
             if (authTemplate.Length == 0 && !string.IsNullOrWhiteSpace(paths.GameDirectory))
+            {
                 authTemplate = Path.Combine(paths.GameDirectory, "zone", "redacted", "patch_redacted.ff");
+            }
             if (!File.Exists(authTemplate))
                 throw new FileNotFoundException(EnglishText.Text("Redacted patch_redacted.ff template not found. Specify it in Settings."), authTemplate);
             if (!Workspace.IsRedacted(authTemplate))
@@ -62,33 +65,42 @@ namespace T6_Workbench
             var knownMaterials = AssetNameNormalizer.ReadMaterialNames(project.Inventory, project.Zone);
             string editedMaterials = Path.Combine(project.Edits, "materials");
             if (Directory.Exists(editedMaterials))
+            {
                 foreach (var materialFile in Directory.GetFiles(editedMaterials, "*.json", SearchOption.AllDirectories))
                 {
                     string relativeMaterial = Helpers.GetRelativePath(editedMaterials, materialFile).Replace('\\', '/');
                     string materialName = Path.ChangeExtension(relativeMaterial, null).Replace('\\', '/');
                     knownMaterials.Add(materialName);
                 }
+            }
             string modelExport = Path.Combine(assets, "model_export");
             if (Directory.Exists(modelExport))
+            {
                 foreach (var glb in Directory.GetFiles(modelExport, "*.glb", SearchOption.AllDirectories))
+                {
                     foreach (var change in GlbModule.NormalizeMaterialNamesInPlace(glb, knownMaterials))
+                    {
                         _log?.Invoke(change + " File: " + glb);
+                    }
+                }
+            }
             // A new zone lists only changed roots. OAT adds direct material/image dependencies when loading them.
             File.WriteAllLines(Path.Combine(source, "patch_redacted.zone"),
                 new[] { ">game,T6" }.Concat(roots.Select(root => root.Type + "," + root.Name)), Encoding.UTF8);
             var imageFolder = Path.Combine(assets, "images");
             var converterLog = new StringBuilder();
             if (Directory.Exists(imageFolder))
+            {
                 foreach (var batch in edits.Where(file => file.EndsWith(".dds", StringComparison.OrdinalIgnoreCase))
                     .Select(file => Path.Combine(assets, Helpers.GetRelativePath(project.Edits, file)))
                     .Chunk(8))
                 {
                     cancellation.ThrowIfCancellationRequested();
-                    var conversion = await _runner.RunAsync(Path.Combine(paths.BinDirectory, "ImageConverter.exe"),
-                        new[] { "--no-color", "--t6" }.Concat(batch), stage, null, cancellation);
+                    var conversion = await _runner.RunAsync(Path.Combine(paths.BinDirectory, "ImageConverter.exe"), new[] { "--no-color", "--t6" }.Concat(batch), stage, null, cancellation);
                     converterLog.AppendLine(conversion.Output);
                     conversion.RequireSuccess();
                 }
+            }
             await Helpers.WriteAllTextAsync(Path.Combine(run, "conversion.log"), converterLog.ToString(), cancellation);
             var baseZones = new List<string>();
             if (roots.Any(root => root.Type.Equals("xmodel", StringComparison.OrdinalIgnoreCase)))
@@ -110,8 +122,14 @@ namespace T6_Workbench
                 // patch_mp; their stock definitions are in code_post_gfx_mp.
                 // Load it only as a build-time base, not as an output root.
                 var codePost = new[] { Path.Combine(paths.GameDirectory, "zone", "all", "code_post_gfx_mp.ff"), Path.Combine(paths.GameDirectory, "zone", "english", "code_post_gfx_mp.ff") }.FirstOrDefault(File.Exists);
-                if (codePost != null) baseZones.Add(codePost);
-                else _log?.Invoke(EnglishText.Text("Zone code_post_gfx_mp.ff was not found for weapon dependencies; some icon materials may be missing."));
+                if (codePost != null)
+                {
+                    baseZones.Add(codePost);
+                }
+                else
+                {
+                    _log?.Invoke(EnglishText.Text("Zone code_post_gfx_mp.ff was not found for weapon dependencies; some icon materials may be missing."));
+                }
                 var patchMp = new[] { Path.Combine(paths.GameDirectory, "zone", "all", "patch_mp.ff"), Path.Combine(paths.GameDirectory, "zone", "english", "patch_mp.ff") }.FirstOrDefault(File.Exists);
                 if (patchMp == null)
                     throw new FileNotFoundException(EnglishText.Text("Building weapons requires patch_mp.ff in the game folder."));
@@ -120,7 +138,9 @@ namespace T6_Workbench
             // Native project zones can provide references that OAT exported without payload.
             // The output zone still contains only selected roots and their linker dependencies.
             if (!Workspace.IsRedacted(project.Fastfile) && !baseZones.Any(zoneFile => Path.GetFileName(zoneFile).Equals(project.FastfileName, StringComparison.OrdinalIgnoreCase)))
+            {
                 baseZones.Add(project.Fastfile);
+            }
             // Older projects may have been created before referenced technique sets were collected.
             // Resolve missing sets into this run only; do not modify the original project.
             var referenceAssets = Path.Combine(stage, "referenced-techsets");
@@ -177,14 +197,14 @@ namespace T6_Workbench
             {
                 var installed = Path.Combine(paths.GameDirectory, "data", "images", Path.GetFileName(image));
                 if (File.Exists(installed) && Workspace.Hash(installed) == Workspace.Hash(image))
+                {
                     continue;
+                }
                 Copy(image, Path.Combine(package, "data", "images", Path.GetFileName(image)));
                 includedImages.Add(Path.GetFileName(image));
             }
-            var remarks = new List<string> { EnglishText.Text("Offline build and asset inventory verified; client and match have not been tested.") };
+            var remarks = new List<string> { EnglishText.Text("Offline build and asset inventory verified; in-client behavior is outside this verification.") };
             remarks.AddRange(build.Output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Where(line => line.TrimStart().StartsWith("WARN:", StringComparison.OrdinalIgnoreCase)));
-            if (roots.Contains(("xmodel", "iw6_viewmodel_honeybadger")) && !roots.Contains(("weapon", "honeybadger_mp")))
-                remarks.Add(EnglishText.Text("iw6_viewmodel_honeybadger only changes the first-person weapon model; new weapon asset and world model are not included."));
             Workspace.WriteJson(Path.Combine(run, "report.json"), new
             {
                 status = "OFFLINE_ONLY",
@@ -201,17 +221,18 @@ namespace T6_Workbench
                 actualAssets = inventory.Order(StringComparer.Ordinal).ToArray(),
                 includedLooseIwi = includedImages
             });
-            File.WriteAllText(Path.Combine(package, "README_TEST.md"),
+            File.WriteAllText(Path.Combine(package, "README.md"),
                 EnglishText.Text("# Standalone Redacted v43 mod\n\n") +
                 EnglishText.Text("FF named patch_redacted.ff for standard loading and built from edits with the required dependencies. ") +
                 (baseZones.Count > 0 ? EnglishText.Text("Standard XModel dependencies are taken from common_mp.ff during build. ") : "") +
                 EnglishText.Text("Previous patch_redacted assets are not included automatically. Report and full asset inventory: ../report.json. ") +
                 EnglishText.Text("Close t6mpv43.exe before installing and back up the current game file patch_redacted.ff. The normal ZoneAuthProbe creates no .log/.bin files; a separate debug variant is available for diagnostics. Install only one plugin at a time. ") +
                 EnglishText.Text("Copy zone/, Plugins/ and if present data/ into the game. To roll back, restore your own backed-up files. ") +
-                EnglishText.Text("Game loading and availability of the modified asset in a match have not yet been tested.\n"), Encoding.UTF8);
+                EnglishText.Text("In-client loading and runtime behavior are not verified by the offline build.\n"), Encoding.UTF8);
             return new OperationResult(package, EnglishText.Format("Standalone FF: {0} modified roots, {1} assets, {2} loose IWI.", roots.Count, inventory.Count, includedImages.Count),
                 remarks.ToArray());
         }
+
         static HashSet<(string Type, string Name)> Roots(WorkbenchProject project, string[] edits)
         {
             var roots = new HashSet<(string, string)>();
@@ -224,9 +245,19 @@ namespace T6_Workbench
                     {
                         string type = asset.GetProperty("type").GetString() ?? "";
                         string name = AssetNameNormalizer.NormalizeName(asset.GetProperty("name").GetString() ?? "").Replace('\\', '/');
-                        if (type != "rawfile" && type != "stringtable") continue;
-                        if (!fileRoots.TryGetValue(name, out var matches)) { matches = new List<string>(); fileRoots.Add(name, matches); }
-                        if (!matches.Contains(type, StringComparer.OrdinalIgnoreCase)) matches.Add(type);
+                        if (type != "rawfile" && type != "stringtable")
+                        {
+                            continue;
+                        }
+                        if (!fileRoots.TryGetValue(name, out var matches))
+                        {
+                            matches = new List<string>();
+                            fileRoots.Add(name, matches);
+                        }
+                        if (!matches.Contains(type, StringComparer.OrdinalIgnoreCase))
+                        {
+                            matches.Add(type);
+                        }
                     }
                 }
             }
@@ -296,7 +327,6 @@ namespace T6_Workbench
                 .Any(lod => string.Equals(lod.GetProperty("file").GetString()?.Replace('\\', '/'), relative, StringComparison.OrdinalIgnoreCase));
             }
         }
-
         /// <summary>
         /// Read/deduplicate asset identities from manifest inventory or zone source.
         /// </summary>
@@ -313,16 +343,21 @@ namespace T6_Workbench
                     continue;
                 }
                 if (content && value.StartsWith("Unloaded zone", StringComparison.OrdinalIgnoreCase))
+                {
                     break;
+                }
                 if (!content)
+                {
                     continue;
+                }
                 int comma = value.IndexOf(',');
                 if (comma > 0 && comma < value.Length - 1)
+                {
                     result.Add(value.Substring(0, (comma) - (0)).Trim() + "," + AssetNameNormalizer.NormalizeName(value.Substring((comma + 1))));
+                }
             }
             return result;
         }
-
         /// <summary>
         /// Copy an operation-owned file, creating its parent directory when necessary.
         /// </summary>

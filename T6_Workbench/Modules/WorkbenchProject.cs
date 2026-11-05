@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,9 +13,13 @@ namespace T6_Workbench
     public sealed class WorkbenchProject
     {
         public string Root { get; set; }
+
         public string Name { get; set; }
+
         public string FastfileName { get; set; }
+
         public string OriginalSha256 { get; set; }
+
         public WorkbenchProject(string Root, string Name, string FastfileName, string OriginalSha256)
         {
             this.Root = Root;
@@ -23,15 +27,25 @@ namespace T6_Workbench
             this.FastfileName = FastfileName;
             this.OriginalSha256 = OriginalSha256;
         }
+
         internal string[] SourceSearchPaths { get; set; } = new string[0];
+
         public string Fastfile => Path.Combine(Root, "source", FastfileName);
+
         public string Assets => Path.Combine(Root, "assets");
+
         public string Edits => Path.Combine(Root, "edits");
+
         public string Dependencies => Path.Combine(Root, "dependencies");
+
         public string Capture => Path.Combine(Root, "source", "CaptureValidator.bin");
+
         public string Zone => Path.Combine(Assets, "zone_source", Path.GetFileNameWithoutExtension(FastfileName) + ".zone");
+
         public string Builds => Path.Combine(Root, "builds");
+
         public string Manifest => Path.Combine(Root, "project.json");
+
         public string Inventory => Path.Combine(Root, "inventory.json");
 
         /// <summary>
@@ -75,19 +89,17 @@ namespace T6_Workbench
             if (!File.Exists(unlinker))
                 throw new FileNotFoundException("OAT Unlinker not found. Select the OAT tools folder in Settings.", unlinker);
             if (Workspace.IsRedacted(ff))
+            {
                 CaptureValidator.Validate(options.CaptureFile);
+            }
             Directory.CreateDirectory(Path.Combine(root, "source"));
-            var name = Path.GetExtension(ff).Equals(".ff2", StringComparison.OrdinalIgnoreCase)
-                ? Path.GetFileNameWithoutExtension(ff) + ".ff" : Path.GetFileName(ff);
+            var name = Path.GetExtension(ff).Equals(".ff2", StringComparison.OrdinalIgnoreCase) ? Path.GetFileNameWithoutExtension(ff) + ".ff" : Path.GetFileName(ff);
             var source = Path.Combine(root, "source", name);
             File.Copy(ff, source);
             string hash = Workspace.Hash(ff);
             if (Workspace.Hash(source) != hash)
                 throw new IOException(EnglishText.Text("The FF copy did not match the original."));
-            var project = new WorkbenchProject(root, Path.GetFileNameWithoutExtension(name), name, hash)
-            {
-                SourceSearchPaths = options.SearchPaths
-            };
+            var project = new WorkbenchProject(root, Path.GetFileNameWithoutExtension(name), name, hash) { SourceSearchPaths = options.SearchPaths};
             if (Workspace.IsRedacted(source))
             {
                 CaptureValidator.Validate(options.CaptureFile);
@@ -128,28 +140,33 @@ namespace T6_Workbench
                     continue;
                 }
                 if (!inContent)
+                {
                     continue;
+                }
                 if (line.StartsWith("Unloaded zone", StringComparison.OrdinalIgnoreCase))
+                {
                     break;
+                }
                 int comma = line.IndexOf(',');
                 if (comma > 0 && comma < line.Length - 1)
                 {
                     var type = line.Substring(0, (comma) - (0)).Trim().ToLowerInvariant();
                     var assetName = AssetNameNormalizer.NormalizeName(line.Substring((comma + 1)));
                     if (seen.Add(type + "\0" + assetName))
-                        inventory.Add(new
-                        {
-                            type,
-                            name = assetName
-                        });
+                    {
+                        inventory.Add(new { type, name = assetName});
+                    }
                 }
             }
             if (inventory.Count > 0)
+            {
                 Workspace.WriteJson(project.Inventory, inventory);
+            }
             Directory.Move(Path.Combine(exported.Directory, "dump"), project.Assets);
             Directory.CreateDirectory(project.Dependencies);
             var imageFolder = Path.Combine(project.Assets, "images");
             if (Directory.Exists(imageFolder))
+            {
                 foreach (var dds in Directory.EnumerateFiles(imageFolder, "*.dds", SearchOption.AllDirectories))
                 {
                     cancellation.ThrowIfCancellationRequested();
@@ -163,6 +180,7 @@ namespace T6_Workbench
                         File.Copy(candidate, target);
                     }
                 }
+            }
             await ReferencedTechniqueSets.ResolveAsync(ReferencedTechniqueSets.ReadReferences(Path.Combine(listed.Directory, "oat.log"), referencesOnly: true),
                 project.Assets, project.Dependencies, options.SearchPaths, options.BinDirectory,
                 Path.Combine(root, "work", "referenced-techsets"), log, cancellation);
@@ -184,7 +202,9 @@ namespace T6_Workbench
             // The full export now lives in assets; remove temporary input copies from this new project.
             var work = Path.Combine(root, "work");
             if (Directory.Exists(work))
+            {
                 Directory.Delete(work, recursive: true);
+            }
             return project;
         }
 
@@ -222,6 +242,7 @@ namespace T6_Workbench
         }
 
         public string AssetPath(string relative) => ChildPath(Assets, relative);
+
         public string EditPath(string relative) => ChildPath(Edits, relative);
         /// <summary>
         /// Resolve a child path and reject traversal beyond the project root.
@@ -240,9 +261,13 @@ namespace T6_Workbench
     public sealed class WorkbenchSession : INotifyPropertyChanged
     {
         readonly Action<string> log;
+
         readonly SynchronizationContext ownerContext;
+
         readonly ObservableCollection<AssetRef> mutableAssets = new System.Collections.ObjectModel.ObservableCollection<AssetRef>(new AssetRef[0]);
+
         readonly ReadOnlyObservableCollection<AssetRef> assets;
+
         WorkbenchProject project;
 
         /// <summary>Capture the owning UI context so collection notifications remain safe for WPF bindings.</summary>
@@ -259,7 +284,9 @@ namespace T6_Workbench
         public WorkbenchProject Project => project;
         /// <summary>Read-only observable inventory for TreeView/ListView bindings.</summary>
         public ReadOnlyObservableCollection<AssetRef> Assets => assets;
+
         public bool HasProject => project != null;
+
         public bool CanBuildRedacted => project != null &&
             project.FastfileName.Equals("patch_redacted.ff", StringComparison.OrdinalIgnoreCase) &&
             Workspace.IsRedacted(project.Fastfile);
@@ -306,9 +333,9 @@ namespace T6_Workbench
                     Publish();
                     completion.SetResult(true);
                 }
-                catch (Exception error) 
-                { 
-                    completion.SetException(error); 
+                catch (Exception error)
+                {
+                    completion.SetException(error);
                 }
             }, null);
             return completion.Task;
@@ -334,9 +361,9 @@ namespace T6_Workbench
                     Publish();
                     completion.SetResult(true);
                 }
-                catch (Exception error) 
-                { 
-                    completion.SetException(error); 
+                catch (Exception error)
+                {
+                    completion.SetException(error);
                 }
             }, null);
             return completion.Task;
@@ -432,7 +459,9 @@ namespace T6_Workbench
                 {
                     var value = line.Trim();
                     if (value.Length == 0 || value.StartsWith('>') || value.StartsWith("//"))
+                    {
                         continue;
+                    }
                     int comma = value.IndexOf(',');
                     if (comma > 0 && comma < value.Length - 1)
                     {
@@ -456,18 +485,23 @@ namespace T6_Workbench
             {
                 var folder = current.EditPath(item.Folder);
                 if (!Directory.Exists(folder))
+                {
                     continue;
+                }
                 foreach (var file in Directory.EnumerateFiles(folder, item.Pattern, SearchOption.AllDirectories))
+                {
                     Add(item.Type, Path.ChangeExtension(Helpers.GetRelativePath(folder, file), null).Replace('\\', '/'));
+                }
             }
             return found.AsReadOnly();
-
             void Add(string type, string name)
             {
                 type = type.Trim().ToLowerInvariant();
                 name = name.Trim();
                 if (type.Length > 0 && type != "mapents" && name.Length > 0 && seen.Add(type + "\0" + name))
+                {
                     found.Add(new AssetRef(type, name));
+                }
             }
         }
 
@@ -519,7 +553,7 @@ namespace T6_Workbench
         }
 
         /// <summary>
-        /// Run the Redacted rebuild/comparison and prepare a test package.
+        /// Rebuild Redacted and compare the exported assets.
         /// </summary>
         async Task<OperationResult> BuildRedactedAsync(WorkbenchProject current, WorkbenchPaths paths, CancellationToken token)
         {
@@ -552,12 +586,8 @@ namespace T6_Workbench
                 {
                     throw new InvalidDataException(EnglishText.Text("Offline verification of the full zone failed."));
                 }
-                var packaged = AssetPipelineModule.CreateTestPackage(rebuilt.Directory, paths.GameDirectory, paths.ProbeFile, paths.OutputDirectory, current.Fastfile);
-                return new OperationResult(packaged)
-                {
-                    Warnings = rebuilt.Warnings.Concat(packaged.Warnings).ToArray()
-                };
             }
+            return rebuilt;
         }
 
         /// <summary>
@@ -581,42 +611,52 @@ namespace T6_Workbench
     /// <summary>
     /// AssetRef. UI-independent project lifecycle, inventory and build dispatch.
     /// </summary>
-    public sealed class AssetRef 
-    { 
-        public string Type { get; set; } 
-        public string Name { get; set; } 
-        public AssetRef(string Type, string Name) 
-        { 
-            this.Type = Type; 
-            this.Name = Name; 
-        } 
+    public sealed class AssetRef
+    {
+        public string Type { get; set; }
+
+        public string Name { get; set; }
+
+        public AssetRef(string Type, string Name)
+        {
+            this.Type = Type;
+            this.Name = Name;
+        }
     }
     /// <summary>
     /// WorkbenchPaths. UI-independent project lifecycle, inventory and build dispatch.
     /// </summary>
-    public sealed class WorkbenchPaths 
-    { 
-        public string BinDirectory { get; set; } 
-        public string CaptureFile { get; set; } 
-        public string GameDirectory { get; set; } 
-        public string ProbeFile { get; set; } 
-        public string OutputDirectory { get; set; } 
-        public string RedactedTemplateFile { get; set; } 
-        public WorkbenchPaths(string BinDirectory, string CaptureFile, string GameDirectory, string ProbeFile, string OutputDirectory, string RedactedTemplateFile = "") 
-        { 
-            this.BinDirectory = BinDirectory; 
-            this.CaptureFile = CaptureFile; 
-            this.GameDirectory = GameDirectory; 
-            this.ProbeFile = ProbeFile; 
-            this.OutputDirectory = OutputDirectory; 
-            this.RedactedTemplateFile = RedactedTemplateFile; 
-        } 
+    public sealed class WorkbenchPaths
+    {
+        public string BinDirectory { get; set; }
+
+        public string CaptureFile { get; set; }
+
+        public string GameDirectory { get; set; }
+
+        public string ProbeFile { get; set; }
+
+        public string OutputDirectory { get; set; }
+
+        public string RedactedTemplateFile { get; set; }
+
+        public WorkbenchPaths(string BinDirectory, string CaptureFile, string GameDirectory, string ProbeFile, string OutputDirectory, string RedactedTemplateFile = "")
+        {
+            this.BinDirectory = BinDirectory;
+            this.CaptureFile = CaptureFile;
+            this.GameDirectory = GameDirectory;
+            this.ProbeFile = ProbeFile;
+            this.OutputDirectory = OutputDirectory;
+            this.RedactedTemplateFile = RedactedTemplateFile;
+        }
     }
     /// <summary>
     /// BuildFlavor. UI-independent project lifecycle, inventory and build dispatch.
     /// </summary>
     public enum BuildFlavor
     {
-        StandardT6, RedactedV43, StandaloneRedacted
+        StandardT6,
+        RedactedV43,
+        StandaloneRedacted
     }
 }

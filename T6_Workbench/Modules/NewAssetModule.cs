@@ -13,6 +13,7 @@ namespace T6_Workbench
         internal sealed class Request
         {
             internal string Name = "", Template = "", Lod0 = "", Lod1 = "", WorldName = "", WorldTemplate = "", WorldLod0 = "", Textures = "", Materials = "", Weapon = "";
+
             internal string[] Animations = Array.Empty<string>();
         }
 
@@ -67,20 +68,28 @@ namespace T6_Workbench
                 foreach (string file in Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories))
                 {
                     if (!extensions.Contains(Path.GetExtension(file), StringComparer.OrdinalIgnoreCase))
+                    {
                         continue;
+                    }
                     string relative = Helpers.GetRelativePath(source, file).Replace('\\', '/');
                     Add(destination + "/" + relative, File.ReadAllBytes(file));
                 }
             }
             Model(request.Name, request.Template, request.Lod0, request.Lod1);
             if (!string.IsNullOrWhiteSpace(request.WorldLod0))
+            {
                 Model(request.WorldName, request.WorldTemplate, request.WorldLod0, "");
+            }
             Folder(request.Textures, "images", ".dds", ".iwi");
             Folder(request.Materials, "materials", ".json");
             foreach (string animation in request.Animations)
+            {
                 Add("xanim/" + Path.GetFileName(animation), File.ReadAllBytes(animation));
+            }
             if (!string.IsNullOrWhiteSpace(request.Weapon))
+            {
                 Add("weapons/" + Path.GetFileName(request.Weapon), File.ReadAllBytes(request.Weapon));
+            }
             // All collisions are checked before any writes; source assets are never altered.
             foreach (var file in files)
             {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,11 +49,6 @@ namespace T6_Workbench
             return _helpers.ConvertTexturesAsync(binDirectory, assetDirectory, outputRoot, cancellation);
         }
 
-        public Task<OperationResult> RunRoundTripAsync(RoundTripRequest request, CancellationToken cancellation = default)
-        {
-            return _helpers.RunRoundTripAsync(request, cancellation);
-        }
-
         public Task<OperationResult> RunFullRoundTripAsync(ExportRequest request, CancellationToken cancellation = default)
         {
             return _helpers.RunFullRoundTripAsync(request, cancellation);
@@ -62,11 +57,6 @@ namespace T6_Workbench
         public Task<OperationResult> BuildStandaloneAsync(WorkbenchProject project, WorkbenchPaths paths, CancellationToken cancellation = default)
         {
             return _helpers.BuildStandaloneAsync(project, paths, cancellation);
-        }
-
-        public static OperationResult CreateTestPackage(string fullRoundTripDirectory, string gameRoot, string probePlugin, string outputRoot, string projectOriginalFastfile = null)
-        {
-            return AssetPipelineHelpers.CreateTestPackage(fullRoundTripDirectory, gameRoot, probePlugin, outputRoot, projectOriginalFastfile);
         }
     }
 }

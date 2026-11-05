@@ -12,13 +12,17 @@ namespace T6_Workbench
     internal static class DialogPathMemory
     {
         static readonly string storagePath = Path.Combine(AppContext.BaseDirectory, "workbench.dialog-paths.json");
+
         static readonly Dictionary<string, string> directories = Load();
 
         internal static bool? ShowDialog(FileDialog dialog, Window owner, string key)
         {
             dialog.InitialDirectory = InitialDirectory(key);
             bool? accepted = dialog.ShowDialog(owner);
-            if (accepted == true) RememberFile(key, dialog.FileName);
+            if (accepted == true)
+            {
+                RememberFile(key, dialog.FileName);
+            }
             return accepted;
         }
 
@@ -26,7 +30,10 @@ namespace T6_Workbench
         {
             dialog.InitialDirectory = InitialDirectory(key);
             bool? accepted = dialog.ShowDialog(owner);
-            if (accepted == true) RememberFolder(key, dialog.FolderName);
+            if (accepted == true)
+            {
+                RememberFolder(key, dialog.FolderName);
+            }
             return accepted;
         }
 
@@ -42,9 +49,14 @@ namespace T6_Workbench
             try
             {
                 string folder = Path.GetDirectoryName(Path.GetFullPath(fileName));
-                if (!string.IsNullOrWhiteSpace(folder)) RememberFolder(key, folder);
+                if (!string.IsNullOrWhiteSpace(folder))
+                {
+                    RememberFolder(key, folder);
+                }
             }
-            catch (Exception ex) when (((ex is System.ArgumentException) || (ex is System.IO.IOException)) || (ex is System.NotSupportedException)) { }
+            catch (Exception ex) when (((ex is System.ArgumentException) || (ex is System.IO.IOException)) || (ex is System.NotSupportedException))
+            {
+            }
         }
 
         static void RememberFolder(string key, string folder)
@@ -57,12 +69,24 @@ namespace T6_Workbench
                 File.WriteAllText(temporary, JsonSerializer.Serialize(directories), new UTF8Encoding(false));
                 if (File.Exists(storagePath))
                 {
-                    try { File.Replace(temporary, storagePath, null); }
-                    catch (IOException) { File.Copy(temporary, storagePath, true); File.Delete(temporary); }
+                    try
+                    {
+                        File.Replace(temporary, storagePath, null);
+                    }
+                    catch (IOException)
+                    {
+                        File.Copy(temporary, storagePath, true);
+                        File.Delete(temporary);
+                    }
                 }
-                else File.Move(temporary, storagePath);
+                else
+                {
+                    File.Move(temporary, storagePath);
+                }
             }
-            catch (Exception ex) when ((((ex is System.ArgumentException) || (ex is System.IO.IOException)) || (ex is System.NotSupportedException)) || (ex is System.UnauthorizedAccessException)) { }
+            catch (Exception ex) when ((((ex is System.ArgumentException) || (ex is System.IO.IOException)) || (ex is System.NotSupportedException)) || (ex is System.UnauthorizedAccessException))
+            {
+            }
         }
 
         static Dictionary<string, string> Load()

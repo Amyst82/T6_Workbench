@@ -1,10 +1,14 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
+using System.Text.Json;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace T6_Workbench
 {
     public partial class MainWindow : Window
     {
+        #region Window UI
         public MainWindow()
         {
             InitializeComponent();
@@ -44,13 +48,24 @@ namespace T6_Workbench
             }
         }
 
-        private void MainTabGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void HideDockButton_Click(object sender, RoutedEventArgs e)
         {
-            double availableWidth = Math.Max(0, MainGrid.ActualWidth - 5);
-            double minFactor = this.WindowState == WindowState.Maximized ? 0.15d : 0.3d;
-            LeftColumn.MinWidth = 300;
-            LeftColumn.MaxWidth = availableWidth * 0.5;
-            FooterRow.Height = this.WindowState == WindowState.Maximized ? new GridLength(50) : new GridLength(0);
+            TreeViewDock.Visibility = TreeViewDock.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
         }
-    }
+        #endregion
+        #region Project operations
+        private void OpenProjButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog { Title = EnglishText.Text("Open project"), Filter = EnglishText.Text("Workbench project (project.json)|project.json") };
+            if (DialogPathMemory.ShowDialog(dialog, this, "project/open-manifest") == true)
+            {
+                //OpenProject(dialog.FileName);
+            }
+        }
+        
+
+        
+
+        #endregion
+    }//
 }

@@ -8,29 +8,45 @@ namespace T6_Workbench
     public class PreviewCameraState : BaseViewModel
     {
         double positionX;
+
         double positionY;
+
         double positionZ;
+
         double lookDirectionX;
+
         double lookDirectionY;
+
         double lookDirectionZ;
 
-        public PreviewCameraState() { }
+        public PreviewCameraState()
+        {
+        }
 
         public double PositionX { get => positionX; set => SetProperty(ref positionX, value); }
+
         public double PositionY { get => positionY; set => SetProperty(ref positionY, value); }
+
         public double PositionZ { get => positionZ; set => SetProperty(ref positionZ, value); }
+
         public double LookDirectionX { get => lookDirectionX; set => SetProperty(ref lookDirectionX, value); }
+
         public double LookDirectionY { get => lookDirectionY; set => SetProperty(ref lookDirectionY, value); }
+
         public double LookDirectionZ { get => lookDirectionZ; set => SetProperty(ref lookDirectionZ, value); }
 
         [JsonIgnore]
         public Point3D Position => new Point3D(PositionX, PositionY, PositionZ);
+
         [JsonIgnore]
         public Vector3D LookDirection => new Vector3D(LookDirectionX, LookDirectionY, LookDirectionZ);
+
         [JsonIgnore]
         public Vector3D UpDirection => new Vector3D(0, 1, 0);
+
         [JsonIgnore]
         public double FieldOfView => 45;
+
         [JsonIgnore]
         public bool HasPose
         {
@@ -66,8 +82,7 @@ namespace T6_Workbench
             const double yaw = 0.75;
             const double pitch = 0.35;
             double horizontal = distance * Math.Cos(pitch);
-            var position = new Point3D(target.X + horizontal * Math.Cos(yaw),
-                target.Y + distance * Math.Sin(pitch), target.Z + horizontal * Math.Sin(yaw));
+            var position = new Point3D(target.X + horizontal * Math.Cos(yaw), target.Y + distance * Math.Sin(pitch), target.Z + horizontal * Math.Sin(yaw));
             SetPose(position, target - position);
         }
 
@@ -81,8 +96,7 @@ namespace T6_Workbench
             double yaw = Math.Atan2(-look.Z, -look.X) + deltaX * 0.01;
             double pitch = Helpers.Clamp(Math.Asin(Helpers.Clamp(-look.Y / distance, -1, 1)) + deltaY * 0.01, -1.45, 1.45);
             double horizontal = distance * Math.Cos(pitch);
-            var position = new Point3D(target.X + horizontal * Math.Cos(yaw),
-                target.Y + distance * Math.Sin(pitch), target.Z + horizontal * Math.Sin(yaw));
+            var position = new Point3D(target.X + horizontal * Math.Cos(yaw), target.Y + distance * Math.Sin(pitch), target.Z + horizontal * Math.Sin(yaw));
             SetPose(position, target - position);
         }
 
@@ -95,8 +109,10 @@ namespace T6_Workbench
             Vector3D forward = look;
             forward.Normalize();
             var right = Vector3D.CrossProduct(forward, UpDirection);
-            if (right.LengthSquared < 1e-10) 
+            if (right.LengthSquared < 1e-10)
+            {
                 right = new Vector3D(1, 0, 0);
+            }
             right.Normalize();
             var up = Vector3D.CrossProduct(right, forward);
             up.Normalize();

@@ -15,6 +15,7 @@ namespace T6_Workbench
     internal sealed class OatService
     {
         private readonly Action<string> _log;
+
         private readonly ToolRunner _runner;
 
         internal OatService(Action<string> log = null)
@@ -74,7 +75,9 @@ namespace T6_Workbench
             string source = Path.GetFullPath(request.Fastfile);
             string capture = Workspace.IsRedacted(source) ? request.CaptureFile : null;
             if (capture != null)
+            {
                 CaptureValidator.Validate(capture);
+            }
             if (!new[] { "GLB", "GLTF", "OBJ", "XMODEL_EXPORT", "XMODEL_BIN" }.Contains(request.ModelFormat))
                 throw new ArgumentException(EnglishText.Text("Unknown model format."));
             if (!new[] { "DDS", "IWI" }.Contains(request.ImageFormat))
@@ -89,12 +92,18 @@ namespace T6_Workbench
                 throw new IOException(EnglishText.Text("The FF copy does not match the original."));
             var args = new List<string> { "--no-color", "--model-format", request.ModelFormat, "--image-format", request.ImageFormat };
             if (listOnly)
+            {
                 args.Add("--list");
+            }
             else
+            {
                 args.AddRange(Enumerable.ToArray(Enumerable.Concat(new string[] { "--output-folder" }, new string[] { dump })));
+            }
             var searchPaths = request.SearchPaths.Select(Path.GetFullPath).Where(Directory.Exists).ToArray();
             if (searchPaths.Length > 0)
+            {
                 args.AddRange(Enumerable.ToArray(Enumerable.Concat(new string[] { "--search-path" }, new string[] { string.Join(";", searchPaths) })));
+            }
             if (request.SpecificAssetType.Length > 0 || request.SpecificAssetName.Length > 0)
             {
                 if (request.SpecificAssetType.Length == 0 || request.SpecificAssetName.Length == 0)
@@ -104,7 +113,9 @@ namespace T6_Workbench
                 args.AddRange(Enumerable.ToArray(Enumerable.Concat(new string[] { "--include-asset" }, new string[] { $"{request.SpecificAssetType},{request.SpecificAssetName}" })));
             }
             else if (request.IncludeAssets.Trim().Length > 0)
+            {
                 args.AddRange(Enumerable.ToArray(Enumerable.Concat(new string[] { "--include-assets" }, new string[] { request.IncludeAssets.Trim() })));
+            }
             args.Add(copy);
             var result = await _runner.RunAsync(Path.Combine(request.BinDirectory, "Unlinker.exe"), args, run, capture, cancellation);
             await Helpers.WriteAllTextAsync(Path.Combine(run, "oat.log"), result.Output, CancellationToken.None);
@@ -119,7 +130,9 @@ namespace T6_Workbench
                 }
             }
             foreach (var repair in materialRepairs)
+            {
                 _log?.Invoke(repair);
+            }
             bool unchanged = Workspace.Hash(source) == before;
             int files = Directory.Exists(dump) ? Directory.GetFiles(dump, "*", SearchOption.AllDirectories).Length : 0;
             Workspace.WriteJson(Path.Combine(run, "report.json"), new

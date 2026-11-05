@@ -21,9 +21,6 @@ namespace T6_Workbench
             _log = log;
         }
         // Only the child receives Redacted settings; inherited settings are always removed.
-        /// <summary>
-        /// Run an operation asynchronously, capture tool output and honor cancellation.
-        /// </summary>
         public async Task<ToolResult> RunAsync(string executable, IEnumerable<string> arguments, string workingDirectory, string capture, CancellationToken cancellation = default, string redactedAuthTemplate = null)
         {
             var start = new ProcessStartInfo(Helpers.IsPathFullyQualified(executable) ? Path.GetFullPath(executable) : executable)
@@ -82,10 +79,16 @@ namespace T6_Workbench
                     try
                     {
                         if (!process.HasExited)
+                        {
                             process.Kill();
+                        }
                     }
-                    catch (InvalidOperationException) { }
-                    catch (System.ComponentModel.Win32Exception) { }
+                    catch (InvalidOperationException)
+                    {
+                    }
+                    catch (System.ComponentModel.Win32Exception)
+                    {
+                    }
                 }))
                 {            // Drain both pipes before disposing, including when cancellation kills the child.
                     await Helpers.WaitForExitAsync(process);

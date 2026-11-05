@@ -18,7 +18,9 @@ namespace T6_Workbench
         {
             string result = name.Trim();
             while (result.StartsWith(",", StringComparison.Ordinal))
+            {
                 result = result.Substring(1).TrimStart();
+            }
             return result.Trim();
         }
 
@@ -56,13 +58,14 @@ namespace T6_Workbench
                             {
                                 string canonical = NormalizeName(name.GetString());
                                 if (canonical.Length > 0)
+                                {
                                     result.Add(canonical);
+                                }
                             }
                         }
                     }
                 }
             }
-
             // Read the zone as a fallback and also as a supplement: older inventories may omit dependencies.
             if (File.Exists(zonePath))
             {
@@ -71,10 +74,14 @@ namespace T6_Workbench
                     string line = NormalizeZoneLine(raw);
                     int comma = line.IndexOf(',');
                     if (comma <= 0 || comma == line.Length - 1 || !line.Substring(0, comma).Trim().Equals("material", StringComparison.OrdinalIgnoreCase))
+                    {
                         continue;
+                    }
                     string name = NormalizeName(line.Substring(comma + 1));
                     if (name.Length > 0)
+                    {
                         result.Add(name);
+                    }
                 }
             }
             return result;

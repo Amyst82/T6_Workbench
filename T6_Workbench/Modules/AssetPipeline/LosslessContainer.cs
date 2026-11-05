@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
@@ -22,18 +22,23 @@ namespace T6_Workbench
         {
             _log = log;
         }
+
         const int HeaderSize = 0x138;
+
         const int ChunkLimit = 0x8000;
+
         const int RingSize = 16000;
+
         const int HashSize = 20;
+
         const int ZeroTailSize = 64;
+
         static readonly byte[] CaptureMagic = System.Text.Encoding.UTF8.GetBytes("OATRD1\0\0").ToArray();
 
         /// <summary>
         /// Exports and reconstructs the container, then checks reconstructed bytes against the original.
         /// </summary>
-        public Task<OperationResult> RunAsync(string fastfile, string capture, string outputRoot,
-            CancellationToken cancellation = default)
+        public Task<OperationResult> RunAsync(string fastfile, string capture, string outputRoot, CancellationToken cancellation = default)
         {
             cancellation.ThrowIfCancellationRequested();
             var sourcePath = Path.GetFullPath(fastfile);
@@ -50,7 +55,7 @@ namespace T6_Workbench
                 throw new InvalidDataException(EnglishText.Text("Byte-for-byte comparison of the rebuilt FF failed."));
             _log?.Invoke("Bit-exact Redacted container roundtrip completed.");
             return Task.FromResult(new OperationResult(run, EnglishText.Text("Byte-for-byte FF export and rebuild matched."), 
-                new string[] { EnglishText.Text("This verifies an unchanged container. Modified assets need to be tested in the client.") }));
+                new string[] { EnglishText.Text("This verifies an unchanged container. Modified assets require in-client validation.") }));
         }
 
         /// <summary>
@@ -82,7 +87,6 @@ namespace T6_Workbench
                 StepRing(ring, plaintext, stream, ordinal);
                 ordinals[stream]++;
             }
-
             var header = source.AsSpan(0, HeaderSize).ToArray();
             var manifest = new ContainerManifest("redacted-bit-exact-v1", info.ZoneName, Hash(source), source.Length, Hash(header), Hash(compressed.ToArray()), Hash(xfile.ToArray()), xfile.Length, Hash(key), records, false, false);
             Directory.CreateDirectory(folder);
@@ -116,13 +120,14 @@ namespace T6_Workbench
             var nameBytes = header.AsSpan(0x18, 32);
             int terminator = nameBytes.IndexOf((byte)0);
             if (terminator < 0)
+            {
                 terminator = nameBytes.Length;
+            }
             var headerZone = Encoding.ASCII.GetString(nameBytes.Slice(0, (terminator) - (0)));
             if (!headerZone.Equals(manifest.ZoneName, StringComparison.Ordinal))
                 throw new InvalidDataException(EnglishText.Text("Zone name in header differs from manifest."));
             var (key, ring) = ReadCapture(capturePath, manifest.ZoneName);
             RequireHash(key, manifest.RuntimeKeySha256, EnglishText.Text("Effective key differs from the export."));
-
             using (var output = new MemoryStream())
             {
                 output.Write(header);
@@ -290,9 +295,9 @@ namespace T6_Workbench
                     }
                 }
             }
-            catch (InvalidDataException) 
-            { 
-                throw; 
+            catch (InvalidDataException)
+            {
+                throw;
             }
             catch (Exception ex) when ((ex is System.IO.IOException) || (ex is System.ArgumentException))
             {
@@ -304,6 +309,7 @@ namespace T6_Workbench
         /// Calculate a streaming SHA-256 file digest.
         /// </summary>
         static string Hash(byte[] bytes) => Helpers.ToHexString(Helpers.Sha256(bytes)).ToLowerInvariant();
+
         static void RequireHash(byte[] bytes, string expected, string message)
         {
             if (!Hash(bytes).Equals(expected, StringComparison.OrdinalIgnoreCase))
@@ -313,65 +319,83 @@ namespace T6_Workbench
         /// <summary>
         /// FastfileInfo. Checked reconstruction from preserved Redacted container chunks.
         /// </summary>
-        sealed class FastfileInfo 
-        { 
-            public string ZoneName { get; set; } 
-            public int ChunkCount { get; set; } 
-            public FastfileInfo(string ZoneName, int ChunkCount) 
-            { 
-                this.ZoneName = ZoneName; this.ChunkCount = ChunkCount; 
-            } 
+        sealed class FastfileInfo
+        {
+            public string ZoneName { get; set; }
+
+            public int ChunkCount { get; set; }
+
+            public FastfileInfo(string ZoneName, int ChunkCount)
+            {
+                this.ZoneName = ZoneName;
+                this.ChunkCount = ChunkCount;
+            }
         }
         /// <summary>
         /// ChunkRecord. Checked reconstruction from preserved Redacted container chunks.
         /// </summary>
-        sealed class ChunkRecord 
-        { 
-            public int CompressedBytes { get; set; } 
-            public int DecodedBytes { get; set; } 
-            public string CompressedSha256 { get; set; } 
-            public string DecodedSha256 { get; set; } 
-            public ChunkRecord(int CompressedBytes, int DecodedBytes, string CompressedSha256, string DecodedSha256) 
-            { 
-                this.CompressedBytes = CompressedBytes; 
-                this.DecodedBytes = DecodedBytes; 
-                this.CompressedSha256 = CompressedSha256; 
-                this.DecodedSha256 = DecodedSha256; 
-            } 
+        sealed class ChunkRecord
+        {
+            public int CompressedBytes { get; set; }
+
+            public int DecodedBytes { get; set; }
+
+            public string CompressedSha256 { get; set; }
+
+            public string DecodedSha256 { get; set; }
+
+            public ChunkRecord(int CompressedBytes, int DecodedBytes, string CompressedSha256, string DecodedSha256)
+            {
+                this.CompressedBytes = CompressedBytes;
+                this.DecodedBytes = DecodedBytes;
+                this.CompressedSha256 = CompressedSha256;
+                this.DecodedSha256 = DecodedSha256;
+            }
         }
         /// <summary>
         /// ContainerManifest. Checked reconstruction from preserved Redacted container chunks.
         /// </summary>
-        sealed class ContainerManifest 
-        { 
-            public string Format { get; set; } 
-            public string ZoneName { get; set; } 
-            public string SourceFfSha256 { get; set; } 
-            public long SourceFfBytes { get; set; } 
-            public string HeaderSha256 { get; set; } 
-            public string CompressedSha256 { get; set; } 
-            public string XfileSha256 { get; set; } 
-            public long XfileBytes { get; set; } 
-            public string RuntimeKeySha256 { get; set; } 
-            public List<ChunkRecord> Xchunks { get; set; } 
-            public bool ExternalLooseAssetsIncluded { get; set; } 
-            public bool EditedZoneInstallable { get; set; } 
-            public ContainerManifest(string Format, string ZoneName, string SourceFfSha256, long SourceFfBytes, string HeaderSha256, string CompressedSha256, 
-                string XfileSha256, long XfileBytes, string RuntimeKeySha256, List<ChunkRecord> Xchunks, bool ExternalLooseAssetsIncluded, bool EditedZoneInstallable) 
-            { 
-                this.Format = Format; 
-                this.ZoneName = ZoneName; 
-                this.SourceFfSha256 = SourceFfSha256; 
-                this.SourceFfBytes = SourceFfBytes; 
-                this.HeaderSha256 = HeaderSha256; 
-                this.CompressedSha256 = CompressedSha256; 
-                this.XfileSha256 = XfileSha256; 
+        sealed class ContainerManifest
+        {
+            public string Format { get; set; }
+
+            public string ZoneName { get; set; }
+
+            public string SourceFfSha256 { get; set; }
+
+            public long SourceFfBytes { get; set; }
+
+            public string HeaderSha256 { get; set; }
+
+            public string CompressedSha256 { get; set; }
+
+            public string XfileSha256 { get; set; }
+
+            public long XfileBytes { get; set; }
+
+            public string RuntimeKeySha256 { get; set; }
+
+            public List<ChunkRecord> Xchunks { get; set; }
+
+            public bool ExternalLooseAssetsIncluded { get; set; }
+
+            public bool EditedZoneInstallable { get; set; }
+
+            public ContainerManifest(string Format, string ZoneName, string SourceFfSha256, long SourceFfBytes, string HeaderSha256, string CompressedSha256,  string XfileSha256, long XfileBytes, string RuntimeKeySha256, List<ChunkRecord> Xchunks, bool ExternalLooseAssetsIncluded, bool EditedZoneInstallable)
+            {
+                this.Format = Format;
+                this.ZoneName = ZoneName;
+                this.SourceFfSha256 = SourceFfSha256;
+                this.SourceFfBytes = SourceFfBytes;
+                this.HeaderSha256 = HeaderSha256;
+                this.CompressedSha256 = CompressedSha256;
+                this.XfileSha256 = XfileSha256;
                 this.XfileBytes = XfileBytes;
-                this.RuntimeKeySha256 = RuntimeKeySha256; 
-                this.Xchunks = Xchunks; 
-                this.ExternalLooseAssetsIncluded = ExternalLooseAssetsIncluded; 
-                this.EditedZoneInstallable = EditedZoneInstallable; 
-            } 
+                this.RuntimeKeySha256 = RuntimeKeySha256;
+                this.Xchunks = Xchunks;
+                this.ExternalLooseAssetsIncluded = ExternalLooseAssetsIncluded;
+                this.EditedZoneInstallable = EditedZoneInstallable;
+            }
         }
 
         /// <summary>
@@ -380,6 +404,7 @@ namespace T6_Workbench
         static class Salsa20
         {
             static ReadOnlySpan<byte> Sigma => System.Text.Encoding.UTF8.GetBytes("expand 32-byte k");
+
             static uint Rotate(uint value, int bits) => (value << bits) | (value >> (32 - bits));
             /// <summary>
             /// Resolves or reads the Word value. Checked reconstruction from preserved Redacted container chunks.

@@ -11,18 +11,22 @@ namespace T6_Workbench
     /// DdsPreviewResult. Decode supported DDS pixels into frozen WPF preview images.
     /// </summary>
     public sealed class DdsPreviewResult
-    { 
-        public BitmapSource Image { get; set; } 
-        public int Width { get; set; } 
-        public int Height { get; set; } 
-        public string Format { get; set; } 
-        public DdsPreviewResult(BitmapSource Image, int Width, int Height, string Format) 
-        { 
-            this.Image = Image; 
-            this.Width = Width; 
-            this.Height = Height; 
-            this.Format = Format; 
-        } 
+    {
+        public BitmapSource Image { get; set; }
+
+        public int Width { get; set; }
+
+        public int Height { get; set; }
+
+        public string Format { get; set; }
+
+        public DdsPreviewResult(BitmapSource Image, int Width, int Height, string Format)
+        {
+            this.Image = Image;
+            this.Width = Width;
+            this.Height = Height;
+            this.Format = Format;
+        }
     }
 
     /// <summary>Decodes the common T6 DDS formats for display inside the Workbench.</summary>
@@ -41,7 +45,6 @@ namespace T6_Workbench
             int height = ReadInt32(data, 12), width = ReadInt32(data, 16);
             if (width <= 0 || height <= 0 || width > 32768 || height > 32768 || (long)width * height > 128_000_000)
                 throw new InvalidDataException(EnglishText.Text("DDS texture size is outside the valid range."));
-
             uint pfFlags = ReadUInt32(data, 80);
             string fourCc = Encoding.ASCII.GetString(data, 84, 4);
             uint rMask = ReadUInt32(data, 92), gMask = ReadUInt32(data, 96), bMask = ReadUInt32(data, 100), aMask = ReadUInt32(data, 104);
@@ -87,14 +90,10 @@ namespace T6_Workbench
                 {
                     pfFlags = 0x41;
                     bitsPerPixel = 32;
-                    (rMask, gMask, bMask, aMask) = (dxgi == 28) || (dxgi == 29
-)
-                        ? (0x000000FFu, 0x0000FF00u, 0x00FF0000u, 0xFF000000u)
-                        : (0x00FF0000u, 0x0000FF00u, 0x000000FFu, 0xFF000000u);
+                    (rMask, gMask, bMask, aMask) = (dxgi == 28) || (dxgi == 29) ? (0x000000FFu, 0x0000FF00u, 0x00FF0000u, 0xFF000000u) : (0x00FF0000u, 0x0000FF00u, 0x000000FFu, 0xFF000000u);
                 }
                 offset = 148;
             }
-
             var pixels = new byte[checked(width * height * 4)];
             string format;
             switch (fourCc)
@@ -129,7 +128,6 @@ namespace T6_Workbench
                         throw new NotSupportedException(EnglishText.Format("DDS format {0} is not yet supported.", fourCc.Trim('\0')));
                     break;
             }
-
             var bitmap = BitmapSource.Create(width, height, 96, 96, PixelFormats.Bgra32, null, pixels, width * 4);
             bitmap.Freeze();
             return new DdsPreviewResult(bitmap, width, height, format);
@@ -143,19 +141,23 @@ namespace T6_Workbench
             int blocksX = (width + 3) / 4, blocksY = (height + 3) / 4;
             Require(data, offset, (long)blocksX * blocksY * 16);
             for (int by = 0; by < blocksY; by++)
+            {
                 for (int bx = 0; bx < blocksX; bx++)
                 {
                     int at = offset + (by * blocksX + bx) * 16;
                     ulong alphaBits = BinaryPrimitives.ReadUInt64LittleEndian(data.AsSpan(at, 8));
                     DecodeColorBlock(data, at + 8, bx, by, width, height, pixels, false);
                     for (int py = 0; py < 4; py++)
+                    {
                         for (int px = 0; px < 4; px++)
-                        {
-                            int pixel = py * 4 + px;
-                            byte alpha = (byte)(((alphaBits >> (pixel * 4)) & 0xf) * 17);
-                            SetAlpha(pixels, width, height, bx * 4 + px, by * 4 + py, alpha);
-                        }
+        {
+            int pixel = py * 4 + px;
+            byte alpha = (byte)(((alphaBits >> (pixel * 4)) & 0xf) * 17);
+            SetAlpha(pixels, width, height, bx * 4 + px, by * 4 + py, alpha);
+        }
+                    }
                 }
+            }
         }
 
         /// <summary>
@@ -166,15 +168,21 @@ namespace T6_Workbench
             int blocksX = (width + 3) / 4, blocksY = (height + 3) / 4;
             Require(data, offset, (long)blocksX * blocksY * 16);
             for (int by = 0; by < blocksY; by++)
+            {
                 for (int bx = 0; bx < blocksX; bx++)
                 {
                     int at = offset + (by * blocksX + bx) * 16;
                     var alpha = DecodeBc4(data.AsSpan(at, 8));
                     DecodeColorBlock(data, at + 8, bx, by, width, height, pixels, false);
                     for (int py = 0; py < 4; py++)
+                    {
                         for (int px = 0; px < 4; px++)
-                            SetAlpha(pixels, width, height, bx * 4 + px, by * 4 + py, alpha[py * 4 + px]);
+        {
+            SetAlpha(pixels, width, height, bx * 4 + px, by * 4 + py, alpha[py * 4 + px]);
+        }
+                    }
                 }
+            }
         }
 
         /// <summary>
@@ -185,8 +193,12 @@ namespace T6_Workbench
             int blocksX = (width + 3) / 4, blocksY = (height + 3) / 4;
             Require(data, offset, (long)blocksX * blocksY * 8);
             for (int by = 0; by < blocksY; by++)
+            {
                 for (int bx = 0; bx < blocksX; bx++)
+                {
                     DecodeColorBlock(data, offset + (by * blocksX + bx) * 8, bx, by, width, height, pixels, allowTransparent);
+                }
+            }
         }
 
         /// <summary>
@@ -197,13 +209,16 @@ namespace T6_Workbench
             int blocksX = (width + 3) / 4, blocksY = (height + 3) / 4;
             Require(data, offset, (long)blocksX * blocksY * 8);
             for (int by = 0; by < blocksY; by++)
+            {
                 for (int bx = 0; bx < blocksX; bx++)
                 {
                     var values = DecodeBc4(data.AsSpan(offset + (by * blocksX + bx) * 8, 8));
                     for (int i = 0; i < 16; i++)
-                        SetPixel(pixels, width, height, bx * 4 + i % 4, by * 4 + i / 4,
-                        values[i], values[i], values[i], 255);
+                    {
+                        SetPixel(pixels, width, height, bx * 4 + i % 4, by * 4 + i / 4, values[i], values[i], values[i], 255);
+                    }
                 }
+            }
         }
 
         /// <summary>
@@ -228,11 +243,13 @@ namespace T6_Workbench
             }
             uint selectors = BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(at + 4, 4));
             for (int py = 0; py < 4; py++)
+            {
                 for (int px = 0; px < 4; px++)
                 {
                     var c = colors[(int)((selectors >> ((py * 4 + px) * 2)) & 3)];
                     SetPixel(pixels, width, height, bx * 4 + px, by * 4 + py, c.R, c.G, c.B, c.A);
                 }
+            }
         }
 
         /// <summary>
@@ -243,6 +260,7 @@ namespace T6_Workbench
             int blocksX = (width + 3) / 4, blocksY = (height + 3) / 4;
             Require(data, offset, (long)blocksX * blocksY * 16);
             for (int by = 0; by < blocksY; by++)
+            {
                 for (int bx = 0; bx < blocksX; bx++)
                 {
                     int at = offset + (by * blocksX + bx) * 16;
@@ -255,6 +273,7 @@ namespace T6_Workbench
                         SetPixel(pixels, width, height, bx * 4 + i % 4, by * 4 + i / 4, red[i], green[i], blue, 255);
                     }
                 }
+            }
         }
 
         /// <summary>
@@ -266,29 +285,38 @@ namespace T6_Workbench
             palette[0] = block[0];
             palette[1] = block[1];
             if (palette[0] > palette[1])
+            {
                 for (int i = 1; i <= 6; i++)
+                {
                     palette[i + 1] = (byte)(((7 - i) * palette[0] + i * palette[1]) / 7);
+                }
+            }
             else
             {
                 for (int i = 1; i <= 4; i++)
+                {
                     palette[i + 1] = (byte)(((5 - i) * palette[0] + i * palette[1]) / 5);
+                }
                 palette[6] = 0;
                 palette[7] = 255;
             }
             ulong selectors = 0;
             for (int i = 0; i < 6; i++)
+            {
                 selectors |= (ulong)block[2 + i] << (i * 8);
+            }
             var result = new byte[16];
             for (int i = 0; i < 16; i++)
+            {
                 result[i] = palette[(int)((selectors >> (i * 3)) & 7)];
+            }
             return result;
         }
 
         /// <summary>
         /// Resolves or reads the Uncompressed value. Decode supported DDS pixels into frozen WPF preview images.
         /// </summary>
-        static void DecodeUncompressed(byte[] data, int offset, int width, int height, byte[] pixels, int bitsPerPixel,
-            uint flags, uint rMask, uint gMask, uint bMask, uint aMask)
+        static void DecodeUncompressed(byte[] data, int offset, int width, int height, byte[] pixels, int bitsPerPixel, uint flags, uint rMask, uint gMask, uint bMask, uint aMask)
         {
             int bytesPerPixel = bitsPerPixel / 8;
             Require(data, offset, (long)width * height * bytesPerPixel);
@@ -339,8 +367,7 @@ namespace T6_Workbench
         static (byte R, byte G, byte B, byte A) From565(ushort value) =>
             ((byte)(((value >> 11) & 31) * 255 / 31), (byte)(((value >> 5) & 63) * 255 / 63), (byte)((value & 31) * 255 / 31), 255);
 
-        static (byte R, byte G, byte B, byte A) Mix((byte R, byte G, byte B, byte A) a, (byte R, byte G, byte B, byte A) b,
-            int weightA, int weightB, int divisor) =>
+        static (byte R, byte G, byte B, byte A) Mix((byte R, byte G, byte B, byte A) a, (byte R, byte G, byte B, byte A) b, int weightA, int weightB, int divisor) =>
             ((byte)((a.R * weightA + b.R * weightB) / divisor), (byte)((a.G * weightA + b.G * weightB) / divisor),
              (byte)((a.B * weightA + b.B * weightB) / divisor), 255);
 
@@ -359,7 +386,9 @@ namespace T6_Workbench
         static void SetAlpha(byte[] pixels, int width, int height, int x, int y, byte alpha)
         {
             if ((uint)x < (uint)width && (uint)y < (uint)height)
+            {
                 pixels[(y * width + x) * 4 + 3] = alpha;
+            }
         }
 
         /// <summary>
@@ -384,6 +413,7 @@ namespace T6_Workbench
         /// Resolves or reads the UInt32 value. Decode supported DDS pixels into frozen WPF preview images.
         /// </summary>
         static uint ReadUInt32(byte[] data, int offset) => BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(offset, 4));
+
         static void Require(byte[] data, int offset, long length)
         {
             if (offset < 0 || length < 0 || offset + length > data.Length)

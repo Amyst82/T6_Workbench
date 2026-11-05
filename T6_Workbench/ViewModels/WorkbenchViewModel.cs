@@ -11,41 +11,65 @@ namespace T6_Workbench
     public static class MainViewModel
     {
         public static WorkbenchViewModel WorkbenchViewModel = new WorkbenchViewModel();
+        
     }
+
     public class WorkbenchViewModel : BaseViewModel
     {
+        private UIColors _uiColors = new UIColors();
+
         WorkbenchSettingsViewModel settings = new WorkbenchSettingsViewModel();
+
         ProjectSessionViewModel currentProject;
+
         WorkbenchOperationStatus status = new WorkbenchOperationStatus(WorkbenchOperationState.Ready, "Ready");
+
         bool canOpenResult;
+
         int selectedLodIndex;
+
         bool previewUsesShaders = true;
+
         PreviewCameraState previewCamera = new PreviewCameraState();
+
         OperationResult lastResult;
+
         Exception lastError;
 
         public ObservableCollection<ProjectSessionViewModel> RecentProjects { get; } = new ObservableCollection<ProjectSessionViewModel>();
+
         public ObservableCollection<ModelLodOptionViewModel> AvailableLods { get; } = new ObservableCollection<ModelLodOptionViewModel>();
+
+        public UIColors UIColors
+        {
+            get => _uiColors;
+            private set => SetProperty(ref _uiColors, value);
+        }
+
         public WorkbenchSettingsViewModel Settings
         {
             get => settings;
             private set => SetProperty(ref settings, value);
         }
+
         public ProjectSessionViewModel CurrentProject
         {
             get => currentProject;
             private set => SetProperty(ref currentProject, value);
         }
+
         public WorkbenchOperationStatus Status
         {
             get => status;
             private set => SetProperty(ref status, value);
         }
+
         public bool CanOpenResult
         {
             get => canOpenResult;
             set => SetProperty(ref canOpenResult, value);
         }
+
         public int SelectedLodIndex
         {
             get => selectedLodIndex;
@@ -53,9 +77,13 @@ namespace T6_Workbench
             {
                 int normalized = Math.Max(0, value);
                 if (!SetProperty(ref selectedLodIndex, normalized)) return;
-                if (CurrentProject != null) CurrentProject.SelectedLodIndex = normalized;
+                if (CurrentProject != null)
+                {
+                    CurrentProject.SelectedLodIndex = normalized;
+                }
             }
         }
+
         public bool PreviewUsesShaders
         {
             get => previewUsesShaders;
@@ -64,25 +92,31 @@ namespace T6_Workbench
                 if (!SetProperty(ref previewUsesShaders, value)) 
                     return;
                 NotifyProperty(nameof(PreviewShadingIndex));
-                if (CurrentProject != null) 
+                if (CurrentProject != null)
+                {
                     CurrentProject.PreviewUsesShaders = value;
+                }
             }
         }
+
         public PreviewCameraState PreviewCamera
         {
             get => previewCamera;
             private set => SetProperty(ref previewCamera, value);
         }
+
         public int PreviewShadingIndex
         {
             get => PreviewUsesShaders ? 1 : 0;
             set => PreviewUsesShaders = value != 0;
         }
+
         internal OperationResult LastResult
         {
             get => lastResult;
             private set => SetProperty(ref lastResult, value);
         }
+
         internal Exception LastError
         {
             get => lastError;
@@ -90,6 +124,7 @@ namespace T6_Workbench
         }
 
         public ICommand OpenRecentProjectCommand { get; }
+
         internal event Action<ProjectSessionViewModel> OpenProjectRequested;
 
         internal WorkbenchViewModel()
@@ -97,7 +132,9 @@ namespace T6_Workbench
             OpenRecentProjectCommand = new RelayCommand(parameter =>
             {
                 if (parameter is ProjectSessionViewModel project && project.IsAvailable)
+                {
                     OpenProjectRequested?.Invoke(project);
+                }
             });
         }
 
@@ -107,29 +144,39 @@ namespace T6_Workbench
             var paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (ProjectSessionViewModel project in projects)
             {
-                if (string.IsNullOrWhiteSpace(project.ManifestPath)) 
+                if (string.IsNullOrWhiteSpace(project.ManifestPath))
+                {
                     continue;
+                }
                 string manifest;
-                try 
-                { 
-                    manifest = Path.GetFullPath(project.ManifestPath); 
+                try
+                {
+                    manifest = Path.GetFullPath(project.ManifestPath);
                 }
-                catch 
-                { 
-                    continue; 
-                }
-                if (!paths.Add(manifest)) 
+                catch
+                {
                     continue;
+                }
+                if (!paths.Add(manifest))
+                {
+                    continue;
+                }
                 project.ManifestPath = manifest;
                 project.ProjectPath = Path.GetDirectoryName(manifest) ?? string.Empty;
                 if (string.IsNullOrWhiteSpace(project.Name))
+                {
                     project.Name = Path.GetFileName(project.ProjectPath);
-                if (project.Settings == null) 
+                }
+                if (project.Settings == null)
+                {
                     project.Settings = new WorkbenchSettingsViewModel();
+                }
                 project.OpenCommand = OpenRecentProjectCommand;
                 RecentProjects.Add(project);
-                if (RecentProjects.Count == 10) 
+                if (RecentProjects.Count == 10)
+                {
                     break;
+                }
             }
         }
 
@@ -139,11 +186,7 @@ namespace T6_Workbench
             ProjectSessionViewModel session = RecentProjects.FirstOrDefault(item => item.ManifestPath.Equals(manifest, StringComparison.OrdinalIgnoreCase));
             if (session == null)
             {
-                session = new ProjectSessionViewModel
-                {
-                    Settings = Settings.Clone(),
-                    OpenCommand = OpenRecentProjectCommand
-                };
+                session = new ProjectSessionViewModel { Settings = Settings.Clone(), OpenCommand = OpenRecentProjectCommand};
                 RecentProjects.Insert(0, session);
             }
             else if (!session.Settings.HasAnyValue)
@@ -151,16 +194,18 @@ namespace T6_Workbench
                 session.Settings.CopyFrom(Settings);
             }
             session.OpenCommand = OpenRecentProjectCommand;
-
             session.Name = project.Name;
             session.ProjectPath = project.Root;
             session.ManifestPath = manifest;
             session.LastOpenedAt = DateTime.Now;
             if (RecentProjects.IndexOf(session) > 0)
+            {
                 RecentProjects.Move(RecentProjects.IndexOf(session), 0);
+            }
             while (RecentProjects.Count > 10)
+            {
                 RecentProjects.RemoveAt(RecentProjects.Count - 1);
-
+            }
             CurrentProject = session;
             Settings = session.Settings;
             PreviewCameraState camera = (session.PreviewCamera = session.PreviewCamera ?? new PreviewCameraState());
@@ -174,9 +219,13 @@ namespace T6_Workbench
         {
             Status = new WorkbenchOperationStatus(state, message);
             if (state == WorkbenchOperationState.Built || state == WorkbenchOperationState.BuiltWithWarnings)
+            {
                 CanOpenResult = true;
+            }
             else if (state == WorkbenchOperationState.Busy || state == WorkbenchOperationState.Building)
+            {
                 CanOpenResult = false;
+            }
         }
 
         internal void BeginOperation(WorkbenchOperationState state, string message)
@@ -203,7 +252,9 @@ namespace T6_Workbench
         internal void ChangeProjectChangeCount(int delta)
         {
             if (CurrentProject != null)
+            {
                 CurrentProject.ProjectChangeCount = Math.Max(0, CurrentProject.ProjectChangeCount + delta);
+            }
         }
 
         internal void RememberPreview(string assetType, string assetName, int lodIndex, bool usesShaders)

@@ -13,6 +13,7 @@ namespace T6_Workbench
         {
             internal string Id = "33", Name = "", Display = "", Description = "", View = "", World = "", Template = "", Table = "", Localization = "", TemplateRow = "", Icon = "", AnimationMappings = "";
         }
+
         internal static string Create(WorkbenchProject project, Request request)
         {
             string name = request.Name.Trim().ToLowerInvariant();
@@ -21,8 +22,10 @@ namespace T6_Workbench
             if (string.IsNullOrWhiteSpace(request.Display) || request.Display.IndexOfAny(new[] { '\r', '\n', '"', '\\' }) >= 0 || request.Description.IndexOfAny(new[] { '\r', '\n', '"', '\\' }) >= 0)
                 throw new InvalidDataException(EnglishText.Text("Names and descriptions must not contain quotation marks, backslashes or line breaks."));
             foreach (var model in new[] { request.View, request.World })
+            {
                 if (string.IsNullOrWhiteSpace(model) || !File.Exists(project.EditPath("xmodel/" + model + ".json")) && !File.Exists(project.AssetPath("xmodel/" + model + ".json")))
                     throw new FileNotFoundException(EnglishText.Text("XModel is missing from the project: ") + model);
+            }
             if (!File.Exists(request.Template))
                 throw new FileNotFoundException(EnglishText.Text("A T6 weapon template file is required."), request.Template);
             string weaponName = name + "_mp", target = project.EditPath("weapons/" + weaponName);
@@ -78,17 +81,21 @@ namespace T6_Workbench
                 throw new InvalidDataException(EnglishText.Text("Could not find a unique template row in statstable: ") + request.TemplateRow);
             var ids = new HashSet<int>();
             foreach (var row in rows.Skip(1))
+            {
                 if (row.Count > 0 && int.TryParse(row[0], out int n) && !ids.Add(n))
                     throw new InvalidDataException(EnglishText.Text("Duplicate entry in table ID ") + n);
+            }
             if (!int.TryParse(request.Id, out int chosenId) || chosenId < 1)
                 throw new InvalidDataException(EnglishText.Text("Specify a positive weapon ID."));
             int index = -1;
             for (int i = 1; i < rows.Length; i++)
+            {
                 if (rows[i].Count > 7 && int.TryParse(rows[i][0], out int n) && n == chosenId && rows[i].Skip(1).All(string.IsNullOrEmpty))
                 {
                     index = i;
                     break;
                 }
+            }
             if (index < 0)
                 throw new InvalidDataException(EnglishText.Text("The selected ID is missing or occupied in statstable. Specify the ID of an existing empty row."));
             var rowNew = new List<string>(templateRows[0]);
@@ -110,7 +117,9 @@ namespace T6_Workbench
                 throw new FileNotFoundException(EnglishText.Text("Icon material not found in the project: ") + icon);
             rowNew[6] = icon;
             foreach (string key in new[] { "hudIcon", "killIcon", "ammoCounterIcon" })
+            {
                 Set(key, rowNew[6]);
+            }
             lines[index] = string.Join(",", rowNew.Select(Csv));
             string locTarget = project.EditPath("english/localizedstrings/patch_redacted.str");
             string locSource = File.Exists(locTarget) ? locTarget : request.Localization;
@@ -126,20 +135,26 @@ namespace T6_Workbench
             string locResult = loc.Insert(marker, addition);
             // Keep both existing edits recoverable before updating shared registration files.
             foreach (string file in new[] { tableTarget, locTarget })
+            {
                 if (File.Exists(file))
                 {
                     string backup = Path.Combine(project.Builds, "backups", DateTime.UtcNow.ToString("yyyyMMdd-HHmmssfff") + "-" + Path.GetFileName(file));
                     Directory.CreateDirectory(Path.GetDirectoryName(backup));
                     File.Copy(file, backup);
                 }
+            }
             foreach (string file in new[] { target, tableTarget, locTarget })
+            {
                 Directory.CreateDirectory(Path.GetDirectoryName(file));
+            }
             File.WriteAllText(target, string.Join("\\", parts), new UTF8Encoding(false));
             File.WriteAllLines(tableTarget, lines, new UTF8Encoding(false));
             File.WriteAllText(locTarget, locResult, new UTF8Encoding(false));
             return weaponName + " · ID " + rowNew[0];
         }
+
         static string Csv(string s) => s.IndexOfAny(new[] { ',', '"', '\r', '\n' }) < 0 ? s : "\"" + s.Replace("\"", "\"\"") + "\"";
+
         static List<string> ParseCsv(string line)
         {
             var fields = new List<string>();
@@ -156,7 +171,9 @@ namespace T6_Workbench
                         i++;
                     }
                     else
+                    {
                         quoted = !quoted;
+                    }
                 }
                 else if (c == ',' && !quoted)
                 {
@@ -164,7 +181,9 @@ namespace T6_Workbench
                     value.Clear();
                 }
                 else
+                {
                     value.Append(c);
+                }
             }
             if (quoted)
                 throw new InvalidDataException(EnglishText.Text("Invalid CSV line (unterminated quote)."));

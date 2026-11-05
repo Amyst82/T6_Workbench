@@ -173,6 +173,16 @@ namespace T6_Workbench.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] hammer_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("hammer_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] search_folder_svgrepo_com {
             get {
                 object obj = ResourceManager.GetObject("search_folder_svgrepo_com", resourceCulture);

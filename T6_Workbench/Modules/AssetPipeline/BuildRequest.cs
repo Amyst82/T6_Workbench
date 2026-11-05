@@ -6,10 +6,15 @@
     public sealed class BuildRequest
     {
         public string BinDirectory { get; set; }
+
         public string ZoneFile { get; set; }
+
         public string AssetDirectory { get; set; }
+
         public string OutputRoot { get; set; }
+
         public string CaptureFile { get; set; }
+
         public string[] BaseZones { get; set; }
 
         public BuildRequest(string BinDirectory, string ZoneFile, string AssetDirectory, string OutputRoot, string CaptureFile, string[] BaseZones)

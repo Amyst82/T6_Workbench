@@ -17,6 +17,7 @@ namespace T6_Workbench
         }
 
         public static DdsPreviewResult LoadDds(string path) => TextureHelpers.LoadDds(path);
+
         public static DdsPreviewResult LoadDds(byte[] data) => TextureHelpers.LoadDds(data);
 
         public static Func<string, BitmapSource> CreateMaterialResolver(IEnumerable<string> assetRoots, int maxTextureDimension = 0)
@@ -25,6 +26,7 @@ namespace T6_Workbench
         }
 
         public static void ValidateMaterialName(string name) => TextureHelpers.ValidateMaterialName(name);
+
         public static string CreateMaterial(string template, IReadOnlyDictionary<string, string> images) => TextureHelpers.CreateMaterial(template, images);
     }
 }

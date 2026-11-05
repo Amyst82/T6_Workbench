@@ -17,9 +17,64 @@ namespace T6_Workbench
     /// <summary>
     /// GlbPreviewResult. Read GLB geometry and basic material color into a WPF model preview.
     /// </summary>
-    public sealed class GlbPreviewMaterialVariant { public MeshGeometry3D Geometry { get; set; } public Material Solid { get; set; } public Material Shaded { get; set; } public GlbPreviewMaterialVariant(MeshGeometry3D Geometry, Material Solid, Material Shaded) { this.Geometry = Geometry; this.Solid = Solid; this.Shaded = Shaded; } }
+    public sealed class GlbPreviewMaterialVariant
+    {
+        public MeshGeometry3D Geometry { get; set; }
+
+        public Material Solid { get; set; }
+
+        public Material Shaded { get; set; }
+
+        public GlbPreviewMaterialVariant(MeshGeometry3D Geometry, Material Solid, Material Shaded)
+        {
+            this.Geometry = Geometry;
+            this.Solid = Solid;
+            this.Shaded = Shaded;
+        }
+    }
     /// <summary>Decoded geometry plus two switchable presentation materials per GLB primitive.</summary>
-    public sealed class GlbPreviewResult { public Model3DGroup Model { get; set; } public int Vertices { get; set; } public int Triangles { get; set; } public int Parts { get; set; } public IReadOnlyList<GlbPreviewMaterialVariant> MaterialVariants { get; set; } public int TexturedParts { get; set; } public int MissingUvParts { get; set; } public int OatVertices { get; set; } public int OatSurfaces { get; set; } public int LargestOatSurfaceVertices { get; set; } public bool OatLodVertexLimitExceeded { get; set; } public bool OatSurfaceLimitExceeded { get; set; } public GlbPreviewResult(Model3DGroup Model, int Vertices, int Triangles, int Parts, IReadOnlyList<GlbPreviewMaterialVariant> MaterialVariants, int TexturedParts, int MissingUvParts, int OatVertices, int OatSurfaces, int LargestOatSurfaceVertices, bool OatLodVertexLimitExceeded, bool OatSurfaceLimitExceeded) { this.Model = Model; this.Vertices = Vertices; this.Triangles = Triangles; this.Parts = Parts; this.MaterialVariants = MaterialVariants; this.TexturedParts = TexturedParts; this.MissingUvParts = MissingUvParts; this.OatVertices = OatVertices; this.OatSurfaces = OatSurfaces; this.LargestOatSurfaceVertices = LargestOatSurfaceVertices; this.OatLodVertexLimitExceeded = OatLodVertexLimitExceeded; this.OatSurfaceLimitExceeded = OatSurfaceLimitExceeded; } }
+    public sealed class GlbPreviewResult
+    {
+        public Model3DGroup Model { get; set; }
+
+        public int Vertices { get; set; }
+
+        public int Triangles { get; set; }
+
+        public int Parts { get; set; }
+
+        public IReadOnlyList<GlbPreviewMaterialVariant> MaterialVariants { get; set; }
+
+        public int TexturedParts { get; set; }
+
+        public int MissingUvParts { get; set; }
+
+        public int OatVertices { get; set; }
+
+        public int OatSurfaces { get; set; }
+
+        public int LargestOatSurfaceVertices { get; set; }
+
+        public bool OatLodVertexLimitExceeded { get; set; }
+
+        public bool OatSurfaceLimitExceeded { get; set; }
+
+        public GlbPreviewResult(Model3DGroup Model, int Vertices, int Triangles, int Parts, IReadOnlyList<GlbPreviewMaterialVariant> MaterialVariants, int TexturedParts, int MissingUvParts, int OatVertices, int OatSurfaces, int LargestOatSurfaceVertices, bool OatLodVertexLimitExceeded, bool OatSurfaceLimitExceeded)
+        {
+            this.Model = Model;
+            this.Vertices = Vertices;
+            this.Triangles = Triangles;
+            this.Parts = Parts;
+            this.MaterialVariants = MaterialVariants;
+            this.TexturedParts = TexturedParts;
+            this.MissingUvParts = MissingUvParts;
+            this.OatVertices = OatVertices;
+            this.OatSurfaces = OatSurfaces;
+            this.LargestOatSurfaceVertices = LargestOatSurfaceVertices;
+            this.OatLodVertexLimitExceeded = OatLodVertexLimitExceeded;
+            this.OatSurfaceLimitExceeded = OatSurfaceLimitExceeded;
+        }
+    }
 
     /// <summary>Small, dependency-free GLB 2.0 preview reader for OAT's static XModel exports.</summary>
     internal static class GlbPreviewLoader
@@ -27,8 +82,7 @@ namespace T6_Workbench
         /// <summary>
         /// Decode and validate the supported preview format into WPF data.
         /// </summary>
-        public static GlbPreviewResult Load(string path, Func<string, BitmapSource> resolveT6Material = null,
-            CancellationToken cancellation = default, string imageBasePath = null)
+        public static GlbPreviewResult Load(string path, Func<string, BitmapSource> resolveT6Material = null, CancellationToken cancellation = default, string imageBasePath = null)
         {
             cancellation.ThrowIfCancellationRequested();
             var data = File.ReadAllBytes(path);
@@ -36,7 +90,6 @@ namespace T6_Workbench
                 throw new InvalidDataException(EnglishText.Text("File is not a GLB 2.0."));
             if (BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(4, 4)) != 2)
                 throw new InvalidDataException(EnglishText.Text("Preview supports GLB version 2."));
-
             int offset = 12;
             int jsonLength = ReadChunkLength(data, ref offset, 0x4e4f534a);
             using (var json = JsonDocument.Parse(data.AsMemory(offset, jsonLength)))
@@ -50,22 +103,18 @@ namespace T6_Workbench
                 }
                 if (binary == null)
                     throw new InvalidDataException(EnglishText.Text("GLB has no BIN buffer for geometry."));
-
                 var root = json.RootElement;
                 var accessors = root.GetProperty("accessors").EnumerateArray().ToArray();
                 var views = root.GetProperty("bufferViews").EnumerateArray().ToArray();
                 var meshes = root.GetProperty("meshes").EnumerateArray().ToArray();
-                var materials = root.TryGetProperty("materials", out var materialElement)
-                    ? materialElement.EnumerateArray().ToArray() : new System.Text.Json.JsonElement[0];
-                var textures = root.TryGetProperty("textures", out var textureElement)
-                    ? textureElement.EnumerateArray().ToArray() : new System.Text.Json.JsonElement[0];
+                var materials = root.TryGetProperty("materials", out var materialElement) ? materialElement.EnumerateArray().ToArray() : new System.Text.Json.JsonElement[0];
+                var textures = root.TryGetProperty("textures", out var textureElement) ? textureElement.EnumerateArray().ToArray() : new System.Text.Json.JsonElement[0];
                 var images = LoadImages(root, views, binary, imageBasePath ?? path, cancellation);
                 var output = new Model3DGroup();
                 int vertexTotal = 0, triangleTotal = 0, partTotal = 0;
                 int texturedPartTotal = 0, missingUvTotal = 0;
                 int oatVertexTotal = 0, oatSurfaceTotal = 0, largestOatSurfaceVertexCount = 0;
                 var variants = new List<GlbPreviewMaterialVariant>();
-
                 Func<Vector3, Vector3> identity = point => point;
                 if (root.TryGetProperty("nodes", out var nodeElement))
                 {
@@ -74,24 +123,39 @@ namespace T6_Workbench
                     {
                         int sceneIndex = root.TryGetProperty("scene", out var defaultScene) ? defaultScene.GetInt32() : 0;
                         if ((uint)sceneIndex >= (uint)sceneElement.GetArrayLength())
+                        {
                             sceneIndex = 0;
+                        }
                         var scene = sceneElement[sceneIndex];
                         if (scene.TryGetProperty("nodes", out var roots))
+                        {
                             foreach (var node in roots.EnumerateArray())
+                            {
                                 VisitNode(node.GetInt32(), identity);
+                            }
+                        }
                     }
                     else
                     {
                         var childNodes = new HashSet<int>();
                         foreach (var node in nodes)
+                        {
                             if (node.TryGetProperty("children", out var children))
+                            {
                                 foreach (var child in children.EnumerateArray())
+                                {
                                     childNodes.Add(child.GetInt32());
+                                }
+                            }
+                        }
                         for (int i = 0; i < nodes.Length; i++)
+                        {
                             if (!childNodes.Contains(i))
+                            {
                                 VisitNode(i, identity);
+                            }
+                        }
                     }
-
                     void VisitNode(int nodeIndex, Func<Vector3, Vector3> parent)
                     {
                         cancellation.ThrowIfCancellationRequested();
@@ -101,18 +165,25 @@ namespace T6_Workbench
                         var local = CreateNodeTransform(node);
                         Vector3 Transform(Vector3 point) => parent(local(point));
                         if (node.TryGetProperty("mesh", out var meshIndex))
+                        {
                             AddMesh(meshIndex.GetInt32(), Transform);
+                        }
                         if (node.TryGetProperty("children", out var children))
+                        {
                             foreach (var child in children.EnumerateArray())
+                            {
                                 VisitNode(child.GetInt32(), Transform);
+                            }
+                        }
                     }
                 }
                 else
                 {
                     for (int i = 0; i < meshes.Length; i++)
+                    {
                         AddMesh(i, identity);
+                    }
                 }
-
                 if (partTotal == 0)
                     throw new InvalidDataException(EnglishText.Text("GLB contains no displayable triangle meshes."));
                 // Freeze all worker-created Freezables. The result can now cross to WPF's UI
@@ -121,7 +192,6 @@ namespace T6_Workbench
                 return new GlbPreviewResult(output, vertexTotal, triangleTotal, partTotal, variants, texturedPartTotal, missingUvTotal,
                     oatVertexTotal, oatSurfaceTotal, largestOatSurfaceVertexCount,
                     oatVertexTotal > ushort.MaxValue + 1, oatSurfaceTotal > byte.MaxValue);
-
                 void AddMesh(int meshIndex, Func<Vector3, Vector3> transform)
                 {
                     if ((uint)meshIndex >= (uint)meshes.Length)
@@ -130,18 +200,22 @@ namespace T6_Workbench
                     {
                         cancellation.ThrowIfCancellationRequested();
                         if (primitive.TryGetProperty("mode", out var mode) && mode.GetInt32() != 4)
+                        {
                             continue;
+                        }
                         if (!primitive.TryGetProperty("attributes", out var attributes)
                             || !attributes.TryGetProperty("POSITION", out var positionAccessor))
+                        {
                             continue;
+                        }
                         var points = ReadVector3(positionAccessor.GetInt32());
                         if (points.Length < 3)
+                        {
                             continue;
-                        var indices = primitive.TryGetProperty("indices", out var indexAccessor)
-                            ? ReadIndices(indexAccessor.GetInt32()) : Enumerable.Range(0, points.Length).ToArray();
+                        }
+                        var indices = primitive.TryGetProperty("indices", out var indexAccessor) ? ReadIndices(indexAccessor.GetInt32()) : Enumerable.Range(0, points.Length).ToArray();
                         if (indices.Length < 3 || indices.Length % 3 != 0)
                             throw new InvalidDataException(EnglishText.Text("GLB mesh contains an incomplete triangle list."));
-
                         var weightCounts = ReadWeightCounts(attributes, points.Length);
                         int maximumWeightCount = 0;
                         foreach (int vertexIndex in indices)
@@ -152,29 +226,36 @@ namespace T6_Workbench
                         }
                         int maxVerticesPerSurface = maximumWeightCount > 1 ? (int)short.MaxValue : (int)ushort.MaxValue;
                         AddOatSurfaceStats(indices, maxVerticesPerSurface);
-
                         var geometry = new MeshGeometry3D();
                         var transformed = new Vector3[points.Length];
                         for (int i = 0; i < points.Length; i++)
                         {
                             if ((i & 2047) == 0)
+                            {
                                 cancellation.ThrowIfCancellationRequested();
+                            }
                             transformed[i] = transform(points[i]);
                             if (!Helpers.IsFinite(transformed[i].X) || !Helpers.IsFinite(transformed[i].Y) || !Helpers.IsFinite(transformed[i].Z))
                                 throw new InvalidDataException(EnglishText.Text("GLB contains an invalid vertex position."));
                             geometry.Positions.Add(new Point3D(transformed[i].X, transformed[i].Y, transformed[i].Z));
                         }
                         var materialColor = GetMaterialColor(primitive, materials);
-                        var uv = attributes.TryGetProperty("TEXCOORD_0", out var uvAccessor)
-                            ? ReadVector2(uvAccessor.GetInt32()) : null;
+                        var uv = attributes.TryGetProperty("TEXCOORD_0", out var uvAccessor) ? ReadVector2(uvAccessor.GetInt32()) : null;
                         bool hasUv = uv != null && uv.Length == points.Length;
                         if (hasUv)
+                        {
                             foreach (var coordinate in uv)
+                            {
                                 geometry.TextureCoordinates.Add(new Point(coordinate.X, coordinate.Y));
+                            }
+                        }
                         else
+                        {
                             for (int i = 0; i < points.Length; i++)
+                            {
                                 geometry.TextureCoordinates.Add(new Point(0, 0));
-
+                            }
+                        }
                         var normals = new Vector3[points.Length];
                         for (int i = 0; i < indices.Length; i += 3)
                         {
@@ -197,7 +278,6 @@ namespace T6_Workbench
                             var n = normal.LengthSquared() > 1e-12f ? Vector3.Normalize(normal) : Vector3.UnitY;
                             geometry.Normals.Add(new Vector3D(n.X, n.Y, n.Z));
                         }
-
                         var solidBrush = new SolidColorBrush(Color.FromRgb(165, 172, 183));
                         solidBrush.Freeze();
                         // DiffuseMaterial keeps the solid-grey mode neutral while preserving visible shape and lighting.
@@ -206,12 +286,18 @@ namespace T6_Workbench
                         BitmapSource baseColor = GetBaseColorImage(primitive, materials, textures, images);
                         if (baseColor == null && hasUv && resolveT6Material != null &&
                             GetMaterialName(primitive, materials) is string materialName)
+                        {
                             baseColor = resolveT6Material(materialName);
+                        }
                         Material shadedMaterial = CreateShadedMaterial(primitive, materials, baseColor, hasUv, materialColor);
                         if (baseColor != null && hasUv)
+                        {
                             texturedPartTotal++;
+                        }
                         else if (baseColor != null)
+                        {
                             missingUvTotal++;
+                        }
                         geometry.Freeze();
                         var model = new GeometryModel3D(geometry, shadedMaterial) { BackMaterial = shadedMaterial };
                         model.Freeze();
@@ -222,7 +308,6 @@ namespace T6_Workbench
                         partTotal++;
                     }
                 }
-
                 Vector3[] ReadVector3(int accessorIndex)
                 {
                     var accessor = GetAccessor(accessorIndex, "VEC3", 5126);
@@ -240,7 +325,6 @@ namespace T6_Workbench
                     }
                     return result;
                 }
-
                 Vector2[] ReadVector2(int accessorIndex)
                 {
                     if ((uint)accessorIndex >= (uint)accessors.Length)
@@ -260,7 +344,6 @@ namespace T6_Workbench
                     }
                     return result;
                 }
-
                 int[] ReadIndices(int accessorIndex)
                 {
                     if ((uint)accessorIndex >= (uint)accessors.Length)
@@ -309,13 +392,11 @@ namespace T6_Workbench
                     }
                     return result;
                 }
-
                 int[] ReadWeightCounts(JsonElement attributes, int expectedVertexCount)
                 {
                     var weightCounts = new int[expectedVertexCount];
                     if (!attributes.TryGetProperty("WEIGHTS_0", out var weightAccessorReference))
                         return weightCounts;
-
                     int weightAccessorIndex = weightAccessorReference.GetInt32();
                     if ((uint)weightAccessorIndex >= (uint)accessors.Length)
                         throw new InvalidDataException(EnglishText.Text("GLB contains an invalid weight accessor."));
@@ -323,7 +404,6 @@ namespace T6_Workbench
                     if (weightAccessor.GetProperty("type").GetString() != "VEC4"
                         || (weightAccessor.TryGetProperty("sparse", out var sparseWeights) && sparseWeights.ValueKind != JsonValueKind.Undefined))
                         throw new InvalidDataException(EnglishText.Text("OAT expects a regular WEIGHTS_0 accessor of type VEC4."));
-
                     int componentType = weightAccessor.GetProperty("componentType").GetInt32();
                     int componentSize;
                     switch (componentType)
@@ -340,7 +420,6 @@ namespace T6_Workbench
                         default:
                             throw new InvalidDataException(EnglishText.Text("OAT does not support this WEIGHTS_0 type."));
                     }
-
                     int accessorVertexCount = weightAccessor.GetProperty("count").GetInt32();
                     if (accessorVertexCount != expectedVertexCount)
                         throw new InvalidDataException(EnglishText.Text("WEIGHTS_0 weight count does not match vertex count."));
@@ -353,7 +432,6 @@ namespace T6_Workbench
                     int elementSize = componentSize * 4;
                     int stride = view.TryGetProperty("byteStride", out var strideElement) ? strideElement.GetInt32() : elementSize;
                     EnsureRange(start, accessorVertexCount, stride, elementSize);
-
                     const float oatZeroWeightThreshold = 1.192092896E-07f;
                     for (int vertexIndex = 0; vertexIndex < accessorVertexCount; vertexIndex++)
                     {
@@ -365,13 +443,14 @@ namespace T6_Workbench
                             float weightValue = (componentType == 5121 ? binary[componentStart] : (componentType == 5123 ? BinaryPrimitives.ReadUInt16LittleEndian(binary.AsSpan(componentStart, 2)) : ReadFloat(componentStart)
     ));
                             if (Math.Abs(weightValue) >= oatZeroWeightThreshold)
+                            {
                                 nonZeroWeightCount++;
+                            }
                         }
                         weightCounts[vertexIndex] = nonZeroWeightCount;
                     }
                     return weightCounts;
                 }
-
                 void AddOatSurfaceStats(int[] indices, int maxVerticesPerSurface)
                 {
                     var surfaceVertices = new HashSet<int>();
@@ -383,7 +462,9 @@ namespace T6_Workbench
                         {
                             int vertexIndex = indices[faceStart + cornerIndex];
                             if (surfaceVertices.Contains(vertexIndex))
+                            {
                                 continue;
+                            }
                             bool alreadyCounted = false;
                             for (int previousCornerIndex = 0; previousCornerIndex < cornerIndex; previousCornerIndex++)
                             {
@@ -394,21 +475,22 @@ namespace T6_Workbench
                                 }
                             }
                             if (!alreadyCounted)
+                            {
                                 newVertexCount++;
+                            }
                         }
-
                         bool exceedsVertexLimit = surfaceVertices.Count + newVertexCount > maxVerticesPerSurface;
                         bool exceedsTriangleLimit = faceCount >= ushort.MaxValue;
                         if (faceCount > 0 && (exceedsVertexLimit || exceedsTriangleLimit))
+                        {
                             FinishOatSurface();
-
+                        }
                         surfaceVertices.Add(indices[faceStart]);
                         surfaceVertices.Add(indices[faceStart + 1]);
                         surfaceVertices.Add(indices[faceStart + 2]);
                         faceCount++;
                     }
                     FinishOatSurface();
-
                     void FinishOatSurface()
                     {
                         if (faceCount == 0)
@@ -420,7 +502,6 @@ namespace T6_Workbench
                         faceCount = 0;
                     }
                 }
-
                 JsonElement GetAccessor(int index, string type, int componentType)
                 {
                     if ((uint)index >= (uint)accessors.Length)
@@ -434,14 +515,12 @@ namespace T6_Workbench
                         throw new InvalidDataException(EnglishText.Text("GLB contains an invalid bufferView."));
                     return accessor;
                 }
-
                 void EnsureRange(int start, int count, int stride, int elementSize)
                 {
                     if (start < 0 || count < 0 || stride < elementSize
                         || (long)start + (long)Math.Max(0, count - 1) * stride + elementSize > binary.Length)
                         throw new InvalidDataException(EnglishText.Text("GLB accesses beyond the bounds of the BIN buffer."));
                 }
-
                 float ReadFloat(int at) => Helpers.Int32BitsToSingle(BinaryPrimitives.ReadInt32LittleEndian(binary.AsSpan(at, 4)));
             }
         }
@@ -485,11 +564,8 @@ namespace T6_Workbench
                     m[1] * point.X + m[5] * point.Y + m[9] * point.Z + m[13],
                     m[2] * point.X + m[6] * point.Y + m[10] * point.Z + m[14]);
             }
-
-            var translation = node.TryGetProperty("translation", out var t)
-                ? new Vector3(t[0].GetSingle(), t[1].GetSingle(), t[2].GetSingle()) : Vector3.Zero;
-            var scale = node.TryGetProperty("scale", out var s)
-                ? new Vector3(s[0].GetSingle(), s[1].GetSingle(), s[2].GetSingle()) : Vector3.One;
+            var translation = node.TryGetProperty("translation", out var t) ? new Vector3(t[0].GetSingle(), t[1].GetSingle(), t[2].GetSingle()) : Vector3.Zero;
+            var scale = node.TryGetProperty("scale", out var s) ? new Vector3(s[0].GetSingle(), s[1].GetSingle(), s[2].GetSingle()) : Vector3.One;
             var rotation = node.TryGetProperty("rotation", out var r)
                 ? NQuaternion.Normalize(new NQuaternion(r[0].GetSingle(), r[1].GetSingle(), r[2].GetSingle(), r[3].GetSingle()))
                 : NQuaternion.Identity;
@@ -507,13 +583,11 @@ namespace T6_Workbench
             if (!material.TryGetProperty("pbrMetallicRoughness", out var pbr) || !pbr.TryGetProperty("baseColorFactor", out var factor))
                 return Color.FromRgb(170, 178, 188);
             var values = factor.EnumerateArray().Select(v => Helpers.Clamp((int)Math.Round(v.GetSingle() * 255), 0, 255)).ToArray();
-            return values.Length == 4 ? Color.FromArgb((byte)values[3], (byte)values[0], (byte)values[1], (byte)values[2])
-                : Color.FromRgb(170, 178, 188);
+            return values.Length == 4 ? Color.FromArgb((byte)values[3], (byte)values[0], (byte)values[1], (byte)values[2]) : Color.FromRgb(170, 178, 188);
         }
 
         /// <summary>Decode GLB image sources once so materials can share immutable WPF bitmaps.</summary>
-        static BitmapSource[] LoadImages(JsonElement root, JsonElement[] views, byte[] binary, string glbPath,
-            CancellationToken cancellation)
+        static BitmapSource[] LoadImages(JsonElement root, JsonElement[] views, byte[] binary, string glbPath, CancellationToken cancellation)
         {
             if (!root.TryGetProperty("images", out var imageArray))
                 return new BitmapSource[0];
@@ -549,14 +623,22 @@ namespace T6_Workbench
                         {
                             int comma = uri.IndexOf(',');
                             if (comma > 0 && uri.Substring(0, (comma) - (0)).EndsWith(";base64", StringComparison.OrdinalIgnoreCase))
+                            {
                                 bytes = Convert.FromBase64String(uri.Substring((comma + 1)));
+                            }
                         }
                         else if (Uri.TryCreate(uri, UriKind.Absolute, out var absolute) && absolute.IsFile)
+                        {
                             bytes = File.ReadAllBytes(absolute.LocalPath);
+                        }
                         else if (!Uri.TryCreate(uri, UriKind.Absolute, out var absoluteUri))
+                        {
                             bytes = File.ReadAllBytes(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(glbPath), Uri.UnescapeDataString(uri.Replace('/', Path.DirectorySeparatorChar)))));
+                        }
                     }
-                    catch (Exception error) when ((((error is System.IO.IOException) || (error is System.UnauthorizedAccessException)) || (error is System.FormatException)) || (error is System.ArgumentException)) { }
+                    catch (Exception error) when ((((error is System.IO.IOException) || (error is System.UnauthorizedAccessException)) || (error is System.FormatException)) || (error is System.ArgumentException))
+                    {
+                    }
                 }
                 if ((bytes != null) && (bytes.Length > 0))
                 {
@@ -568,7 +650,9 @@ namespace T6_Workbench
                         {
                             var dds = TextureModule.LoadDds(bytes);
                             if ((long)dds.Width * dds.Height <= 64_000_000)
+                            {
                                 result[index] = dds.Image;
+                            }
                         }
                         else
                         {
@@ -597,8 +681,7 @@ namespace T6_Workbench
         }
 
         /// <summary>Resolve the glTF material's base-color texture through its texture and image tables.</summary>
-        static BitmapSource GetBaseColorImage(JsonElement primitive, JsonElement[] materials,
-            JsonElement[] textures, BitmapSource[] images)
+        static BitmapSource GetBaseColorImage(JsonElement primitive, JsonElement[] materials, JsonElement[] textures, BitmapSource[] images)
         {
             if (!primitive.TryGetProperty("material", out var slot) || (uint)slot.GetInt32() >= (uint)materials.Length)
                 return null;
@@ -614,7 +697,6 @@ namespace T6_Workbench
             int imageIndex = source.GetInt32();
             return (uint)imageIndex < (uint)images.Length ? images[imageIndex] : null;
         }
-
         // Convert only the preview bitmap; source DDS and GLB files remain untouched.
         static BitmapSource ApplyAlphaMode(BitmapSource source, string mode, double cutoff, byte factorAlpha)
         {
@@ -624,15 +706,15 @@ namespace T6_Workbench
             converted.CopyPixels(pixels, stride, 0);
             bool mask = mode.Equals("MASK", StringComparison.OrdinalIgnoreCase);
             for (int i = 3; i < pixels.Length; i += 4)
+            {
                 pixels[i] = mask ? (byte)(pixels[i] / 255.0 * (factorAlpha / 255.0) >= cutoff ? 255 : 0) : (byte)255;
-            var result = BitmapSource.Create(converted.PixelWidth, converted.PixelHeight, source.DpiX, source.DpiY,
-                PixelFormats.Bgra32, null, pixels, stride);
+            }
+            var result = BitmapSource.Create(converted.PixelWidth, converted.PixelHeight, source.DpiX, source.DpiY, PixelFormats.Bgra32, null, pixels, stride);
             result.Freeze();
             return result;
         }
         /// <summary>Approximate GLB PBR with a base-color image/factor, diffuse light and metallic highlight.</summary>
-        static Material CreateShadedMaterial(JsonElement primitive, JsonElement[] materials, BitmapSource bitmap,
-            bool hasUv, Color baseColor)
+        static Material CreateShadedMaterial(JsonElement primitive, JsonElement[] materials, BitmapSource bitmap, bool hasUv, Color baseColor)
         {
             // glTF defaults to OPAQUE: an alpha channel may contain unrelated T6 shader data.
             // Only BLEND or MASK materials may use texture alpha for display.
@@ -642,14 +724,22 @@ namespace T6_Workbench
             {
                 var alphaMaterial = materials[alphaSlot.GetInt32()];
                 if (alphaMaterial.TryGetProperty("alphaMode", out var mode))
+                {
                     alphaMode = mode.GetString() ?? "OPAQUE";
+                }
                 if (alphaMaterial.TryGetProperty("alphaCutoff", out var cutoff))
+                {
                     alphaCutoff = Helpers.Clamp(cutoff.GetDouble(), 0, 1);
+                }
             }
             if (bitmap != null && hasUv && !alphaMode.Equals("BLEND", StringComparison.OrdinalIgnoreCase))
+            {
                 bitmap = ApplyAlphaMode(bitmap, alphaMode, alphaCutoff, baseColor.A);
+            }
             if (bitmap == null && alphaMode.Equals("OPAQUE", StringComparison.OrdinalIgnoreCase))
+            {
                 baseColor.A = 255;
+            }
             Brush brush = bitmap != null && hasUv
                 ? (Brush)new ImageBrush(bitmap)
                 {
@@ -673,8 +763,7 @@ namespace T6_Workbench
                     float roughness = pbr.TryGetProperty("roughnessFactor", out var r) ? Helpers.Clamp(r.GetSingle(), 0, 1) : 1;
                     if (metallic > 0.01f)
                     {
-                        var specular = new SolidColorBrush(Color.FromRgb((byte)(baseColor.R * metallic),
-                            (byte)(baseColor.G * metallic), (byte)(baseColor.B * metallic)));
+                        var specular = new SolidColorBrush(Color.FromRgb((byte)(baseColor.R * metallic), (byte)(baseColor.G * metallic), (byte)(baseColor.B * metallic)));
                         specular.Freeze();
                         group.Children.Add(new SpecularMaterial(specular, Math.Max(2, 128 * (1 - roughness))));
                     }

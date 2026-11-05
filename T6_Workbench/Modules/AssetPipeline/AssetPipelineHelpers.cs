@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +9,7 @@ namespace T6_Workbench
     internal sealed class AssetPipelineHelpers
     {
         private readonly Action<string> _log;
+
         private readonly AssetEditor _editor;
 
         internal AssetPipelineHelpers(Action<string> log = null)
@@ -47,11 +48,6 @@ namespace T6_Workbench
             return new OatService(_log).ConvertTexturesAsync(binDirectory, assetDirectory, outputRoot, cancellation);
         }
 
-        internal Task<OperationResult> RunRoundTripAsync(RoundTripRequest request, CancellationToken cancellation) 
-        {
-            return new RoundTrips(_log).RunAsync(request, cancellation);
-        }
-
         internal Task<OperationResult> RunFullRoundTripAsync(ExportRequest request, CancellationToken cancellation)
         {
             return new FullRoundTrip(_log).RunAsync(request, cancellation);
@@ -60,11 +56,6 @@ namespace T6_Workbench
         internal Task<OperationResult> BuildStandaloneAsync(WorkbenchProject project, WorkbenchPaths paths, CancellationToken cancellation)
         {
             return new StandaloneRedactedBuild(_log).RunAsync(project, paths, cancellation);
-        }
-
-        internal static OperationResult CreateTestPackage(string fullRoundTripDirectory, string gameRoot, string probePlugin, string outputRoot, string projectOriginalFastfile)
-        {
-            return LocalTestPackage.Create(fullRoundTripDirectory, gameRoot, probePlugin, outputRoot, projectOriginalFastfile);
         }
     }
 }

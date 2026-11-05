@@ -6,21 +6,32 @@
     public sealed class ExportRequest
     {
         public string BinDirectory { get; set; }
+
         public string Fastfile { get; set; }
+
         public string CaptureFile { get; set; }
+
         public string OutputRoot { get; set; }
+
         public string[] SearchPaths { get; set; }
+
         public string ModelFormat { get; set; }
+
         public string ImageFormat { get; set; }
+
         public string IncludeAssets { get; set; }
+
         public bool AllowMissingIdentityNormal { get; set; }
+
         public string EditedAssetsRoot { get; set; }
+
         public string SpecificAssetType { get; set; }
+
         public string SpecificAssetName { get; set; }
+
         public string ProjectAssetsRoot { get; set; }
 
-        public ExportRequest(string BinDirectory, string Fastfile, string CaptureFile, string OutputRoot, string[] SearchPaths, string ModelFormat = "GLB", string ImageFormat = "DDS", string IncludeAssets = "",
-            bool AllowMissingIdentityNormal = false, string EditedAssetsRoot = null, string SpecificAssetType = "", string SpecificAssetName = "", string ProjectAssetsRoot = null)
+        public ExportRequest(string BinDirectory, string Fastfile, string CaptureFile, string OutputRoot, string[] SearchPaths, string ModelFormat = "GLB", string ImageFormat = "DDS", string IncludeAssets = "", bool AllowMissingIdentityNormal = false, string EditedAssetsRoot = null, string SpecificAssetType = "", string SpecificAssetName = "", string ProjectAssetsRoot = null)
         {
             this.BinDirectory = BinDirectory;
             this.Fastfile = Fastfile;

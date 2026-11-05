@@ -30,11 +30,13 @@ namespace T6_Workbench
                 if (installed != null) return installed;
             }
             foreach (string directory in (Environment.GetEnvironmentVariable("PATH") ?? "").Split(Path.PathSeparator))
+            {
                 if (!string.IsNullOrWhiteSpace(directory))
                 {
                     string candidate = Path.Combine(directory.Trim().Trim('"'), "blender.exe");
                     if (File.Exists(candidate)) return Path.GetFullPath(candidate);
                 }
+            }
             throw new FileNotFoundException(EnglishText.Text("Blender not found. Specify blender.exe in Workbench Settings."));
         }
 
@@ -43,7 +45,10 @@ namespace T6_Workbench
             if (!File.Exists(glb)) throw new FileNotFoundException(EnglishText.Text("Exported GLB not found."), glb);
             string basePath = Path.ChangeExtension(Path.GetFullPath(glb), null);
             string output = basePath + ".blend";
-            for (int index = 1; File.Exists(output); index++) output = basePath + "." + index.ToString("000") + ".blend";
+            for (int index = 1; File.Exists(output); index++)
+            {
+                output = basePath + "." + index.ToString("000") + ".blend";
+            }
             string ikScript = Path.Combine(AppContext.BaseDirectory, "resources", "xanim", "workbench_ik.py");
             if (!File.Exists(ikScript)) throw new FileNotFoundException("Workbench IK script was not found.", ikScript);
             var result = await new ToolRunner().RunAsync(blender,

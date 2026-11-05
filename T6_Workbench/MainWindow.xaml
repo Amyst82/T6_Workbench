@@ -8,7 +8,7 @@
         xmlns:AMUI="clr-namespace:AMUI;assembly=AMUI"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="MainWindow" Height="650" Width="1000" MinHeight="650" MinWidth="1000" AllowsTransparency="True" WindowStyle="None" Background="Transparent" Foreground="White" FontSize="16" 
+        Title="MainWindow" Height="650" Width="1000" MinHeight="650" MinWidth="1000" AllowsTransparency="True" WindowStyle="None" Background="Transparent" Foreground="{Binding UIColors.Foreground}" FontSize="16" 
         FontFamily="./Resources/#SF Pro Rounded Regular" x:Name="T6WorkbenchMainWindow" DataContext="{x:Static local:MainViewModel.WorkbenchViewModel}">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="11" GlassFrameThickness="0" CornerRadius="10" UseAeroCaptionButtons="False" />
@@ -16,7 +16,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-            
+
             </ResourceDictionary.MergedDictionaries>
             <x:Static x:Key="empty" Member="sys:String.Empty" />
             <Visibility x:Key="Collapsed">Collapsed</Visibility>
@@ -25,30 +25,30 @@
             <sys:Boolean x:Key="BoolFalse">False</sys:Boolean>
             <WindowState x:Key="WndMaximized">Maximized</WindowState>
             <WindowState x:Key="WndNormal">Normal</WindowState>
-            <Style x:Key="ContextMenuStyle" TargetType="{x:Type ContextMenu}">
+            <Style TargetType="{x:Type ContextMenu}">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ContextMenu}">
-                            <Border Background="#232323" CornerRadius="8" Padding="5" Margin="5" MinWidth="200">
+                            <Border Background="{Binding UIColors.Gray4}" CornerRadius="8" Padding="5" Margin="5" MinWidth="200">
                                 <StackPanel IsItemsHost="True"/>
                             </Border>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </Style>
-            <Style x:Key="ContextMenuItemStyle" TargetType="{x:Type MenuItem}">
+            <Style TargetType="{x:Type MenuItem}">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type MenuItem}">
-                            <Border x:Name="BackGroundBorder" Background="#232323" CornerRadius="5" Padding="10,2,10,2" Margin="0">
+                            <Border x:Name="BackGroundBorder" Background="{Binding UIColors.Gray4}" CornerRadius="5" Padding="2,2,2,2" Margin="0">
                                 <StackPanel Orientation="Horizontal">
                                     <ContentPresenter ContentSource="Icon" RecognizesAccessKey="True"/>
-                                    <TextBlock Text="{TemplateBinding Header}" Foreground="{TemplateBinding Foreground}" FontSize="14" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{TemplateBinding Header}" Foreground="{TemplateBinding Foreground}" FontSize="14" Margin="5,0,5,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" TargetName="BackGroundBorder" Value="#2F2F2F"/>
+                                    <Setter Property="Background" TargetName="BackGroundBorder" Value="{Binding UIColors.Gray5}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -59,14 +59,14 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                            <Border x:Name="BackGroundBorder" Height="50" Background="#1D1D1D" Margin="2" CornerRadius="8" BorderThickness="2" BorderBrush="#1D1D1D">
+                            <Border x:Name="BackGroundBorder" Height="50" Background="{Binding UIColors.Gray2}" Margin="2" CornerRadius="8" BorderThickness="2" BorderBrush="{Binding UIColors.Gray2}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
-                                        <TextBlock x:Name="ProjNameLabel" Text="{TemplateBinding Content}" FontSize="16" Foreground="FloralWhite" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Last opened:" FontSize="16" Foreground="#606060" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="ProjNameLabel" Text="{TemplateBinding Content}" FontSize="16" Foreground="{Binding UIColors.Foreground}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Last opened:" FontSize="12" Foreground="{Binding UIColors.Gray6}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Grid>
                             </Border>
@@ -75,9 +75,9 @@
                                     <MultiTrigger.Conditions>
                                         <Condition Property="IsMouseOver" Value="True"/>
                                     </MultiTrigger.Conditions>
-                                    <Setter Property="Background" TargetName="BackGroundBorder" Value="#333"/>
-                                    <Setter Property="BorderBrush" TargetName="BackGroundBorder" Value="#3b3b3b"/>
-                                    <Setter Property="TextElement.Foreground" TargetName="ProjNameLabel" Value="White"/>
+                                    <Setter Property="Background" TargetName="BackGroundBorder" Value="{Binding UIColors.Gray5}"/>
+                                    <Setter Property="BorderBrush" TargetName="BackGroundBorder" Value="{Binding UIColors.Gray5}"/>
+                                    <Setter Property="TextElement.Foreground" TargetName="ProjNameLabel" Value="{Binding UIColors.Foreground}"/>
                                 </MultiTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -85,19 +85,19 @@
                 </Setter>
                 <Setter Property="ContextMenu">
                     <Setter.Value>
-                        <ContextMenu Style="{StaticResource ContextMenuStyle}">
-                            <MenuItem Header="Show in explorer" Style="{StaticResource ContextMenuItemStyle}" Foreground="FloralWhite">
+                        <ContextMenu>
+                            <MenuItem Header="Show in explorer" Foreground="{Binding UIColors.Foreground}">
                                 <MenuItem.Icon>
                                     <svg:SVGImage UriSource="./Resources/search-folder-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Hide from recents" Style="{StaticResource ContextMenuItemStyle}" Foreground="FloralWhite">
+                            <MenuItem Header="Hide from recents" Foreground="{Binding UIColors.Foreground}">
                                 <MenuItem.Icon>
                                     <svg:SVGImage UriSource="./Resources/eye-off-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </MenuItem.Icon>
                             </MenuItem>
 
-                            <MenuItem Header="Delete" Foreground="#FF8080" Style="{StaticResource ContextMenuItemStyle}">
+                            <MenuItem Header="Delete" Foreground="{Binding UIColors.Danger}">
                                 <MenuItem.Icon>
                                     <svg:SVGImage UriSource="./Resources/trash-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </MenuItem.Icon>
@@ -108,12 +108,33 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <Border Background="#151515" CornerRadius="10" Margin="5">
+    <Border Background="{Binding UIColors.Gray0}" CornerRadius="10" Margin="5">
         <Grid x:Name="MainGrid" Background="Transparent" MouseMove="MainGrid_MouseMove" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition x:Name="FooterRow" Height="0"/> <!--Just to fix the full screen displaying issues-->
+                <RowDefinition x:Name="FooterRow">
+                    <RowDefinition.Height>
+                        <MultiBinding Converter="{AMUI:ConvertersME Converter=Expression}" ConverterParameter="A = B">
+                            <Binding Path="WindowState" ElementName="T6WorkbenchMainWindow"/>
+                            <!-- A -->
+                            <Binding Source="{x:Static WindowState.Maximized}"/>
+                            <Binding>
+                                <!-- True value -->
+                                <Binding.Source>
+                                    <GridLength>50</GridLength>
+                                </Binding.Source>
+                            </Binding>
+                            <Binding>
+                                <!-- False value -->
+                                <Binding.Source>
+                                    <GridLength>0</GridLength>
+                                </Binding.Source>
+                            </Binding>
+                        </MultiBinding>
+                    </RowDefinition.Height>
+                </RowDefinition>
+                <!--Just to fix the full screen displaying issues-->
             </Grid.RowDefinitions>
             <Grid x:Name="ToolBarHead" Background="Transparent" Margin="5,5,5,0" MouseDown="ToolBarHead_MouseDown">
                 <Grid.ColumnDefinitions>
@@ -123,22 +144,148 @@
                 </Grid.ColumnDefinitions>
                 <Grid Background="Transparent" Grid.Column="0">
                     <StackPanel Orientation="Horizontal" Margin="10,0,0,0" Visibility="{AMUI:ConditionME IF={Binding SelectedIndex, ElementName=TabsControl}, ComparingMode=NotEquals, TO=0, Then={StaticResource Visible}, Else={StaticResource Collapsed}}">
-                        <AMUI:Button82 Accent82="#151515" Width="35" Height="35" Margin="5">
+                        <AMUI:Button82 x:Name="HideDockButton" Accent82="{Binding UIColors.Gray0}" Width="35" Height="35" Margin="5" Click="HideDockButton_Click">
                             <svg:SVGImage UriSource="./Resources/dock-left-svgrepo-com.svg" Width="18" Height="18" Margin="0,5,0,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </AMUI:Button82>
+                        <Border x:Name="ProjCardBorder" CornerRadius="8" Margin="5" Height="35" VerticalAlignment="Center">
+                            <Border.Background>
+                                <MultiBinding Converter="{AMUI:ConvertersME Converter=Expression}" ConverterParameter="A = B">
+                                    <Binding Path="IsChecked" ElementName="ProjDropdownMenuCheckBoxButton"/>
+                                    <!-- A -->
+                                    <Binding>
+                                        <Binding.Source>
+                                            <sys:Boolean>True</sys:Boolean>
+                                        </Binding.Source>
+                                    </Binding>
+                                    <Binding>
+                                        <!-- True value -->
+                                        <Binding.Source>
+                                            <SolidColorBrush Color="{Binding UIColors.Gray4}"/>
+                                        </Binding.Source>
+                                    </Binding>
+                                    <Binding>
+                                        <!-- False value -->
+                                        <Binding.Source>
+                                            <SolidColorBrush Color="Transparent"/>
+                                        </Binding.Source>
+                                    </Binding>
+                                </MultiBinding>
+                            </Border.Background>
+                            <StackPanel Orientation="Horizontal" Background="Transparent">
+                                <TextBlock Margin="10,5,5,5" Text="{AMUI:StringME InputString={Binding CurrentProject.ProjectPath, FallbackValue='No project open'}, MaxLength=25}" VerticalAlignment="Center" Foreground="{Binding UIColors.Foreground}" FontSize="16"/>
+                                <AMUI:CustomizableCheckBox82 x:Name="ProjDropdownMenuCheckBoxButton" Width="25" Height="25" Content="{x:Null}" Margin="5" Cursor="Hand" Foreground="{Binding UIColors.Gray6}" HorizontalContentAlignment="Center" OutlineThickness="5" IsChecked="False">
+                                    <AMUI:CustomizableCheckBox82.UncheckedContent>
+                                        <TextBlock Text="•••" FontSize="12" Foreground="{Binding UIColors.Gray6}" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    </AMUI:CustomizableCheckBox82.UncheckedContent>
+                                    <AMUI:CustomizableCheckBox82.CheckedContent>
+                                        <Viewbox Margin="6" Width="12" Height="12" RenderTransformOrigin="0.5,0.5">
+                                            <Viewbox.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform/>
+                                                    <SkewTransform/>
+                                                    <RotateTransform Angle="-180"/>
+                                                    <TranslateTransform/>
+                                                </TransformGroup>
+                                            </Viewbox.RenderTransform>
+                                            <Path Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center" Stroke="{Binding UIColors.Gray6}" StrokeThickness="2" StrokeLineJoin="Round" StrokeEndLineCap="Round" StrokeStartLineCap="Round" Data="M12.25 5.75 8 10.25l-4.25-4.5"/>
+                                        </Viewbox>
+                                    </AMUI:CustomizableCheckBox82.CheckedContent>
+                                </AMUI:CustomizableCheckBox82>
+                                <Popup Placement="Bottom" IsOpen="{Binding ElementName=ProjDropdownMenuCheckBoxButton, Path=IsChecked, Mode=TwoWay}" VerticalOffset="5" HorizontalAlignment="Center" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade" StaysOpen="False">
+                                    <Grid SnapsToDevicePixels="True" MinWidth="{Binding ElementName=ProjCardBorder,Path=ActualWidth}" MinHeight="70" MaxHeight="520">
+                                        <Border Background="{Binding UIColors.Gray4}" CornerRadius="8" Padding="5" Margin="0">
+                                            <StackPanel Orientation="Vertical" Margin="5">
+                                                <TextBlock Text="Project" Foreground="{Binding UIColors.Gray6}" FontSize="13" Margin="5"/>
+                                                <MenuItem Header="New project" Foreground="{Binding UIColors.Foreground}">
+                                                    <MenuItem.Icon>
+                                                        <svg:SVGImage UriSource="./Resources/add-file-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem Header="Open project" Foreground="{Binding UIColors.Foreground}">
+                                                    <MenuItem.Icon>
+                                                        <svg:SVGImage UriSource="./Resources/folder-open-svgrepo-com.svg" Width="16" Height="16" Margin="5,10,5,5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem Header="Show in explorer" Foreground="{Binding UIColors.Foreground}">
+                                                    <MenuItem.Icon>
+                                                        <svg:SVGImage UriSource="./Resources/search-folder-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem Header="Settings" Foreground="{Binding UIColors.Foreground}">
+                                                    <MenuItem.Icon>
+                                                        <svg:SVGImage UriSource="./Resources/gear-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+
+                                                <MenuItem Header="Delete" Foreground="{Binding UIColors.Danger}">
+                                                    <MenuItem.Icon>
+                                                        <svg:SVGImage UriSource="./Resources/trash-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <TextBlock Text="Workbench" Foreground="{Binding UIColors.Gray6}" FontSize="13" Margin="5"/>
+                                                <MenuItem Header="Home screen" Foreground="{Binding UIColors.Foreground}">
+                                                    <MenuItem.Icon>
+                                                        <svg:SVGImage UriSource="./Resources/blender-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem Header="Logs" Foreground="{Binding UIColors.Foreground}">
+                                                    <MenuItem.Icon>
+                                                        <svg:SVGImage UriSource="./Resources/search-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem Header="About" Foreground="{Binding UIColors.Foreground}">
+                                                    <MenuItem.Icon>
+                                                        <svg:SVGImage UriSource="./Resources/search-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                               
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </Popup>
+                               
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </Grid>
                 <Grid Background="Transparent" Grid.Column="1">
-                    <AMUI:TextBox82 x:Name="SearchTextBox"  Margin="5,5,5,5" HintText="Search through assets..." OutlineThickness="1" Background82="#171717" Accent82="#212121" EdgeRoundness="8" Visibility="{AMUI:ConditionME IF={Binding SelectedIndex, ElementName=TabsControl}, ComparingMode=NotEquals, TO=0, Then={StaticResource Visible}, Else={StaticResource Collapsed}}">
+                    <AMUI:TextBox82 x:Name="SearchTextBox"  Margin="5,5,5,5" HintText="Search through assets..." OutlineThickness="1" Background82="{Binding UIColors.Gray1}" Accent82="{Binding UIColors.Gray3}" EdgeRoundness="8" Visibility="{AMUI:ConditionME IF={Binding SelectedIndex, ElementName=TabsControl}, ComparingMode=NotEquals, TO=0, Then={StaticResource Visible}, Else={StaticResource Collapsed}}">
                         <AMUI:TextBox82.IconPlaceholder>
                             <svg:SVGImage UriSource="./Resources/search-svgrepo-com.svg" Width="16" Height="16" Margin="10,0,5,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </AMUI:TextBox82.IconPlaceholder>
                     </AMUI:TextBox82>
                 </Grid>
                 <Grid Grid.Column="2" Background="Transparent">
-                    <AMUI:Button82 Content="Build" Width="75" HorizontalAlignment="Left" Margin="5" Visibility="{AMUI:ConditionME IF={Binding SelectedIndex, ElementName=TabsControl}, ComparingMode=NotEquals, TO=0, Then={StaticResource Visible}, Else={StaticResource Collapsed}}"/>
+                    <AMUI:Button82 x:Name="BuildButton" Width="35" Height="35" HorizontalAlignment="Left" Margin="5" 
+                                   Visibility="{AMUI:ConditionME IF={Binding SelectedIndex, ElementName=TabsControl}, ComparingMode=NotEquals, TO=0, Then={StaticResource Visible}, Else={StaticResource Collapsed}}" 
+                                   EdgeRoundness="8" Accent82="{Binding UIColors.Gray1}" Border82="{Binding UIColors.Gray3}" OutlineThickness="1" ScaleUpOnHover="True" ScaleDownOnPress="True">
+                        <svg:SVGImage UriSource="./Resources/hammer-svgrepo-com.svg" Width="18" Height="18" Margin="0,2,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{Binding UIColors.AccentColor}"/>
+                    </AMUI:Button82>
+                    <Popup Placement="Bottom" IsOpen="{Binding ElementName=BuildButton, Path=IsChecked, Mode=TwoWay}" VerticalOffset="5" HorizontalAlignment="Center" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade" StaysOpen="False">
+                        <Grid SnapsToDevicePixels="True" MinWidth="220" MinHeight="70" MaxHeight="520">
+                            <Border Background="{Binding UIColors.Gray4}" CornerRadius="8" Padding="5" Margin="0">
+                                <StackPanel Orientation="Vertical" Margin="5">
+                                    <MenuItem Header="Build for T6" Foreground="{Binding UIColors.Foreground}">
+                                        <MenuItem.Icon>
+                                            <svg:SVGImage UriSource="./Resources/hammer-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{Binding UIColors.AccentColor}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Build for T6 Redacted" Foreground="{Binding UIColors.Foreground}">
+                                        <MenuItem.Icon>
+                                            <svg:SVGImage UriSource="./Resources/hammer-svgrepo-com.svg" Width="16" Height="16" Margin="5,10,5,5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{Binding UIColors.AccentColor}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Build for T6 Redacted Standalone" Foreground="{Binding UIColors.Foreground}">
+                                        <MenuItem.Icon>
+                                            <svg:SVGImage UriSource="./Resources/hammer-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{Binding UIColors.SuccessColor}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Popup>
                     <StackPanel x:Name="ControlButtons" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <AMUI:Button82 x:Name="MinimizeWindowButton" Width="45" Click="MinimizeWindowButton_Click" EdgeRoundness="5,0,0,5" Accent82="#FF151515" Border82="#FF141414" ScaleUpOnHover="False" ScaleDownOnPress="False">
+                        <AMUI:Button82 x:Name="MinimizeWindowButton" Width="45" Click="MinimizeWindowButton_Click" EdgeRoundness="5,0,0,5" Accent82="{Binding UIColors.Gray0}" Border82="{Binding UIColors.Gray0}" ScaleUpOnHover="False" ScaleDownOnPress="False">
                             <svg:SVGImage UriSource="./Resources/window-minimize-svgrepo-com.svg" Width="11" Height="11" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
                                 <svg:SVGImage.RenderTransform>
                                     <TransformGroup>
@@ -150,16 +297,16 @@
                                 </svg:SVGImage.RenderTransform>
                             </svg:SVGImage>
                         </AMUI:Button82>
-                        <AMUI:Button82 x:Name="MaximizeWindowButton" Width="45" Click="MaximizeWindowButton_Click" EdgeRoundness="0,0,0,0" Accent82="#FF151515" Border82="#FF141414" ScaleUpOnHover="False" ScaleDownOnPress="False">
+                        <AMUI:Button82 x:Name="MaximizeWindowButton" Width="45" Click="MaximizeWindowButton_Click" EdgeRoundness="0,0,0,0" Accent82="{Binding UIColors.Gray0}" Border82="{Binding UIColors.Gray0}" ScaleUpOnHover="False" ScaleDownOnPress="False">
                             <svg:SVGImage UriSource="./Resources/window-maximize-svgrepo-com.svg" Width="11" Height="11" Margin="0,3,0,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </AMUI:Button82>
-                        <AMUI:Button82 x:Name="CloseWindowButton"    Width="45" Click="CloseWindowButton_Click"    EdgeRoundness="0,5,5,0" Accent82="#FF151515" Border82="#FF141414" ScaleUpOnHover="False" ScaleDownOnPress="False">
+                        <AMUI:Button82 x:Name="CloseWindowButton"    Width="45" Click="CloseWindowButton_Click"    EdgeRoundness="0,5,5,0" Accent82="{Binding UIColors.Gray0}" Border82="{Binding UIColors.Gray0}" ScaleUpOnHover="False" ScaleDownOnPress="False">
                             <svg:SVGImage UriSource="./Resources/xmark-svgrepo-com.svg" Width="11" Height="11" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </AMUI:Button82>
                     </StackPanel>
                 </Grid>
             </Grid>
-            <TabControl x:Name="TabsControl" Grid.Row="1" Background="#181818" BorderThickness="0" SelectedIndex="0" TabStripPlacement="Left">
+            <TabControl x:Name="TabsControl" Grid.Row="1" Background="{Binding UIColors.Gray0}" BorderThickness="0" SelectedIndex="1" TabStripPlacement="Bottom">
                 <TabItem x:Name="HomeTab" Header="Home" Visibility="Visible">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -171,32 +318,44 @@
                             <RowDefinition/>
                             <RowDefinition Height="0.1*"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="No recent projects" Foreground="#808080" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,50,0" Grid.RowSpan="2"/>
-                        <ListBox x:Name="RecentProjectsListBox" HorizontalAlignment="Right" MinWidth="300" MaxHeight="400"
-                                  Margin="0,0,20,0" Grid.RowSpan="2" VerticalAlignment="Center" 
-                                  Background="Transparent" BorderThickness="0"
-                                  ItemContainerStyle="{DynamicResource RecentProjectListViewItemStyle}" Foreground="White">
-                            <ListBoxItem Content="New project"/>
-                            <ListBoxItem Content="My test project"/>
-                            <ListBoxItem Content="My test project"/>
-                            <ListBoxItem Content="My test project"/>
-                            <ListBoxItem Content="dfsdfdsfdsfsdfdsfsadfsadffsadg"/>
-                            <ListBoxItem Content="dfsdfdsfdsfsdfdsfsadfsadffsadg"/>
-                            <ListBoxItem Content="dfsdfdsfdsfsdfdsfsadfsadffsadg"/>
+                        <TextBlock Text="No recent projects" Foreground="{Binding UIColors.Gray5}" FontSize="16" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,50,0" Grid.RowSpan="2">
+                            <TextBlock.Visibility>
+                                <MultiBinding Converter="{AMUI:ConvertersME Converter=Expression}" ConverterParameter="A = 0">
+                                    <Binding Path="RecentProjects.Count"/>
+                                    <!-- A -->
+                                    <Binding>
+                                        <!-- True value -->
+                                        <Binding.Source>
+                                            <Visibility>Visible</Visibility>
+                                        </Binding.Source>
+                                    </Binding>
+                                    <Binding>
+                                        <!-- False value -->
+                                        <Binding.Source>
+                                            <Visibility>Collapsed</Visibility>
+                                        </Binding.Source>
+                                    </Binding>
+                                </MultiBinding>
+                            </TextBlock.Visibility>
+                        </TextBlock>
+                        <ListBox x:Name="RecentProjectsListBox" HorizontalAlignment="Right" MinWidth="300" MaxHeight="400" Margin="0,0,20,0" Grid.RowSpan="2" VerticalAlignment="Center" 
+                                  Background="Transparent" BorderThickness="0" ItemContainerStyle="{DynamicResource RecentProjectListViewItemStyle}" Foreground="White">
+                            <ListBoxItem>Huy</ListBoxItem>
                         </ListBox>
-                        
-                        <Border Width="3" Grid.Column="1" Height="400" Background="#1a1a1a" Grid.RowSpan="3" VerticalAlignment="Center"/> <!--divider-->
+
+                        <Border Width="3" Grid.Column="1" Height="400" Background="{Binding UIColors.Gray1}" Grid.RowSpan="3" VerticalAlignment="Center"/>
+                        <!--divider-->
                         <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Left" Margin="20,0,0,0" Grid.RowSpan="2">
-                            <AMUI:Button82 x:Name="NewProjButton" Height="125" Width="125" Margin="5" Accent82="#1D1D1D" Border82="#1D1D1D" ScaleUpOnHover="True" ScaleDownOnPress="True" EdgeRoundness="10" ScaleUpAmount="105" ScaleUpAnimDuration="200">
+                            <AMUI:Button82 x:Name="NewProjButton" Height="125" Width="125" Margin="5" Accent82="{Binding UIColors.Gray2}" Border82="{Binding UIColors.Gray2}" ScaleUpOnHover="True" ScaleDownOnPress="True" EdgeRoundness="10" ScaleUpAmount="105" ScaleUpAnimDuration="200">
                                 <StackPanel>
                                     <svg:SVGImage UriSource="./Resources/add-file-svgrepo-com.svg" Width="45" Height="45" Margin="12,5,5,10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    <TextBlock Text="New project" Foreground="FloralWhite" FontSize="16"/>
+                                    <TextBlock Text="New project" Foreground="{Binding UIColors.Foreground}" FontSize="16"/>
                                 </StackPanel>
                             </AMUI:Button82>
-                            <AMUI:Button82 x:Name="OpenProjButton" Height="125" Width="125" Margin="5" Accent82="#1D1D1D" Border82="#1D1D1D" ScaleUpOnHover="True" ScaleDownOnPress="True" EdgeRoundness="10" ScaleUpAmount="105" ScaleUpAnimDuration="200">
+                            <AMUI:Button82 x:Name="OpenProjButton" Height="125" Width="125" Margin="5" Accent82="{Binding UIColors.Gray2}" Border82="{Binding UIColors.Gray2}" ScaleUpOnHover="True" ScaleDownOnPress="True" EdgeRoundness="10" ScaleUpAmount="105" ScaleUpAnimDuration="200" Click="OpenProjButton_Click">
                                 <StackPanel>
                                     <svg:SVGImage UriSource="./Resources/folder-open-svgrepo-com.svg" Width="55" Height="55" Margin="12,5,5,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Open project" Foreground="FloralWhite" FontSize="16"/>
+                                    <TextBlock Text="Open project" Foreground="{Binding UIColors.Foreground}" FontSize="16"/>
                                 </StackPanel>
                             </AMUI:Button82>
 
@@ -204,25 +363,40 @@
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="MainTab" Header="Main" Visibility="Visible">
-                    <Grid x:Name="MainTabGrid" Background="Transparent" SizeChanged="MainTabGrid_SizeChanged">
+                    <Grid x:Name="MainTabGrid" Background="Transparent">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition x:Name="LeftColumn" Width="0.3*"/>
-                            <ColumnDefinition Width="5"/>  <!--Splitter-->
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto">
+                                <ColumnDefinition.MinWidth>
+                                    <MultiBinding Converter="{AMUI:ExpressionConverter ReturnValue=True}" ConverterParameter="300 * A">
+                                        <Binding ElementName="TreeViewDock" Path="IsVisible" />
+                                    </MultiBinding>
+                                </ColumnDefinition.MinWidth>
+                                <ColumnDefinition.MaxWidth>
+                                    <MultiBinding Converter="{AMUI:ExpressionConverter ReturnValue=True}" ConverterParameter="(A - B) * 0.5 * C">
+                                        <Binding ElementName="MainTabGrid" Path="ActualWidth" />
+                                        <Binding ElementName="MainTabGridSplitter" Path="ActualWidth" />
+                                        <Binding ElementName="TreeViewDock" Path="IsVisible" />
+                                    </MultiBinding>
+                                </ColumnDefinition.MaxWidth>
+
+                            </ColumnDefinition>
+                            <ColumnDefinition Width="Auto"/>
+                            <!--Splitter-->
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Grid Background="#171717" Grid.Column="0">
+                        <Grid x:Name="TreeViewDock" Background="{Binding UIColors.Gray1}" Grid.Column="0">
                             <!--Tree view-->
                         </Grid>
-                        <GridSplitter x:Name="MainTabGridSplitter" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#171717" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" />
-                        <Grid Background="Transparent" Grid.Column="2">
+                        <GridSplitter x:Name="MainTabGridSplitter" Visibility="{Binding ElementName=TreeViewDock, Path=Visibility}" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{Binding UIColors.Gray1}" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" />
+                        <Grid Background="{Binding UIColors.Gray2}" Grid.Column="2">
                             <!--Viewport-->
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50"/>
                                 <RowDefinition/>
                                 <RowDefinition Height="50"/>
                             </Grid.RowDefinitions>
-                            <Border Margin="5,5,20,5" HorizontalAlignment="Right" Grid.Row="2" Background="#212121" BorderBrush="#2b2b2b" BorderThickness="1" MinWidth="100" CornerRadius="8">
-                                <TextBlock Text="Status: Ready" Foreground="FloralWhite" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
+                            <Border Margin="5,5,20,5" HorizontalAlignment="Right" Grid.Row="2" Background="{Binding UIColors.Gray4}" BorderBrush="{Binding UIColors.Gray5}" BorderThickness="1" MinWidth="100" CornerRadius="8">
+                                <TextBlock Text="Status: Ready" Foreground="{Binding UIColors.Foreground}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
                             </Border>
                         </Grid>
                     </Grid>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Media.Imaging;
@@ -24,12 +24,6 @@ namespace T6_Workbench
 
         internal static string CompareEditedGeometry(string edited, string rebuilt) =>
             GlbHelpers.CompareEditedGeometry(edited, rebuilt);
-
-        internal static string CompareWithAddedMesh(string edited, string roundtrip) =>
-            GlbHelpers.CompareWithAddedMesh(edited, roundtrip);
-
-        internal static bool HasFloatingTestAddition(string file) => GlbHelpers.HasFloatingTestAddition(file);
-        internal static void EditFirstPosition(string file, float amount) => GlbHelpers.EditFirstPosition(file, amount);
     }
 
     /// <summary>Contains normalized GLB bytes and the import changes made by the normalizer.</summary>
@@ -39,6 +33,7 @@ namespace T6_Workbench
         {
             get; private set;
         }
+
         public string[] Changes
         {
             get; private set;

@@ -30,6 +30,7 @@ namespace T6_Workbench
             if (unsupported.Length > 0)
                 throw new NotSupportedException(EnglishText.Text("Weapon GLB contains glTF extensions that are not yet supported: ") + string.Join(", ", unsupported));
             foreach (string key in new[] { "extensionsUsed", "extensionsRequired" })
+            {
                 if (weapon.Json[key] is JsonArray declared && declared.Count > 0)
                 {
                     var combined = Array(hands.Json, key);
@@ -37,16 +38,20 @@ namespace T6_Workbench
                     foreach (var item in declared)
                     {
                         string name = item.GetValue<string>();
-                        if (existing.Add(name)) 
-                            combined.Add(name);
+                        if (existing.Add(name))
+        {
+            combined.Add(name);
+        }
                     }
                 }
+            }
             if (weapon.Json["animations"] is JsonArray animations && animations.Count > 0)
                 throw new NotSupportedException(EnglishText.Text("Weapon GLB must contain a model without its own animations."));
             JsonArray handsNodes = Array(hands.Json, "nodes");
             JsonArray weaponNodes = Array(weapon.Json, "nodes");
             int mount = -1;
             for (int i = 0; i < handsNodes.Count; i++)
+            {
                 if (string.Equals((string)handsNodes[i]?["name"], "tag_weapon", StringComparison.OrdinalIgnoreCase))
                 {
                     if (mount >= 0)
@@ -55,6 +60,7 @@ namespace T6_Workbench
                     }
                     mount = i;
                 }
+            }
             if (mount < 0)
             {
                 throw new InvalidDataException(EnglishText.Text("Hands model is missing tag_weapon for attaching the weapon."));
@@ -160,7 +166,9 @@ namespace T6_Workbench
                 Shift(node, "mesh", meshOffset);
                 Shift(node, "skin", skinOffset);
                 if (node["children"] is JsonArray children)
+                {
                     ShiftArray(children, nodeOffset);
+                }
                 handsNodes.Add(node);
             }
             int scene = (int?)weapon.Json["scene"] ?? 0;
@@ -170,8 +178,9 @@ namespace T6_Workbench
             JsonArray weaponSceneRoots = Array(scenes[scene].AsObject(), "nodes");
             WeaponGripAlignment alignment = attachment ? new WeaponGripAlignment(Matrix4x4.CreateTranslation(offsetX, offsetZ, -offsetY), "weapon origin", false) : XAnimWeaponPreviewHelpers.FindGripAlignment(weapon.Json, weaponSceneRoots);
             if (!attachment && alignment.AnchorName == "scene root")
+            {
                 warning?.Invoke(EnglishText.Text("Weapon GLB has no j_gun pivot or workbench_weapon_grip point; the weapon scene origin was used."));
-
+            }
             // T6 viewmodels attach the weapon pivot to tag_weapon; finger helper bones can move away from the grip.
             if (attachment)
             {
@@ -187,7 +196,6 @@ namespace T6_Workbench
                 attachmentChildren = new JsonArray();
                 attachmentNode["children"] = attachmentChildren;
             }
-
             var fittedWeaponNode = new JsonObject
             {
                 ["name"] = attachment ? "workbench_weapon_attachment" : "workbench_weapon_grip_alignment",
@@ -207,16 +215,23 @@ namespace T6_Workbench
             Write(animatedPath, hands.Json, binary);
             return nodeOffset;
         }
+
         static void Shift(JsonObject value, string property, int offset)
         {
             if (value?[property] != null)
+            {
                 value[property] = value[property].GetValue<int>() + offset;
+            }
         }
+
         static void ShiftArray(JsonArray values, int offset)
         {
             for (int i = 0; i < values.Count; i++)
+            {
                 values[i] = values[i].GetValue<int>() + offset;
+            }
         }
+
         static void ShiftAttributeMap(JsonObject map, int offset)
         {
             if (map == null)
@@ -226,15 +241,20 @@ namespace T6_Workbench
                 Shift(map, key, offset);
             }
         }
+
         static void ShiftTextureReferences(JsonNode node, int offset)
         {
             if (node is JsonObject obj)
+            {
                 foreach (var pair in obj.ToArray())
                 {
                     if (pair.Key.EndsWith("Texture", StringComparison.Ordinal) && pair.Value is JsonObject texture)
+                    {
                         Shift(texture, "index", offset);
+                    }
                     ShiftTextureReferences(pair.Value, offset);
                 }
+            }
             else if (node is JsonArray array)
             {
                 foreach (var child in array)
@@ -243,6 +263,7 @@ namespace T6_Workbench
                 }
             }
         }
+
         static JsonArray Array(JsonObject value, string key)
         {
             if (value[key] is JsonArray result)
@@ -251,6 +272,7 @@ namespace T6_Workbench
             value[key] = array;
             return array;
         }
+
         static HashSet<int> FindNormalImageIndices(JsonObject root)
         {
             var result = new HashSet<int>();
@@ -259,8 +281,10 @@ namespace T6_Workbench
             {
                 foreach (var normal in new[] { material["normalTexture"], material["extensions"]?["KHR_materials_clearcoat"]?["clearcoatNormalTexture"] }.OfType<JsonObject>())
                 {
-                    if (normal["index"] == null) 
+                    if (normal["index"] == null)
+                    {
                         continue;
+                    }
                     int textureIndex = normal["index"].GetValue<int>();
                     if ((uint)textureIndex < textures.Count && textures[textureIndex]?["source"] != null)
                     {
@@ -270,6 +294,7 @@ namespace T6_Workbench
             }
             return result;
         }
+
         static string PlaceholderImage(bool normal)
         {
             byte[] pixel = normal ? new byte[] { 255, 128, 128, 255 } : new byte[] { 255, 255, 255, 255 };
@@ -282,6 +307,7 @@ namespace T6_Workbench
                 return "data:image/png;base64," + Convert.ToBase64String(stream.ToArray());
             }
         }
+
         static void EmbedImage(JsonObject image, string weaponPath, WorkbenchProject project)
         {
             string uri = (string)image["uri"];
@@ -322,7 +348,20 @@ namespace T6_Workbench
                 throw new NotSupportedException(EnglishText.Text("Weapon texture format is not supported: ") + extension);
             image["uri"] = "data:" + mime + ";base64," + Convert.ToBase64String(bytes);
         }
-        sealed class Glb { public JsonObject Json { get; set; } public byte[] Binary { get; set; } public Glb(JsonObject Json, byte[] Binary) { this.Json = Json; this.Binary = Binary; } }
+
+        sealed class Glb
+        {
+            public JsonObject Json { get; set; }
+
+            public byte[] Binary { get; set; }
+
+            public Glb(JsonObject Json, byte[] Binary)
+            {
+                this.Json = Json;
+                this.Binary = Binary;
+            }
+        }
+
         static Glb Read(string path)
         {
             byte[] bytes = File.ReadAllBytes(path);
@@ -340,6 +379,7 @@ namespace T6_Workbench
                 throw new InvalidDataException(EnglishText.Text("GLB must contain one embedded buffer."));
             return new Glb(json, bytes.AsSpan(pos + 8, length).ToArray());
         }
+
         static void Write(string path, JsonObject json, byte[] binary)
         {
             byte[] text = Encoding.UTF8.GetBytes(json.ToJsonString());
@@ -355,12 +395,16 @@ namespace T6_Workbench
                     writer.Write(0x4e4f534au);
                     writer.Write(text);
                     for (int i = text.Length; i < textLength; i++)
+                    {
                         writer.Write((byte)32);
+                    }
                     writer.Write(binLength);
                     writer.Write(0x004e4942u);
                     writer.Write(binary);
                     for (int i = binary.Length; i < binLength; i++)
+                    {
                         writer.Write((byte)0);
+                    }
                 }
             }
         }

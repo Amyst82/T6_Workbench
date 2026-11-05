@@ -11,7 +11,9 @@ namespace T6_Workbench
     internal sealed class OpenFolderDialog
     {
         public string Title { get; set; } = "Select folder";
+
         public string InitialDirectory { get; set; } = "";
+
         public string FolderName { get; private set; } = "";
 
         /// <summary>Wrap the framework folder dialog and keep ownership with the calling WPF window.</summary>

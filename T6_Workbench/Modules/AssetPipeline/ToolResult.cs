@@ -10,6 +10,7 @@ namespace T6_Workbench
     public sealed class ToolResult
     {
         public int ExitCode { get; set; }
+
         public string Output { get; set; }
 
         public ToolResult(int ExitCode, string Output)

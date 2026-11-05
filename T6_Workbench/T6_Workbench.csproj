@@ -110,14 +110,10 @@
     <Compile Include="Modules\AssetPipeline\ComparisonEntry.cs" />
     <Compile Include="Modules\AssetPipeline\ExportRequest.cs" />
     <Compile Include="Modules\AssetPipeline\FullRoundTrip.cs" />
-    <Compile Include="Modules\AssetPipeline\LocalTestPackage.cs" />
     <Compile Include="Modules\AssetPipeline\LosslessContainer.cs" />
     <Compile Include="Modules\AssetPipeline\OatService.cs" />
     <Compile Include="Modules\AssetPipeline\OperationResult.cs" />
-    <Compile Include="Modules\AssetPipeline\RoundTripRequest.cs" />
-    <Compile Include="Modules\AssetPipeline\RoundTrips.cs" />
     <Compile Include="Modules\AssetPipeline\StandaloneRedactedBuild.cs" />
-    <Compile Include="Modules\AssetPipeline\TestOutcome.cs" />
     <Compile Include="Modules\AssetPipeline\ToolResult.cs" />
     <Compile Include="Modules\AssetPipeline\ToolRunner.cs" />
     <Compile Include="Modules\AssetPipeline\Workspace.cs" />
@@ -146,6 +142,7 @@
     <Compile Include="ViewModels\PreviewCameraState.cs" />
     <Compile Include="ViewModels\ProjectSessionViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
+    <Compile Include="ViewModels\UIColors.cs" />
     <Compile Include="ViewModels\WorkbenchOperationStatus.cs" />
     <Compile Include="ViewModels\WorkbenchSettingsViewModel.cs" />
     <Compile Include="ViewModels\WorkbenchViewModel.cs" />
@@ -179,6 +176,7 @@
     <Content Include="OAT\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="resources\hammer-svgrepo-com.svg" />
     <Content Include="resources\images\c_chn_mp_pla_lower_n.dds" />
     <Content Include="resources\images\c_mul_mp_pmc_glasses_n.dds" />
     <Content Include="resources\images\c_usa_mp_fbi_armor_vest_n.dds" />

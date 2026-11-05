@@ -1,4 +1,4 @@
-﻿using AMUI;
+using AMUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,41 +9,71 @@ namespace T6_Workbench
     public class WorkbenchSettingsViewModel : BaseViewModel
     {
         string oatToolsFolder = "";
+
         string outputFolder = "";
+
         string captureFile = "";
+
         string redactedTemplateFile = "";
+
         string gameFolder = "";
+
         string gameFastfile = "";
+
         string browserFastfile = "";
+
         string includeAssets = "";
+
         string zoneFile = "";
+
         string assetsFolder = "";
+
         string basesFolder = "";
+
         string dumpFolder = "";
+
         string editsFolder = "";
+
         string runFolder = "";
-        string zoneAuthProbeFile = "";
+
         string textureOutputFolder = "";
+
         string blenderExecutable = "";
 
-        public WorkbenchSettingsViewModel() { }
+        public WorkbenchSettingsViewModel()
+        {
+        }
 
         public string OatToolsFolder { get => oatToolsFolder; set => SetProperty(ref oatToolsFolder, value ?? ""); }
+
         public string OutputFolder { get => outputFolder; set => SetProperty(ref outputFolder, value ?? ""); }
+
         public string CaptureFile { get => captureFile; set => SetProperty(ref captureFile, value ?? ""); }
+
         public string RedactedTemplateFile { get => redactedTemplateFile; set => SetProperty(ref redactedTemplateFile, value ?? ""); }
+
         public string GameFolder { get => gameFolder; set => SetProperty(ref gameFolder, value ?? ""); }
+
         public string GameFastfile { get => gameFastfile; set => SetProperty(ref gameFastfile, value ?? ""); }
+
         public string BrowserFastfile { get => browserFastfile; set => SetProperty(ref browserFastfile, value ?? ""); }
+
         public string IncludeAssets { get => includeAssets; set => SetProperty(ref includeAssets, value ?? ""); }
+
         public string ZoneFile { get => zoneFile; set => SetProperty(ref zoneFile, value ?? ""); }
+
         public string AssetsFolder { get => assetsFolder; set => SetProperty(ref assetsFolder, value ?? ""); }
+
         public string BasesFolder { get => basesFolder; set => SetProperty(ref basesFolder, value ?? ""); }
+
         public string DumpFolder { get => dumpFolder; set => SetProperty(ref dumpFolder, value ?? ""); }
+
         public string EditsFolder { get => editsFolder; set => SetProperty(ref editsFolder, value ?? ""); }
+
         public string RunFolder { get => runFolder; set => SetProperty(ref runFolder, value ?? ""); }
-        public string ZoneAuthProbeFile { get => zoneAuthProbeFile; set => SetProperty(ref zoneAuthProbeFile, value ?? ""); }
+
         public string TextureOutputFolder { get => textureOutputFolder; set => SetProperty(ref textureOutputFolder, value ?? ""); }
+
         public string BlenderExecutable { get => blenderExecutable; set => SetProperty(ref blenderExecutable, value ?? ""); }
 
         [JsonIgnore]
@@ -67,7 +97,6 @@ namespace T6_Workbench
                 case "DumpBox": DumpFolder = value; break;
                 case "EditBox": EditsFolder = value; break;
                 case "RunBox": RunFolder = value; break;
-                case "ProbeBox": ZoneAuthProbeFile = value; break;
                 case "TextureOutputPathBox": TextureOutputFolder = value; break;
                 case "BlenderBox": BlenderExecutable = value; break;
             }
@@ -89,19 +118,28 @@ namespace T6_Workbench
             ["DumpBox"] = DumpFolder,
             ["EditBox"] = EditsFolder,
             ["RunBox"] = RunFolder,
-            ["ProbeBox"] = ZoneAuthProbeFile,
             ["TextureOutputPathBox"] = TextureOutputFolder,
             ["BlenderBox"] = BlenderExecutable
         };
 
         internal void CopyFrom(WorkbenchSettingsViewModel other)
         {
-            OatToolsFolder = other.OatToolsFolder; OutputFolder = other.OutputFolder; CaptureFile = other.CaptureFile;
-            RedactedTemplateFile = other.RedactedTemplateFile; GameFolder = other.GameFolder; GameFastfile = other.GameFastfile;
-            BrowserFastfile = other.BrowserFastfile; IncludeAssets = other.IncludeAssets; ZoneFile = other.ZoneFile;
-            AssetsFolder = other.AssetsFolder; BasesFolder = other.BasesFolder; DumpFolder = other.DumpFolder;
-            EditsFolder = other.EditsFolder; RunFolder = other.RunFolder; ZoneAuthProbeFile = other.ZoneAuthProbeFile;
-            TextureOutputFolder = other.TextureOutputFolder; BlenderExecutable = other.BlenderExecutable;
+            OatToolsFolder = other.OatToolsFolder;
+            OutputFolder = other.OutputFolder;
+            CaptureFile = other.CaptureFile;
+            RedactedTemplateFile = other.RedactedTemplateFile;
+            GameFolder = other.GameFolder;
+            GameFastfile = other.GameFastfile;
+            BrowserFastfile = other.BrowserFastfile;
+            IncludeAssets = other.IncludeAssets;
+            ZoneFile = other.ZoneFile;
+            AssetsFolder = other.AssetsFolder;
+            BasesFolder = other.BasesFolder;
+            DumpFolder = other.DumpFolder;
+            EditsFolder = other.EditsFolder;
+            RunFolder = other.RunFolder;
+            TextureOutputFolder = other.TextureOutputFolder;
+            BlenderExecutable = other.BlenderExecutable;
         }
 
         internal WorkbenchSettingsViewModel Clone()

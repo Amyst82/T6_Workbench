@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +17,7 @@ namespace T6_Workbench
     internal sealed class FullRoundTrip
     {
         private readonly Action<string> _log;
+
         private readonly ToolRunner _runner;
 
         internal FullRoundTrip(Action<string> log = null)
@@ -169,11 +170,17 @@ namespace T6_Workbench
                         var lodFile = lod.GetProperty("file").GetString();
                         var lodInAssets = Path.Combine(modelAssets, lodFile.Replace('/', Path.DirectorySeparatorChar));
                         if (File.Exists(lodInAssets))
+                        {
                             continue;
+                        }
                         if (File.Exists(Path.Combine(original, lodFile.Replace('/', Path.DirectorySeparatorChar))))
+                        {
                             CopyFile(original, modelAssets, lodFile);
+                        }
                         else if (File.Exists(Path.Combine(request.EditedAssetsRoot, lodFile.Replace('/', Path.DirectorySeparatorChar))))
+                        {
                             CopyFile(request.EditedAssetsRoot, modelAssets, lodFile);
+                        }
                         else
                             throw new FileNotFoundException(EnglishText.Text("GLB LOD not found."), lodFile);
                     }
@@ -190,7 +197,9 @@ namespace T6_Workbench
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
             foreach (var materialEdit in editedByRelative.Keys.Where(path =>
                          path.StartsWith("materials/", StringComparison.OrdinalIgnoreCase) && path.EndsWith(".json", StringComparison.OrdinalIgnoreCase)))
+            {
                 knownMaterials.Add(materialEdit.Substring("materials/".Length, materialEdit.Length - "materials/".Length - ".json".Length));
+            }
             await PrepareModelDependencies(modelAssets, original, request, knownMaterials, cancellation);
             // Model comparison rebuilds only xmodel roots. Use T6 game base zones for stock material references.
             // Do not load the source Redacted FF here: this diagnostic zone has a different name and cannot reuse
@@ -199,8 +208,7 @@ namespace T6_Workbench
             var modelBuild = await Link(modelDir, modelAssets, modelSource, modelsName, request, overlayBases, cancellation);
             modelBuild.RequireSuccess();
             var modelFf = Path.Combine(modelDir, "zone", modelsName + ".ff");
-            var modelDump = await Dump(modelDir, modelFf, request, "xmodel", cancellation,
-                useGameSearchPaths: true);
+            var modelDump = await Dump(modelDir, modelFf, request, "xmodel", cancellation, useGameSearchPaths: true);
             var modelFiles = Directory.GetFiles(modelAssets, "*", SearchOption.AllDirectories)
                 .Select(file => Helpers.GetRelativePath(modelAssets, file).Replace('\\', '/'))
                 .Where(relative => relative.StartsWith("xmodel/", StringComparison.OrdinalIgnoreCase) || relative.StartsWith("model_export/", StringComparison.OrdinalIgnoreCase))
@@ -216,7 +224,6 @@ namespace T6_Workbench
                 binary = BinaryComparison(sourceCopy, modelFf, "Models-only zone: not a reconstruction of the entire source FF")
             });
             _log?.Invoke(EnglishText.Format("All models: {0}/{1} files verified.", models.Count(c => c.Status == "PASS"), models.Count));
-
             // Preserve source exports. Conversion and build happen only on a new project copy.
             var fullDir = Path.Combine(run, "full-patch");
             var fullAssets = Path.Combine(fullDir, "assets");
@@ -276,8 +283,7 @@ namespace T6_Workbench
             if (selectedDir != null)
             {
                 var rebuilt = Path.Combine(selectedDir, "zone", nameFull + ".ff");
-                var fullDump = await Dump(selectedDir, rebuilt, request, "", cancellation,
-                    useGameSearchPaths: addedModelNames.Count > 0);
+                var fullDump = await Dump(selectedDir, rebuilt, request, "", cancellation, useGameSearchPaths: addedModelNames.Count > 0);
                 var comparisonOverrides = editedByRelative.Where(item => !item.Key.EndsWith(".iwi", StringComparison.OrdinalIgnoreCase)) .ToDictionary(item => item.Key, item => item.Value, StringComparer.OrdinalIgnoreCase);
                 var comparisonFiles = Directory.GetFiles(original, "*", SearchOption.AllDirectories)
                     .Select(file => Helpers.GetRelativePath(original, file).Replace('\\', '/'))
@@ -311,22 +317,23 @@ namespace T6_Workbench
                         File.Copy(iwi, destination);
                         generatedLooseIwi++;
                         if (sourceCandidates.Length == 0)
+                        {
                             sourceLooseIwiUnavailable++;
+                        }
                         else
+                        {
                             changedLooseIwiPayload++;
+                        }
                     }
                 }
                 var looseIwiChecks = editedByRelative.Where(item => item.Key.EndsWith(".iwi", StringComparison.OrdinalIgnoreCase)).Select(item =>
-                    {
-                        var releaseIwi = Path.Combine(release, "data", item.Key.Replace('/', Path.DirectorySeparatorChar));
-                        var passed = File.Exists(releaseIwi) && Workspace.Hash(item.Value) == Workspace.Hash(releaseIwi);
-                        return new ComparisonEntry(item.Key, passed ? "PASS" : "FAIL", passed ? "Loose IWI SHA-256 preserved in release." : "Loose IWI is missing or changed in release.");
-                    });
-                fullComparison = fullComparison.Concat(looseIwiChecks).ToArray();
-                Workspace.WriteJson(Path.Combine(selectedDir, "comparison.json"), new
                 {
-                    files = fullComparison
+                    var releaseIwi = Path.Combine(release, "data", item.Key.Replace('/', Path.DirectorySeparatorChar));
+                    var passed = File.Exists(releaseIwi) && Workspace.Hash(item.Value) == Workspace.Hash(releaseIwi);
+                    return new ComparisonEntry(item.Key, passed ? "PASS" : "FAIL", passed ? "Loose IWI SHA-256 preserved in release." : "Loose IWI is missing or changed in release.");
                 });
+                fullComparison = fullComparison.Concat(looseIwiChecks).ToArray();
+                Workspace.WriteJson(Path.Combine(selectedDir, "comparison.json"), new { files = fullComparison});
                 binary = BinaryComparison(sourceCopy, rebuilt, "Redacted source versus Redacted reconstruction; opaque signature retained, not verified");
                 Workspace.WriteJson(Path.Combine(selectedDir, "binary-comparison.json"), binary);
                 var originalList = await _runner.RunAsync(Path.Combine(request.BinDirectory, "Unlinker.exe"),
@@ -358,17 +365,11 @@ namespace T6_Workbench
                 {
                     GlbModule.Compare(Path.Combine(modelAssets, entry.File), Path.Combine(modelDump, entry.File), (semantic, delta) => deltas[semantic] = Math.Max(deltas.GetValueOrDefault(semantic), delta), measureOnly: true);
                 }
-                catch (Exception ex) 
-                { 
-                    structuralError = ex.Message; 
-                }
-                numericReports.Add(new
+                catch (Exception ex)
                 {
-                    entry.File,
-                    maxDeltaBySemantic = deltas,
-                    structuralError,
-                    status = "MEASURED; original strict failure retained"
-                });
+                    structuralError = ex.Message;
+                }
+                numericReports.Add(new { entry.File, maxDeltaBySemantic = deltas, structuralError, status = "MEASURED; original strict failure retained"});
             }
             Workspace.WriteJson(Path.Combine(modelDir, "numeric-differences.json"), numericReports);
             bool unchanged = Workspace.Hash(request.Fastfile) == originalHash;
@@ -389,7 +390,7 @@ namespace T6_Workbench
             }
             if (editedByRelative.Count > 0)
             {
-                remarks.Add(EnglishText.Format("Edits applied to {0} exported assets; visual results have not been tested in a match.", editedByRelative.Count));
+                remarks.Add(EnglishText.Format("Edits applied to {0} exported assets; visual results in a live match are outside this offline build verification.", editedByRelative.Count));
             }
             Workspace.WriteJson(Path.Combine(run, "report.json"), new
             {
@@ -421,7 +422,7 @@ namespace T6_Workbench
                     pixelPayloadChanged = changedLooseIwiPayload
                 },
                 container = "Redacted 0x1337; chunks at 0x138; loose IWI; opaque source signature NOT verified",
-                limitations = "No live game test; full source binary/internal XModel fields are not guaranteed equal by GLB comparison",
+                limitations = "Live game behavior and full source binary/internal XModel fields are outside the GLB comparison",
                 linkerSha256 = Workspace.Hash(Path.Combine(request.BinDirectory, "Linker.exe")),
                 unlinkerSha256 = Workspace.Hash(Path.Combine(request.BinDirectory, "Unlinker.exe"))
             });
@@ -608,6 +609,7 @@ namespace T6_Workbench
             await Helpers.WriteAllTextAsync(Path.Combine(dir, "build.log"), result.Output, CancellationToken.None);
             return result;
         }
+
         async Task<string> Dump(string dir, string ff, ExportRequest request, string filter, CancellationToken cancellation, bool useGameSearchPaths = false)
         {
             var dump = Path.Combine(dir, "dump");
@@ -673,7 +675,9 @@ namespace T6_Workbench
                 throw new FileNotFoundException(EnglishText.Text("A new MP xmodel requires the original common_mp.ff in the game paths."));
             var bases = new List<string>();
             if (common != null)
+            {
                 bases.Add(common);
+            }
             return bases.ToArray();
         }
 
@@ -700,9 +704,13 @@ namespace T6_Workbench
             foreach (var relative in files)
             {
                 if (relative.StartsWith("zone_source/"))
+                {
                     continue; // Container metadata compared separately via --list.
+                }
                 if (includeFiles != null && !includeFiles.Contains(relative))
+                {
                     continue;
+                }
                 var output = Path.Combine(target, relative);
                 var sourceFile = Path.Combine(source, relative.Replace('/', Path.DirectorySeparatorChar));
                 var comparisonSource = overrides != null && overrides.TryGetValue(relative, out var replacement) ? replacement : sourceFile;
@@ -723,16 +731,16 @@ namespace T6_Workbench
                     }
                     else if (relative.EndsWith(".str"))
                     {
-                        var a = RoundTrips.LocalizeStrings(comparisonSource);
-                        var b = RoundTrips.LocalizeStrings(output);
+                        var a = LocalizeStrings(comparisonSource);
+                        var b = LocalizeStrings(output);
                         if (a.Count != b.Count || a.Any(p => !b.TryGetValue(p.Key, out var v) || p.Value != v))
                             throw new InvalidDataException("Localize values differ.");
                         details = $"{a.Count} language/reference values equal";
                     }
                     else if (relative.EndsWith(".csv"))
                     {
-                        var a = RoundTrips.CsvRows(comparisonSource);
-                        var b = RoundTrips.CsvRows(output);
+                        var a = CsvRows(comparisonSource);
+                        var b = CsvRows(output);
                         if (a.Length != b.Length || a.Zip(b).Any(p => !p.First.SequenceEqual(p.Second)))
                             throw new InvalidDataException("CSV cells differ.");
                         details = $"{a.Length} CSV rows equal, including whitespace";
@@ -745,9 +753,9 @@ namespace T6_Workbench
                     }
                     results.Add(new ComparisonEntry(relative, "PASS", details));
                 }
-                catch (Exception ex) 
-                { 
-                    results.Add(new ComparisonEntry(relative, "FAIL", ex.Message)); 
+                catch (Exception ex)
+                {
+                    results.Add(new ComparisonEntry(relative, "FAIL", ex.Message));
                 }
             }
             var expected = files;
@@ -755,12 +763,17 @@ namespace T6_Workbench
             {
                 var relative = Helpers.GetRelativePath(target, file).Replace('\\', '/');
                 if (includeFiles != null && !includeFiles.Contains(relative))
+                {
                     continue;
+                }
                 if (!expected.Contains(relative) && !relative.StartsWith("zone_source/"))
+                {
                     results.Add(new ComparisonEntry(relative, "ADDED", "Additional exported file."));
+                }
             }
             return results;
         }
+
         static HashSet<string> Inventory(string text)
         {
             var result = new HashSet<string>(StringComparer.Ordinal);
@@ -774,32 +787,45 @@ namespace T6_Workbench
                     continue;
                 }
                 if (!content)
+                {
                     continue;
+                }
                 if (line.StartsWith("Unloaded zone", StringComparison.OrdinalIgnoreCase))
+                {
                     break;
+                }
                 line = AssetNameNormalizer.NormalizeZoneLine(line);
                 int comma = line.IndexOf(',');
                 if (comma <= 0 || comma == line.Length - 1)
+                {
                     continue;
+                }
                 string type = line.Substring(0, comma).Trim();
                 string name = AssetNameNormalizer.NormalizeName(line.Substring(comma + 1));
                 if (type.Length > 0 && name.Length > 0)
+                {
                     result.Add(type + ", " + name);
+                }
             }
             return result;
         }
+
         static object BinaryComparison(string original, string rebuilt, string scope)
         {
             byte[] a = File.ReadAllBytes(original), b = File.ReadAllBytes(rebuilt);
             int common = Math.Min(a.Length, b.Length), first = -1;
             long different = 0;
             for (int i = 0; i < common; i++)
+            {
                 if (a[i] != b[i])
                 {
                     if (first < 0)
+                    {
                         first = i;
+                    }
                     different++;
                 }
+            }
             return new
             {
                 scope,
@@ -819,5 +845,44 @@ namespace T6_Workbench
                 rebuiltVersion = BitConverter.ToUInt32(b, 8)
             };
         }
+        static string[][] CsvRows(string file)
+        {
+            using (var parser = new Microsoft.VisualBasic.FileIO.TextFieldParser(file) { HasFieldsEnclosedInQuotes = true, TrimWhiteSpace = false })
+            {
+                parser.SetDelimiters(",");
+                var rows = new List<string[]>();
+                while (!parser.EndOfData)
+                {
+                    rows.Add(parser.ReadFields());
+                }
+                return rows.ToArray();
+            }
+        }
+
+        static Dictionary<string, string> LocalizeStrings(string file)
+        {
+            var entries = new Dictionary<string, string>();
+            string reference = null;
+            foreach (var line in File.ReadAllLines(file))
+            {
+                var match = Regex.Match(line, @"^\s*(REFERENCE|LANG_\w+)\s+(.*)$");
+                if (!match.Success)
+                {
+                    continue;
+                }
+                if (match.Groups[1].Value == "REFERENCE")
+                {
+                    reference = match.Groups[2].Value.Trim();
+                }
+                else
+                {
+                    entries.Add((reference ?? throw new InvalidDataException("Language before reference")) + "/" + match.Groups[1].Value, match.Groups[2].Value);
+                }
+            }
+            if (entries.Count == 0)
+                throw new InvalidDataException("No localize strings.");
+            return entries;
+        }
+
     }
 }
