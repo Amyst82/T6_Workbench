@@ -20,7 +20,7 @@ namespace T6_Workbench
 
         WorkbenchSettingsViewModel settings = new WorkbenchSettingsViewModel();
 
-        ProjectSessionViewModel currentProject;
+        ProjectSessionViewModel currentProject = new ProjectSessionViewModel();
 
         WorkbenchOperationStatus status = new WorkbenchOperationStatus(WorkbenchOperationState.Ready, "Ready");
 

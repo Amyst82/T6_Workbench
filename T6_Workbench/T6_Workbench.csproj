@@ -214,6 +214,7 @@
     <Resource Include="resources\refresh-ccw-clock-svgrepo-com.svg" />
     <Resource Include="resources\message-square-info-svgrepo-com.svg" />
     <Resource Include="resources\thinking-face-svgrepo-com.svg" />
+    <Resource Include="resources\warning-symbol-svgrepo-com.svg" />
     <Content Include="Resources\XAnim\*" Link="resources/xanim/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Resources\images\*" Link="resources/images/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="resources\XAnim\workbench_ik.py" />

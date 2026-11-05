@@ -8,7 +8,7 @@ namespace T6_Workbench
 {
     public class ProjectSessionViewModel : BaseViewModel
     {
-        string name = "";
+        string name = "test";
 
         string projectPath = "";
 
@@ -22,7 +22,7 @@ namespace T6_Workbench
 
         int selectedLodIndex;
 
-        int projectChangeCount;
+        int projectChangeCount = 10;
 
         bool previewUsesShaders = true;
 

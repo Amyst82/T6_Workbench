@@ -158,23 +158,13 @@
                                             <sys:Boolean>True</sys:Boolean>
                                         </Binding.Source>
                                     </Binding>
-                                    <Binding>
-                                        <!-- True value -->
-                                        <Binding.Source>
-                                            <SolidColorBrush Color="{Binding UIColors.Gray4}"/>
-                                        </Binding.Source>
-                                    </Binding>
-                                    <Binding>
-                                        <!-- False value -->
-                                        <Binding.Source>
-                                            <SolidColorBrush Color="Transparent"/>
-                                        </Binding.Source>
-                                    </Binding>
+                                    <Binding Path="UIColors.Gray4"/>
+                                    <Binding Source="{x:Static Brushes.Transparent}"/>
                                 </MultiBinding>
                             </Border.Background>
                             <StackPanel Orientation="Horizontal" Background="Transparent">
-                                <TextBlock Margin="10,5,5,5" Text="{AMUI:StringME InputString={Binding CurrentProject.ProjectPath, FallbackValue='No project open'}, MaxLength=25}" VerticalAlignment="Center" Foreground="{Binding UIColors.Foreground}" FontSize="16"/>
-                                <AMUI:CustomizableCheckBox82 x:Name="ProjDropdownMenuCheckBoxButton" Width="25" Height="25" Content="{x:Null}" Margin="5" Cursor="Hand" Foreground="{Binding UIColors.Gray6}" HorizontalContentAlignment="Center" OutlineThickness="5" IsChecked="False">
+                                <TextBlock Margin="10,5,5,5" Text="{AMUI:StringME InputString={Binding CurrentProject.Name, FallbackValue='No project open'}, MaxLength=25}" VerticalAlignment="Center" Foreground="{Binding UIColors.Foreground}" FontSize="16"/>
+                                <AMUI:CustomizableCheckBox82 x:Name="ProjDropdownMenuCheckBoxButton" Width="25" Height="25" Content="{x:Null}" Margin="5" Cursor="Hand" Foreground="{Binding UIColors.Gray6}" OutlineThickness="5" IsChecked="False">
                                     <AMUI:CustomizableCheckBox82.UncheckedContent>
                                         <TextBlock Text="•••" FontSize="12" Foreground="{Binding UIColors.Gray6}" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                     </AMUI:CustomizableCheckBox82.UncheckedContent>
@@ -196,50 +186,51 @@
                                     <Grid SnapsToDevicePixels="True" MinWidth="{Binding ElementName=ProjCardBorder,Path=ActualWidth}" MinHeight="70" MaxHeight="520">
                                         <Border Background="{Binding UIColors.Gray4}" CornerRadius="8" Padding="5" Margin="0">
                                             <StackPanel Orientation="Vertical" Margin="5">
-                                                <TextBlock Text="Project" Foreground="{Binding UIColors.Gray6}" FontSize="13" Margin="5"/>
-                                                <MenuItem Header="New project" Foreground="{Binding UIColors.Foreground}">
-                                                    <MenuItem.Icon>
-                                                        <svg:SVGImage UriSource="./Resources/add-file-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Open project" Foreground="{Binding UIColors.Foreground}">
-                                                    <MenuItem.Icon>
-                                                        <svg:SVGImage UriSource="./Resources/folder-open-svgrepo-com.svg" Width="16" Height="16" Margin="5,10,5,5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Show in explorer" Foreground="{Binding UIColors.Foreground}">
-                                                    <MenuItem.Icon>
-                                                        <svg:SVGImage UriSource="./Resources/search-folder-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Settings" Foreground="{Binding UIColors.Foreground}">
-                                                    <MenuItem.Icon>
-                                                        <svg:SVGImage UriSource="./Resources/gear-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
+                                                <ItemsControl>
+                                                    <TextBlock Text="Project" Foreground="{Binding UIColors.Gray6}" FontSize="13" Margin="5"/>
+                                                    <MenuItem Header="New project" Foreground="{Binding UIColors.Foreground}">
+                                                        <MenuItem.Icon>
+                                                            <svg:SVGImage UriSource="./Resources/add-file-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Open project" Foreground="{Binding UIColors.Foreground}">
+                                                        <MenuItem.Icon>
+                                                            <svg:SVGImage UriSource="./Resources/folder-open-svgrepo-com.svg" Width="16" Height="16" Margin="5,10,5,5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Show in explorer" Foreground="{Binding UIColors.Foreground}">
+                                                        <MenuItem.Icon>
+                                                            <svg:SVGImage UriSource="./Resources/search-folder-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Settings" Foreground="{Binding UIColors.Foreground}">
+                                                        <MenuItem.Icon>
+                                                            <svg:SVGImage UriSource="./Resources/gear-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
 
-                                                <MenuItem Header="Delete" Foreground="{Binding UIColors.Danger}">
-                                                    <MenuItem.Icon>
-                                                        <svg:SVGImage UriSource="./Resources/trash-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <TextBlock Text="Workbench" Foreground="{Binding UIColors.Gray6}" FontSize="13" Margin="5"/>
-                                                <MenuItem Header="Home screen" Foreground="{Binding UIColors.Foreground}">
-                                                    <MenuItem.Icon>
-                                                        <svg:SVGImage UriSource="./Resources/house-chimney-floor-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.Gray6Color}"/>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="Logs" Foreground="{Binding UIColors.Foreground}">
-                                                    <MenuItem.Icon>
-                                                        <svg:SVGImage UriSource="./Resources/refresh-ccw-clock-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.Gray6Color}"/>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Header="About" Foreground="{Binding UIColors.Foreground}">
-                                                    <MenuItem.Icon>
-                                                        <svg:SVGImage UriSource="./Resources/circle-information-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.Gray6Color}"/>
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                               
+                                                    <MenuItem Header="Delete" Foreground="{Binding UIColors.Danger}">
+                                                        <MenuItem.Icon>
+                                                            <svg:SVGImage UriSource="./Resources/trash-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <TextBlock Text="Workbench" Foreground="{Binding UIColors.Gray6}" FontSize="13" Margin="5"/>
+                                                    <MenuItem Header="Home screen" Foreground="{Binding UIColors.Foreground}">
+                                                        <MenuItem.Icon>
+                                                            <svg:SVGImage UriSource="./Resources/house-chimney-floor-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.Gray6Color}"/>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Logs" Foreground="{Binding UIColors.Foreground}">
+                                                        <MenuItem.Icon>
+                                                            <svg:SVGImage UriSource="./Resources/refresh-ccw-clock-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.Gray6Color}"/>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="About" Foreground="{Binding UIColors.Foreground}">
+                                                        <MenuItem.Icon>
+                                                            <svg:SVGImage UriSource="./Resources/circle-information-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.Gray6Color}"/>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                </ItemsControl>                                               
                                             </StackPanel>
                                         </Border>
                                     </Grid>
@@ -259,10 +250,13 @@
                 <Grid Grid.Column="2" Background="Transparent">
                     <AMUI:Button82 x:Name="BuildButton" Width="35" Height="35" HorizontalAlignment="Left" Margin="5" 
                                    Visibility="{AMUI:ConditionME IF={Binding SelectedIndex, ElementName=TabsControl}, ComparingMode=NotEquals, TO=0, Then={StaticResource Visible}, Else={StaticResource Collapsed}}" 
-                                   EdgeRoundness="8" Accent82="{Binding UIColors.Gray1}" Border82="{Binding UIColors.Gray3}" OutlineThickness="1" ScaleUpOnHover="True" ScaleDownOnPress="True" ToolTipService.ShowOnDisabled="True" ToolTip="{AMUI:ConditionME IF={Binding CurrentProject.ProjectChangeCount, FallbackValue=0, TargetNullValue=0}, ComparingMode=Greater, TO=0, Then={Binding CurrentProject.ProjectChangeCount, FallbackValue=0, TargetNullValue=0, StringFormat='Changes: {0}'}, ThenType={x:Type sys:String}, Else='No changes made', ElseType={x:Type sys:String}}">
+                                   EdgeRoundness="8" Accent82="{Binding UIColors.Gray1}" Border82="{Binding UIColors.Gray3}" OutlineThickness="1" ScaleUpOnHover="True" ScaleDownOnPress="True" 
+                                   ToolTipService.ShowOnDisabled="True" ToolTip="{AMUI:ConditionME IF={Binding CurrentProject.ProjectChangeCount, FallbackValue=0}, 
+                                   ComparingMode=Greater, TO=0, Then={Binding CurrentProject.ProjectChangeCount, FallbackValue=0, StringFormat=Changes {0}}, 
+                                   Else='No changes made', ElseType={x:Type sys:String}}">
                         <AMUI:Button82.IsEnabled>
                             <MultiBinding Converter="{AMUI:ConvertersME Converter=Expression}" ConverterParameter="A &gt; 0">
-                                <Binding Path="CurrentProject.ProjectChangeCount" FallbackValue="0" TargetNullValue="0" />
+                                <Binding Path="CurrentProject.ProjectChangeCount" FallbackValue="0" />
                                 <Binding>
                                     <Binding.Source>
                                         <sys:Boolean>True</sys:Boolean>
@@ -279,7 +273,7 @@
                             <svg:SVGImage Width="18" Height="18" Margin="0,2,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <svg:SVGImage.UriSource>
                                     <MultiBinding Converter="{AMUI:ConvertersME Converter=Expression}" ConverterParameter="A &gt; 0">
-                                        <Binding Path="CurrentProject.ProjectChangeCount" FallbackValue="0" TargetNullValue="0" />
+                                        <Binding Path="CurrentProject.ProjectChangeCount" FallbackValue="0" />
                                         <Binding>
                                             <Binding.Source>
                                                 <sys2:Uri>./Resources/hammer-svgrepo-com.svg</sys2:Uri>
@@ -305,21 +299,23 @@
                         <Grid SnapsToDevicePixels="True" MinWidth="220" MinHeight="70" MaxHeight="520">
                             <Border Background="{Binding UIColors.Gray4}" CornerRadius="8" Padding="5" Margin="0">
                                 <StackPanel Orientation="Vertical" Margin="5">
-                                    <MenuItem Header="Build for T6" Foreground="{Binding UIColors.Foreground}">
-                                        <MenuItem.Icon>
-                                            <svg:SVGImage UriSource="./Resources/hammer-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{Binding UIColors.AccentColor}"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Header="Build for T6 Redacted" Foreground="{Binding UIColors.Foreground}">
-                                        <MenuItem.Icon>
-                                            <svg:SVGImage UriSource="./Resources/hammer-svgrepo-com.svg" Width="16" Height="16" Margin="5,10,5,5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{Binding UIColors.AccentColor}"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Header="Build for T6 Redacted Standalone" Foreground="{Binding UIColors.Foreground}">
-                                        <MenuItem.Icon>
-                                            <svg:SVGImage UriSource="./Resources/hammer-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{Binding UIColors.SuccessColor}"/>
-                                        </MenuItem.Icon>
-                                    </MenuItem>
+                                    <ItemsControl>
+                                        <MenuItem Header="Build for T6" Foreground="{Binding UIColors.Foreground}">
+                                            <MenuItem.Icon>
+                                                <svg:SVGImage UriSource="./Resources/hammer-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{Binding UIColors.AccentColor}"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Build for T6 Redacted" Foreground="{Binding UIColors.Foreground}">
+                                            <MenuItem.Icon>
+                                                <svg:SVGImage UriSource="./Resources/hammer-svgrepo-com.svg" Width="16" Height="16" Margin="5,10,5,5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{Binding UIColors.AccentColor}"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Build for T6 Redacted Standalone" Foreground="{Binding UIColors.Foreground}">
+                                            <MenuItem.Icon>
+                                                <svg:SVGImage UriSource="./Resources/hammer-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{Binding UIColors.SuccessColor}"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ItemsControl>
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -437,8 +433,14 @@
                             </Grid.RowDefinitions>
                             <Border Margin="5,5,20,5" HorizontalAlignment="Right" Grid.Row="2" Background="{Binding UIColors.Gray4}" BorderBrush="{Binding UIColors.Gray5}" BorderThickness="1" MinWidth="90" CornerRadius="8">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" ToolTip="{Binding Status.State}">
-                                    <AMUI:ArcProgressBar82 Width="16" Height="16" Margin="5" DoneCheckMark="False" Border82="{Binding UIColors.Gray5}" Accent82="{Binding UIColors.Accent}" StrokeWidth="65" Value="26" IsIndeterminate="True"/>
                                     <TextBlock Text="{Binding Status.Message}" Foreground="{Binding UIColors.Foreground}" FontSize="14" VerticalAlignment="Center" Margin="5,5,5,5"/>
+                                    <svg:SVGImage UriSource="./Resources/xmark-svgrepo-com.svg" Width="12" Height="12" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.DangerColor}"/>
+                                    <svg:SVGImage UriSource="./Resources/warning-symbol-svgrepo-com.svg" Width="16" Height="16" Margin="5,5,5,2" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{Binding UIColors.WarningColor}"/>
+                                    <AMUI:Button82 Width="16" Height="16" Accent82="{Binding UIColors.Gray4}" Margin="5" ToolTip="Open result">
+                                        <svg:SVGImage UriSource="./Resources/external-link-svgrepo-com.svg" Width="13" Height="13" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.SuccessColor}"/>
+                                    </AMUI:Button82>
+                                    <AMUI:Button82 Width="16" Height="16" Accent82="{Binding UIColors.Danger}" Margin="5" ToolTip="Cancel"/>
+                                    <AMUI:ArcProgressBar82 Width="16" Height="16" Margin="5" DoneCheckMark="False" Border82="{Binding UIColors.Gray5}" Accent82="{Binding UIColors.Accent}" StrokeWidth="65" Value="26" IsIndeterminate="True"/>
                                 </StackPanel>
                                 
                             </Border>

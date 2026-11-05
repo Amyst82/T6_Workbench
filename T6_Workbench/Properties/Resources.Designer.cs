@@ -373,6 +373,16 @@ namespace T6_Workbench.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] warning_symbol_svgrepo_com {
+            get {
+                object obj = ResourceManager.GetObject("warning_symbol_svgrepo_com", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] window_maximize_svgrepo_com {
             get {
                 object obj = ResourceManager.GetObject("window_maximize_svgrepo_com", resourceCulture);
