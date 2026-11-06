@@ -104,6 +104,11 @@ namespace T6_Workbench
             get => _foregroundColor;
             set => SetProperty(ref _foregroundColor, value);
         }
+        public Color ForegroundColor
+        {
+            get => _foregroundColor.Color;
+            set => SetProperty(ref _foregroundColor, new SolidColorBrush(value));
+        }
         private Color _dangerColor = (Color)ColorConverter.ConvertFromString("#FF8080");
         public SolidColorBrush Danger
         {

@@ -189,6 +189,7 @@
     <Resource Include="resources\face-with-symbols-on-mouth-svgrepo-com.svg" />
     <Resource Include="resources\fire-svgrepo-com.svg" />
     <Resource Include="resources\beer-mug-svgrepo-com.svg" />
+    <Resource Include="resources\check-svgrepo-com.svg" />
     <Content Include="resources\images\c_chn_mp_pla_lower_n.dds" />
     <Content Include="resources\images\c_mul_mp_pmc_glasses_n.dds" />
     <Content Include="resources\images\c_usa_mp_fbi_armor_vest_n.dds" />

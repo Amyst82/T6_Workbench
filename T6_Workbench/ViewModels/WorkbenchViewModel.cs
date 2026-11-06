@@ -20,7 +20,7 @@ namespace T6_Workbench
 
         WorkbenchSettingsViewModel settings = new WorkbenchSettingsViewModel();
 
-        ProjectSessionViewModel currentProject = new ProjectSessionViewModel();
+        ProjectSessionViewModel currentProject;
 
         WorkbenchOperationStatus status = new WorkbenchOperationStatus(WorkbenchOperationState.Ready, "Ready");
 
@@ -218,6 +218,7 @@ namespace T6_Workbench
         internal void SetStatus(WorkbenchOperationState state, string message)
         {
             Status = new WorkbenchOperationStatus(state, message);
+            CanOpenResult = false;
             if (state == WorkbenchOperationState.Built || state == WorkbenchOperationState.BuiltWithWarnings)
             {
                 CanOpenResult = true;

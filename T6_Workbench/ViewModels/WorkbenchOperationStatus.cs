@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using AMUI;
+using System.Text.Json.Serialization;
 
 namespace T6_Workbench
 {
@@ -16,6 +17,22 @@ namespace T6_Workbench
 
         [JsonIgnore]
         public bool IsRunning => (State == WorkbenchOperationState.Busy) || (State == WorkbenchOperationState.Building);
+
+        [JsonIgnore]
+        public bool IsError => (State == WorkbenchOperationState.Error);
+
+        [JsonIgnore]
+        public bool IsCanceled => (State == WorkbenchOperationState.Cancelled);
+
+        [JsonIgnore]
+        public bool IsBuilt => (State == WorkbenchOperationState.Built);
+
+        [JsonIgnore]
+        public bool IsBuiltWithWarnings => (State == WorkbenchOperationState.BuiltWithWarnings);
+
+        [JsonIgnore]
+        public bool IsReady => (State == WorkbenchOperationState.Ready);
+
     }
 
     public enum WorkbenchOperationState

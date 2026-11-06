@@ -57,10 +57,17 @@ namespace T6_Workbench
                 //OpenProject(dialog.FileName);
             }
         }
-        
 
-        
+
+
 
         #endregion
+
+        private void ProjSettingsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            TabsControl.SelectedIndex = 2;
+            ProjDropdownMenuCheckBoxButton.IsChecked = false;
+        }
+       
     }//
 }

@@ -148,7 +148,7 @@
                         <AMUI:Button82 x:Name="HideDockButton" Accent82="{Binding UIColors.Gray0}" Width="35" Height="35" Margin="5">
                             <svg:SVGImage UriSource="./Resources/dock-left-svgrepo-com.svg" Width="18" Height="18" Margin="0,5,0,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </AMUI:Button82>
-                        <Border x:Name="ProjCardBorder" CornerRadius="8" Margin="5" Height="35" VerticalAlignment="Center">
+                        <Border x:Name="ProjCardBorder" CornerRadius="8" Margin="5" Height="35" VerticalAlignment="Center" ToolTip="{Binding CurrentProject.ProjectPath}">
                             <Border.Background>
                                 <MultiBinding Converter="{AMUI:ConvertersME Converter=Expression}" ConverterParameter="A = B">
                                     <Binding Path="IsChecked" ElementName="ProjDropdownMenuCheckBoxButton"/>
@@ -203,7 +203,7 @@
                                                             <svg:SVGImage UriSource="./Resources/search-folder-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                         </MenuItem.Icon>
                                                     </MenuItem>
-                                                    <MenuItem Header="Settings" Foreground="{Binding UIColors.Foreground}">
+                                                    <MenuItem x:Name="ProjSettingsMenuItem" Header="Settings" Foreground="{Binding UIColors.Foreground}" Click="ProjSettingsMenuItem_Click">
                                                         <MenuItem.Icon>
                                                             <svg:SVGImage UriSource="./Resources/gear-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                         </MenuItem.Icon>
@@ -431,19 +431,24 @@
                                 <RowDefinition/>
                                 <RowDefinition Height="50"/>
                             </Grid.RowDefinitions>
-                            <Border Margin="5,5,20,5" HorizontalAlignment="Right" Grid.Row="2" Background="{Binding UIColors.Gray4}" BorderBrush="{Binding UIColors.Gray5}" BorderThickness="1" MinWidth="90" CornerRadius="8">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" ToolTip="{Binding Status.State}">
-                                    <TextBlock Text="{Binding Status.Message}" Foreground="{Binding UIColors.Foreground}" FontSize="14" VerticalAlignment="Center" Margin="5,5,5,5"/>
-                                    <svg:SVGImage UriSource="./Resources/xmark-svgrepo-com.svg" Width="12" Height="12" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.DangerColor}"/>
-                                    <svg:SVGImage UriSource="./Resources/warning-symbol-svgrepo-com.svg" Width="16" Height="16" Margin="5,5,5,2" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{Binding UIColors.WarningColor}"/>
-                                    <AMUI:Button82 Width="16" Height="16" Accent82="{Binding UIColors.Gray4}" Margin="5" ToolTip="Open result">
-                                        <svg:SVGImage UriSource="./Resources/external-link-svgrepo-com.svg" Width="13" Height="13" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.SuccessColor}"/>
-                                    </AMUI:Button82>
-                                    <AMUI:Button82 Width="16" Height="16" Accent82="{Binding UIColors.Danger}" Margin="5" ToolTip="Cancel"/>
-                                    <AMUI:ArcProgressBar82 Width="16" Height="16" Margin="5" DoneCheckMark="False" Border82="{Binding UIColors.Gray5}" Accent82="{Binding UIColors.Accent}" StrokeWidth="65" Value="26" IsIndeterminate="True"/>
-                                </StackPanel>
-                                
-                            </Border>
+                            <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right" Margin="0,0,20,0" >
+                                <Border Margin="5,5,5,5" Background="{Binding UIColors.Gray4}" BorderBrush="{Binding UIColors.Gray5}" BorderThickness="1" CornerRadius="8">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" ToolTip="{Binding Status.State}">
+                                        <TextBlock Text="{Binding Status.Message}" Foreground="{Binding UIColors.Foreground}" FontSize="14" VerticalAlignment="Center" Margin="5,5,5,5"/>
+                                        <svg:SVGImage UriSource="./Resources/xmark-svgrepo-com.svg" Width="12" Height="12" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.DangerColor}" Visibility="{Binding Status.IsError, Converter={AMUI:ConvertersME Converter=BoolToVisibility}}"/>
+                                        <svg:SVGImage UriSource="./Resources/warning-symbol-svgrepo-com.svg" Width="16" Height="16" Margin="5,5,5,2" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{Binding UIColors.WarningColor}" Visibility="{Binding Status.IsBuiltWithWarnings, Converter={AMUI:ConvertersME Converter=BoolToVisibility}}"/>
+                                        <svg:SVGImage UriSource="./Resources/check-svgrepo-com.svg" Width="16" Height="16" Margin="5,5,5,0" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.SuccessColor}" Visibility="{Binding Status.IsBuilt, Converter={AMUI:ConvertersME Converter=BoolToVisibility}}"/>
+                                        <AMUI:ArcProgressBar82 Width="16" Height="16" Margin="5" DoneCheckMark="False" Border82="{Binding UIColors.Gray5}" Accent82="{Binding UIColors.Accent}" StrokeWidth="65" Value="26" IsIndeterminate="True" Visibility="{Binding Status.IsRunning, Converter={AMUI:ConvertersME Converter=BoolToVisibility}}"/>
+                                    </StackPanel>
+                                </Border>
+                                <AMUI:Button82 x:Name="CancelButton" Content="Cancel" Width="75" Height="35" Margin="5,5,5,5" Foreground="{Binding UIColors.Gray0}" Accent82="{Binding UIColors.Danger}" Visibility="{Binding Status.IsRunning, Converter={AMUI:ConvertersME Converter=BoolToVisibility}}"/>
+                                <AMUI:Button82 x:Name="OpenButton" Width="120" Height="37" Margin="5,5,5,5" Foreground="{Binding UIColors.Foreground}" Accent82="{Binding UIColors.Gray5}" Visibility="{Binding CanOpenResult, Converter={AMUI:ConvertersME Converter=BoolToVisibility}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <svg:SVGImage UriSource="./Resources/external-link-svgrepo-com.svg" Width="14" Height="14" Margin="5,5,10,5" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{Binding UIColors.ForegroundColor}"/>
+                                        <TextBlock Text="Open result" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    </StackPanel>
+                                </AMUI:Button82>
+                            </StackPanel>
                         </Grid>
                     </Grid>
                 </TabItem>

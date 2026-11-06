@@ -133,6 +133,9 @@
   <data name="blender_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\blender-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="check_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\check-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="circle_information_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\circle-information-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
