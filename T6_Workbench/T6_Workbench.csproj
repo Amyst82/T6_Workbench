@@ -98,6 +98,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="MarkupExtensions\UIColorExtension.cs" />
     <Compile Include="Helpers\WorkbenchState.cs" />
     <Compile Include="Helpers\WorkbenchStateStore.cs" />
     <Compile Include="Helpers\SettingsPathPicker.cs" />
