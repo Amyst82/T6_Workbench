@@ -23,17 +23,77 @@ namespace T6_Workbench
         {
         }
 
-        public double PositionX { get => positionX; set => SetProperty(ref positionX, value); }
+        public double PositionX
+        {
+            get => positionX;
+            set
+            {
+                if (!Helpers.IsFinite(value) || !SetProperty(ref positionX, value))
+                    return;
+                NotifyProperty(nameof(Position));
+                NotifyProperty(nameof(HasPose));
+            }
+        }
 
-        public double PositionY { get => positionY; set => SetProperty(ref positionY, value); }
+        public double PositionY
+        {
+            get => positionY;
+            set
+            {
+                if (!Helpers.IsFinite(value) || !SetProperty(ref positionY, value))
+                    return;
+                NotifyProperty(nameof(Position));
+                NotifyProperty(nameof(HasPose));
+            }
+        }
 
-        public double PositionZ { get => positionZ; set => SetProperty(ref positionZ, value); }
+        public double PositionZ
+        {
+            get => positionZ;
+            set
+            {
+                if (!Helpers.IsFinite(value) || !SetProperty(ref positionZ, value))
+                    return;
+                NotifyProperty(nameof(Position));
+                NotifyProperty(nameof(HasPose));
+            }
+        }
 
-        public double LookDirectionX { get => lookDirectionX; set => SetProperty(ref lookDirectionX, value); }
+        public double LookDirectionX
+        {
+            get => lookDirectionX;
+            set
+            {
+                if (!Helpers.IsFinite(value) || !SetProperty(ref lookDirectionX, value))
+                    return;
+                NotifyProperty(nameof(LookDirection));
+                NotifyProperty(nameof(HasPose));
+            }
+        }
 
-        public double LookDirectionY { get => lookDirectionY; set => SetProperty(ref lookDirectionY, value); }
+        public double LookDirectionY
+        {
+            get => lookDirectionY;
+            set
+            {
+                if (!Helpers.IsFinite(value) || !SetProperty(ref lookDirectionY, value))
+                    return;
+                NotifyProperty(nameof(LookDirection));
+                NotifyProperty(nameof(HasPose));
+            }
+        }
 
-        public double LookDirectionZ { get => lookDirectionZ; set => SetProperty(ref lookDirectionZ, value); }
+        public double LookDirectionZ
+        {
+            get => lookDirectionZ;
+            set
+            {
+                if (!Helpers.IsFinite(value) || !SetProperty(ref lookDirectionZ, value))
+                    return;
+                NotifyProperty(nameof(LookDirection));
+                NotifyProperty(nameof(HasPose));
+            }
+        }
 
         [JsonIgnore]
         public Point3D Position => new Point3D(PositionX, PositionY, PositionZ);
@@ -70,9 +130,6 @@ namespace T6_Workbench
             LookDirectionX = lookDirection.X;
             LookDirectionY = lookDirection.Y;
             LookDirectionZ = lookDirection.Z;
-            NotifyProperty(nameof(Position));
-            NotifyProperty(nameof(LookDirection));
-            NotifyProperty(nameof(HasPose));
         }
 
         internal void FitToBounds(Rect3D bounds)

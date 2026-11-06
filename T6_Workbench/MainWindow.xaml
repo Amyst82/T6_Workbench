@@ -26,11 +26,11 @@
             <sys:Boolean x:Key="BoolFalse">False</sys:Boolean>
             <WindowState x:Key="WndMaximized">Maximized</WindowState>
             <WindowState x:Key="WndNormal">Normal</WindowState>
-            <Style TargetType="{x:Type ContextMenu}">
+            <Style x:Key="ContextMenuStyle" TargetType="{x:Type ContextMenu}">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ContextMenu}">
-                            <Border Background="{Binding UIColors.Gray4}" CornerRadius="8" Padding="5" Margin="5" MinWidth="200">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="5" Margin="5" MinWidth="200">
                                 <StackPanel IsItemsHost="True"/>
                             </Border>
                         </ControlTemplate>
@@ -41,7 +41,7 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type MenuItem}">
-                            <Border x:Name="BackGroundBorder" Background="{Binding UIColors.Gray4}" CornerRadius="5" Padding="2,2,2,2" Margin="0">
+                            <Border x:Name="BackGroundBorder" Background="{Binding DataContext.UIColors.Gray4, ElementName=T6WorkbenchMainWindow}" CornerRadius="5" Padding="2,2,2,2" Margin="0">
                                 <StackPanel Orientation="Horizontal">
                                     <ContentPresenter ContentSource="Icon" RecognizesAccessKey="True"/>
                                     <TextBlock Text="{TemplateBinding Header}" Foreground="{TemplateBinding Foreground}" FontSize="14" Margin="5,0,5,0" VerticalAlignment="Center"/>
@@ -49,7 +49,7 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" TargetName="BackGroundBorder" Value="{Binding UIColors.Gray5}"/>
+                                    <Setter Property="Background" TargetName="BackGroundBorder" Value="{Binding DataContext.UIColors.Gray5, ElementName=T6WorkbenchMainWindow}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -57,48 +57,45 @@
                 </Setter>
             </Style>
             <Style x:Key="RecentProjectListViewItemStyle" TargetType="{x:Type ListBoxItem}">
+                <Setter Property="ToolTip" Value="{Binding ProjectPath}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                            <Border x:Name="BackGroundBorder" Height="50" Background="{Binding UIColors.Gray2}" Margin="2" CornerRadius="8" BorderThickness="2" BorderBrush="{Binding UIColors.Gray2}">
+                            <Border x:Name="BackGroundBorder" Height="50" Background="{Binding DataContext.UIColors.Gray2, ElementName=T6WorkbenchMainWindow}" Margin="2" CornerRadius="8" BorderThickness="2" BorderBrush="{Binding DataContext.UIColors.Gray2, ElementName=T6WorkbenchMainWindow}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0">
-                                        <TextBlock x:Name="ProjNameLabel" Text="{TemplateBinding Content}" FontSize="16" Foreground="{Binding UIColors.Foreground}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Last opened:" FontSize="12" Foreground="{Binding UIColors.Gray6}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="ProjNameLabel" Text="{Binding Name}" FontSize="16" Foreground="{Binding DataContext.UIColors.Foreground, ElementName=T6WorkbenchMainWindow}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding LastOpenedAt, StringFormat='Last opened: {0:g}'}" FontSize="12" Foreground="{Binding DataContext.UIColors.Gray6, ElementName=T6WorkbenchMainWindow}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Grid>
                             </Border>
                             <ControlTemplate.Triggers>
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsMouseOver" Value="True"/>
-                                    </MultiTrigger.Conditions>
-                                    <Setter Property="Background" TargetName="BackGroundBorder" Value="{Binding UIColors.Gray5}"/>
-                                    <Setter Property="BorderBrush" TargetName="BackGroundBorder" Value="{Binding UIColors.Gray5}"/>
-                                    <Setter Property="TextElement.Foreground" TargetName="ProjNameLabel" Value="{Binding UIColors.Foreground}"/>
-                                </MultiTrigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" TargetName="BackGroundBorder" Value="{Binding DataContext.UIColors.Gray5, ElementName=T6WorkbenchMainWindow}"/>
+                                    <Setter Property="BorderBrush" TargetName="BackGroundBorder" Value="{Binding DataContext.UIColors.Gray5, ElementName=T6WorkbenchMainWindow}"/>
+                                    <Setter Property="TextElement.Foreground" TargetName="ProjNameLabel" Value="{Binding DataContext.UIColors.Foreground, ElementName=T6WorkbenchMainWindow}"/>
+                                </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
                 <Setter Property="ContextMenu">
                     <Setter.Value>
-                        <ContextMenu>
-                            <MenuItem Header="Show in explorer" Foreground="{Binding UIColors.Foreground}">
+                        <ContextMenu Style="{StaticResource ContextMenuStyle}" Background="{Binding DataContext.UIColors.Gray4, ElementName=T6WorkbenchMainWindow}">
+                            <MenuItem Header="Show in explorer" Foreground="{Binding DataContext.UIColors.Foreground, ElementName=T6WorkbenchMainWindow}">
                                 <MenuItem.Icon>
                                     <svg:SVGImage UriSource="./Resources/search-folder-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Hide from recents" Foreground="{Binding UIColors.Foreground}">
+                            <MenuItem Header="Hide from recents" Foreground="{Binding DataContext.UIColors.Foreground, ElementName=T6WorkbenchMainWindow}">
                                 <MenuItem.Icon>
                                     <svg:SVGImage UriSource="./Resources/eye-off-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-
-                            <MenuItem Header="Delete" Foreground="{Binding UIColors.Danger}">
+                            <MenuItem Header="Delete" Foreground="{Binding DataContext.UIColors.Danger, ElementName=T6WorkbenchMainWindow}">
                                 <MenuItem.Icon>
                                     <svg:SVGImage UriSource="./Resources/trash-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </MenuItem.Icon>
@@ -193,7 +190,7 @@
                                                             <svg:SVGImage UriSource="./Resources/add-file-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                         </MenuItem.Icon>
                                                     </MenuItem>
-                                                    <MenuItem Header="Open project" Foreground="{Binding UIColors.Foreground}">
+                                                    <MenuItem Click="OpenProject_Click" IsEnabled="{Binding CanOpenProject}" Header="Open project" Foreground="{Binding UIColors.Foreground}">
                                                         <MenuItem.Icon>
                                                             <svg:SVGImage UriSource="./Resources/folder-open-svgrepo-com.svg" Width="16" Height="16" Margin="5,10,5,5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                         </MenuItem.Icon>
@@ -208,7 +205,6 @@
                                                             <svg:SVGImage UriSource="./Resources/gear-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                         </MenuItem.Icon>
                                                     </MenuItem>
-
                                                     <MenuItem Header="Delete" Foreground="{Binding UIColors.Danger}">
                                                         <MenuItem.Icon>
                                                             <svg:SVGImage UriSource="./Resources/trash-svgrepo-com.svg" Width="16" Height="16" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -375,8 +371,7 @@
                             </TextBlock.Visibility>
                         </TextBlock>
                         <ListBox x:Name="RecentProjectsListBox" HorizontalAlignment="Right" MinWidth="300" MaxHeight="400" Margin="0,0,20,0" Grid.RowSpan="2" VerticalAlignment="Center" 
-                                  Background="Transparent" BorderThickness="0" ItemContainerStyle="{DynamicResource RecentProjectListViewItemStyle}" Foreground="White">
-                            <ListBoxItem>Huy</ListBoxItem>
+                                  Background="Transparent" BorderThickness="0" ItemContainerStyle="{DynamicResource RecentProjectListViewItemStyle}" Foreground="{Binding UIColors.Foreground}" ItemsSource="{Binding RecentProjects}">
                         </ListBox>
 
                         <Border Width="3" Grid.Column="1" Height="400" Background="{Binding UIColors.Gray1}" Grid.RowSpan="3" VerticalAlignment="Center"/>
@@ -388,13 +383,12 @@
                                     <TextBlock Text="New project" Foreground="{Binding UIColors.Foreground}" FontSize="16"/>
                                 </StackPanel>
                             </AMUI:Button82>
-                            <AMUI:Button82 x:Name="OpenProjButton" Height="125" Width="125" Margin="5" Accent82="{Binding UIColors.Gray2}" Border82="{Binding UIColors.Gray2}" ScaleUpOnHover="True" ScaleDownOnPress="True" EdgeRoundness="10" ScaleUpAmount="105" ScaleUpAnimDuration="200" Click="OpenProjButton_Click">
+                            <AMUI:Button82 x:Name="OpenProjButton" Height="125" Width="125" Margin="5" Accent82="{Binding UIColors.Gray2}" Border82="{Binding UIColors.Gray2}" ScaleUpOnHover="True" ScaleDownOnPress="True" EdgeRoundness="10" ScaleUpAmount="105" ScaleUpAnimDuration="200" Click="OpenProject_Click" IsEnabled="{Binding CanOpenProject}">
                                 <StackPanel>
                                     <svg:SVGImage UriSource="./Resources/folder-open-svgrepo-com.svg" Width="55" Height="55" Margin="12,5,5,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     <TextBlock Text="Open project" Foreground="{Binding UIColors.Foreground}" FontSize="16"/>
                                 </StackPanel>
                             </AMUI:Button82>
-
                         </StackPanel>
                     </Grid>
                 </TabItem>
@@ -414,7 +408,6 @@
                                         <Binding ElementName="TreeViewDock" Path="IsVisible" />
                                     </MultiBinding>
                                 </ColumnDefinition.MaxWidth>
-
                             </ColumnDefinition>
                             <ColumnDefinition Width="Auto"/>
                             <!--Splitter-->
@@ -453,9 +446,37 @@
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="SettingsTab" Header="Settings" Visibility="Visible">
-                    <Grid Background="Red">
-                        <TextBlock Text="Tab3" Foreground="AntiqueWhite" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Background="{Binding UIColors.Gray0}">
+                        <StackPanel Margin="20" MaxWidth="900" HorizontalAlignment="Stretch">
+                            <TextBlock Text="Settings" FontSize="20" Foreground="{Binding UIColors.Foreground}" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding StateStorageError}" Foreground="{Binding UIColors.Danger}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                            <TextBlock Text="OAT tools folder" Foreground="{Binding UIColors.Foreground}" Margin="0,8,0,4"/>
+                            <DockPanel>
+                                <AMUI:Button82 Content="Browse..." Click="BrowseSetting_Click" Tag="OatToolsFolder" DockPanel.Dock="Right" Width="90" Margin="8,0,0,0" Accent82="{Binding UIColors.Gray3}" Foreground="{Binding UIColors.Foreground}" EdgeRoundness="5"/>
+                                <TextBox Text="{Binding Settings.OatToolsFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="7" Background="{Binding UIColors.Gray1}" Foreground="{Binding UIColors.Foreground}" BorderBrush="{Binding UIColors.Gray3}"/>
+                            </DockPanel>
+                            <TextBlock Text="Redacted capture file" Foreground="{Binding UIColors.Foreground}" Margin="0,8,0,4"/>
+                            <DockPanel>
+                                <AMUI:Button82 Content="Browse..." Click="BrowseSetting_Click" Tag="CaptureFile" DockPanel.Dock="Right" Width="90" Margin="8,0,0,0" Accent82="{Binding UIColors.Gray3}" Foreground="{Binding UIColors.Foreground}" EdgeRoundness="5"/>
+                                <TextBox Text="{Binding Settings.CaptureFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="7" Background="{Binding UIColors.Gray1}" Foreground="{Binding UIColors.Foreground}" BorderBrush="{Binding UIColors.Gray3}"/>
+                            </DockPanel>
+                            <TextBlock Text="Redacted template file" Foreground="{Binding UIColors.Foreground}" Margin="0,8,0,4"/>
+                            <DockPanel>
+                                <AMUI:Button82 Content="Browse..." Click="BrowseSetting_Click" Tag="RedactedTemplateFile" DockPanel.Dock="Right" Width="90" Margin="8,0,0,0" Accent82="{Binding UIColors.Gray3}" Foreground="{Binding UIColors.Foreground}" EdgeRoundness="5"/>
+                                <TextBox Text="{Binding Settings.RedactedTemplateFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="7" Background="{Binding UIColors.Gray1}" Foreground="{Binding UIColors.Foreground}" BorderBrush="{Binding UIColors.Gray3}"/>
+                            </DockPanel>
+                            <TextBlock Text="Game folder" Foreground="{Binding UIColors.Foreground}" Margin="0,8,0,4"/>
+                            <DockPanel>
+                                <AMUI:Button82 Content="Browse..." Click="BrowseSetting_Click" Tag="GameFolder" DockPanel.Dock="Right" Width="90" Margin="8,0,0,0" Accent82="{Binding UIColors.Gray3}" Foreground="{Binding UIColors.Foreground}" EdgeRoundness="5"/>
+                                <TextBox Text="{Binding Settings.GameFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="7" Background="{Binding UIColors.Gray1}" Foreground="{Binding UIColors.Foreground}" BorderBrush="{Binding UIColors.Gray3}"/>
+                            </DockPanel>
+                            <TextBlock Text="Blender executable" Foreground="{Binding UIColors.Foreground}" Margin="0,8,0,4"/>
+                            <DockPanel>
+                                <AMUI:Button82 Content="Browse..." Click="BrowseSetting_Click" Tag="BlenderExecutable" DockPanel.Dock="Right" Width="90" Margin="8,0,0,0" Accent82="{Binding UIColors.Gray3}" Foreground="{Binding UIColors.Foreground}" EdgeRoundness="5"/>
+                                <TextBox Text="{Binding Settings.BlenderExecutable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="7" Background="{Binding UIColors.Gray1}" Foreground="{Binding UIColors.Foreground}" BorderBrush="{Binding UIColors.Gray3}"/>
+                            </DockPanel>
+                        </StackPanel>
+                    </ScrollViewer>
                 </TabItem>
             </TabControl>
         </Grid>

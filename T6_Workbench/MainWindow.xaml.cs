@@ -1,6 +1,5 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -48,26 +47,56 @@ namespace T6_Workbench
             }
         }
         #endregion
-        #region Project operations
-        private void OpenProjButton_Click(object sender, RoutedEventArgs e)
+
+
+        private async void OpenProject_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new OpenFileDialog { Title = EnglishText.Text("Open project"), Filter = EnglishText.Text("Workbench project (project.json)|project.json") };
+            if (!MainViewModel.WorkbenchViewModel.CanOpenProject)
+                return;
+            var dialog = new OpenFileDialog { Title = "Open project", Filter = "Workbench project (project.json)|project.json", CheckFileExists = true };
             if (DialogPathMemory.ShowDialog(dialog, this, "project/open-manifest") == true)
             {
-                //OpenProject(dialog.FileName);
+                await MainViewModel.WorkbenchViewModel.OpenProjectAsync(dialog.FileName);
             }
         }
 
+        private async void RecentProject_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement element && element.DataContext is ProjectSessionViewModel project)
+            {
+                await MainViewModel.WorkbenchViewModel.OpenProjectAsync(project.ManifestPath);
+            }
+        }
 
+        private void ShowRecentProjectFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem item && item.Tag is ProjectSessionViewModel project)
+            {
+                MainViewModel.WorkbenchViewModel.ShowRecentProjectFolder(project);
+            }
+        }
 
+        private void RemoveRecentProject_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem item && item.Tag is ProjectSessionViewModel project)
+            {
+                MainViewModel.WorkbenchViewModel.RemoveRecentProject(project);
+            }
+        }
 
-        #endregion
+        private void BrowseSetting_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement element && element.Tag is string name)
+            {
+                MainViewModel.WorkbenchViewModel.BrowseSetting(name, this);
+            }
+        }
 
         private void ProjSettingsMenuItem_Click(object sender, RoutedEventArgs e)
         {
             TabsControl.SelectedIndex = 2;
             ProjDropdownMenuCheckBoxButton.IsChecked = false;
         }
-       
+
     }//
 }

@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using System.Text.Json.Serialization;
-using System.Windows.Input;
 
 namespace T6_Workbench
 {
@@ -28,7 +27,7 @@ namespace T6_Workbench
 
         WorkbenchSettingsViewModel settings = new WorkbenchSettingsViewModel();
 
-        PreviewCameraState previewCamera;
+        PreviewCameraState previewCamera = new PreviewCameraState();
 
         public ProjectSessionViewModel()
         {
@@ -49,7 +48,13 @@ namespace T6_Workbench
         public string ManifestPath 
         { 
             get => manifestPath; 
-            set => SetProperty(ref manifestPath, value ?? ""); 
+            set
+            {
+                if (SetProperty(ref manifestPath, value ?? ""))
+                {
+                    NotifyProperty(nameof(IsAvailable));
+                }
+            }
         }
 
         public DateTime LastOpenedAt 
@@ -89,7 +94,7 @@ namespace T6_Workbench
             {
                 if (!SetProperty(ref previewUsesShaders, value)) 
                     return;
-                NotifyProperty(nameof(PreviewUsesShaders));
+                NotifyProperty(nameof(PreviewShadingIndex));
             }
         }
 
@@ -102,11 +107,8 @@ namespace T6_Workbench
         public PreviewCameraState PreviewCamera 
         { 
             get => previewCamera; 
-            set => SetProperty(ref previewCamera, value); 
+            set => SetProperty(ref previewCamera, value ?? new PreviewCameraState());
         }
-
-        [JsonIgnore]
-        public ICommand OpenCommand { get; set; }
 
         [JsonIgnore]
         public int PreviewShadingIndex
