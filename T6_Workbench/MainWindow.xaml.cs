@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace T6_Workbench
 {
@@ -60,14 +61,6 @@ namespace T6_Workbench
             }
         }
 
-        private async void RecentProject_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is FrameworkElement element && element.DataContext is ProjectSessionViewModel project)
-            {
-                await MainViewModel.WorkbenchViewModel.OpenProjectAsync(project.ManifestPath);
-            }
-        }
-
         private void ShowRecentProjectFolder_Click(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem item && item.Tag is ProjectSessionViewModel project)
@@ -98,5 +91,20 @@ namespace T6_Workbench
             ProjDropdownMenuCheckBoxButton.IsChecked = false;
         }
 
+        private async void RecentProjStyleBackGroundBorder_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if(e.ClickCount == 2)
+            {
+                if (sender is FrameworkElement element && element.DataContext is ProjectSessionViewModel project)
+                {
+                    await MainViewModel.WorkbenchViewModel.OpenProjectAsync(project.ManifestPath);
+                }
+            }
+        }
+
+        private void SwitchThemeButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainViewModel.WorkbenchViewModel.UIColors.SetTheme(SwitchThemeButton.IsChecked);
+        }
     }//
 }

@@ -179,5 +179,41 @@ namespace T6_Workbench
                 return;
             NotifyProperty(brushProperty);
         }
+
+        public void ResetColors()
+        {
+            Gray0Color = (Color)ColorConverter.ConvertFromString("#151515");
+            Gray1Color = (Color)ColorConverter.ConvertFromString("#171717");
+            Gray2Color = (Color)ColorConverter.ConvertFromString("#1A1A1A");
+            Gray3Color = (Color)ColorConverter.ConvertFromString("#212121");
+            Gray4Color = (Color)ColorConverter.ConvertFromString("#232323");
+            Gray5Color = (Color)ColorConverter.ConvertFromString("#2F2F2F");
+            Gray6Color = (Color)ColorConverter.ConvertFromString("#808080");
+            AccentColor = (Color)ColorConverter.ConvertFromString("#6659FF");
+            ForegroundColor = (Color)ColorConverter.ConvertFromString("#FFFAF0");
+            DangerColor = (Color)ColorConverter.ConvertFromString("#FF8080");
+            WarningColor = (Color)ColorConverter.ConvertFromString("#FFC74F");
+            SuccessColor = (Color)ColorConverter.ConvertFromString("#439546");
+        }
+
+        public void SetTheme(bool IsLight)
+        {
+            if(IsLight)
+            {
+                Gray0Color = (Color)ColorConverter.ConvertFromString("#eaeaea");
+                Gray1Color = (Color)ColorConverter.ConvertFromString("#dddddd");
+                Gray2Color = (Color)ColorConverter.ConvertFromString("#e6e6e6");
+                Gray3Color = (Color)ColorConverter.ConvertFromString("#dfdfdf");
+                Gray4Color = (Color)ColorConverter.ConvertFromString("#e9e9e9");
+                Gray5Color = (Color)ColorConverter.ConvertFromString("#eaeaea");
+                Gray6Color = (Color)ColorConverter.ConvertFromString("#808080");
+                AccentColor = (Color)ColorConverter.ConvertFromString("#6659FF");
+                ForegroundColor = (Color)ColorConverter.ConvertFromString("#000107");
+            }
+            else
+            {
+                ResetColors();
+            }
+        }
     }
 }

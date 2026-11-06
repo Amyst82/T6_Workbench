@@ -24,6 +24,7 @@
             <Visibility x:Key="Visible">Visible</Visibility>
             <sys:Boolean x:Key="BoolTrue">True</sys:Boolean>
             <sys:Boolean x:Key="BoolFalse">False</sys:Boolean>
+            <sys:Int32 x:Key="IntZero">0</sys:Int32>
             <WindowState x:Key="WndMaximized">Maximized</WindowState>
             <WindowState x:Key="WndNormal">Normal</WindowState>
             <Style x:Key="ContextMenuStyle" TargetType="{x:Type ContextMenu}">
@@ -61,7 +62,7 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                            <Border x:Name="BackGroundBorder" Height="50" Background="{local:UIColor Gray2}" Margin="2" CornerRadius="8" BorderThickness="2" BorderBrush="{local:UIColor Gray2}">
+                            <Border x:Name="RecentProjStyleBackGroundBorder" Height="50" Background="{local:UIColor Gray2}" Margin="2" CornerRadius="8" BorderThickness="2" BorderBrush="{local:UIColor Gray2}" MouseDown="RecentProjStyleBackGroundBorder_MouseDown">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
@@ -74,8 +75,8 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" TargetName="BackGroundBorder" Value="{local:UIColor Gray5}"/>
-                                    <Setter Property="BorderBrush" TargetName="BackGroundBorder" Value="{local:UIColor Gray5}"/>
+                                    <Setter Property="Background" TargetName="RecentProjStyleBackGroundBorder" Value="{local:UIColor Gray5}"/>
+                                    <Setter Property="BorderBrush" TargetName="RecentProjStyleBackGroundBorder" Value="{local:UIColor Gray5}"/>
                                     <Setter Property="TextElement.Foreground" TargetName="ProjNameLabel" Value="{local:UIColor Foreground}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
@@ -237,7 +238,7 @@
                     </StackPanel>
                 </Grid>
                 <Grid Background="Transparent" Grid.Column="1">
-                    <AMUI:TextBox82 x:Name="SearchTextBox"  Margin="5,5,5,5" HintText="Search through assets..." OutlineThickness="1" Background82="{local:UIColor Gray1}" Accent82="{local:UIColor Gray3}" EdgeRoundness="8" Visibility="{AMUI:ConditionME IF={Binding SelectedIndex, ElementName=TabsControl}, ComparingMode=NotEquals, TO=0, Then={StaticResource Visible}, Else={StaticResource Collapsed}}">
+                    <AMUI:TextBox82 x:Name="SearchTextBox" Foreground="{local:UIColor Foreground}" CaretBrush="{local:UIColor Foreground}"  Margin="5,5,5,5" HintText="Search through assets..." OutlineThickness="1" Background82="{local:UIColor Gray1}" Accent82="{local:UIColor Gray3}" EdgeRoundness="8" Visibility="{AMUI:ConditionME IF={Binding SelectedIndex, ElementName=TabsControl}, ComparingMode=NotEquals, TO=0, Then={StaticResource Visible}, Else={StaticResource Collapsed}}">
                         <AMUI:TextBox82.IconPlaceholder>
                             <svg:SVGImage UriSource="./Resources/search-svgrepo-com.svg" Width="16" Height="16" Margin="10,0,5,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </AMUI:TextBox82.IconPlaceholder>
@@ -252,7 +253,7 @@
                                    Else='No changes made', ElseType={x:Type sys:String}}">
                         <AMUI:Button82.IsEnabled>
                             <MultiBinding Converter="{AMUI:ConvertersME Converter=Expression}" ConverterParameter="A &gt; 0">
-                                <Binding Path="CurrentProject.ProjectChangeCount" FallbackValue="0" />
+                                <Binding Path="CurrentProject.ProjectChangeCount"/>
                                 <Binding>
                                     <Binding.Source>
                                         <sys:Boolean>True</sys:Boolean>
@@ -338,7 +339,7 @@
                     </StackPanel>
                 </Grid>
             </Grid>
-            <TabControl x:Name="TabsControl" Grid.Row="1" Background="{local:UIColor Gray0}" BorderThickness="0" SelectedIndex="1" TabStripPlacement="Bottom">
+            <TabControl x:Name="TabsControl" Grid.Row="1" Background="{local:UIColor Gray0}" BorderThickness="0" TabStripPlacement="Bottom">
                 <TabItem x:Name="HomeTab" Header="Home" Visibility="Visible">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -390,6 +391,19 @@
                                 </StackPanel>
                             </AMUI:Button82>
                         </StackPanel>
+                        <Border Grid.Column="2" Grid.Row="1" Margin="5,5,20,5" MaxHeight="37" HorizontalAlignment="Right" Background="{local:UIColor Gray2}" BorderBrush="{local:UIColor Gray4}" BorderThickness="1" CornerRadius="8">
+                            <StackPanel Orientation="Horizontal" Margin="2" >
+                                <AMUI:Button82 x:Name="SwitchThemeButton" IsChecked="True" Margin="5" Width="24" Height="24" Accent82="{local:UIColor Gray2}" Border82="{local:UIColor Gray2}" ScaleUpOnHover="True" ScaleDownOnPress="True" EdgeRoundness="10" ScaleUpAmount="105" ScaleUpAnimDuration="200" Cursor="Hand" Click="SwitchThemeButton_Click">
+                                    <svg:SVGImage UriSource="./Resources/thinking-face-svgrepo-com.svg" Width="16" Height="16" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </AMUI:Button82>
+                                <AMUI:Button82 Margin="5" Width="24" Height="24" Accent82="{local:UIColor Gray2}" Border82="{local:UIColor Gray2}" ScaleUpOnHover="True" ScaleDownOnPress="True" EdgeRoundness="10" ScaleUpAmount="105" ScaleUpAnimDuration="200" Cursor="Hand">
+                                    <svg:SVGImage UriSource="./Resources/circle-information-svgrepo-com.svg" Width="16" Height="16" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{local:UIColor Gray6Color}"/>
+                                </AMUI:Button82>
+                                <AMUI:Button82 Margin="5" Width="24" Height="24" Accent82="{local:UIColor Gray2}" Border82="{local:UIColor Gray2}" ScaleUpOnHover="True" ScaleDownOnPress="True" EdgeRoundness="10" ScaleUpAmount="105" ScaleUpAnimDuration="200" Cursor="Hand">
+                                    <svg:SVGImage UriSource="./Resources/github-142-svgrepo-com.svg" Width="16" Height="16" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </AMUI:Button82>
+                            </StackPanel>
+                        </Border>
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="MainTab" Header="Main" Visibility="Visible">
