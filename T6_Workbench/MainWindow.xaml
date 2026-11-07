@@ -438,6 +438,40 @@
                                 <RowDefinition/>
                                 <RowDefinition Height="50"/>
                             </Grid.RowDefinitions>
+                            <Viewport3D x:Name="ModelViewport" Visibility="Visible" Grid.RowSpan="3">
+                                <Viewport3D.Camera>
+                                    <PerspectiveCamera Position="{Binding PreviewCamera.Position}" LookDirection="{Binding PreviewCamera.LookDirection}" UpDirection="{Binding PreviewCamera.UpDirection}" FieldOfView="{Binding PreviewCamera.FieldOfView}" />
+                                </Viewport3D.Camera>
+                            </Viewport3D>
+                            <Image x:Name="TexturePreview" Visibility="Visible" Stretch="Uniform" Grid.Row="1" />
+                            <Border MaxHeight="45" Background="{local:UIColor Gray3}" Margin="20,5,5,5" CornerRadius="8" HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal">
+                                    <AMUI:Button82 Accent82="{local:UIColor Gray3}" Foreground="{local:UIColor Foreground}" Width="30" Margin="5">
+                                        <svg:SVGImage UriSource="./Resources/undo-svgrepo-com.svg" Width="16" Height="16" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{local:UIColor Gray6Color}"/>
+                                    </AMUI:Button82>
+                                    <AMUI:Button82 Accent82="{local:UIColor Gray3}" Foreground="{local:UIColor Foreground}" Width="30" Margin="5">
+                                        <svg:SVGImage UriSource="./Resources/undo-svgrepo-com.svg" Width="16" Height="16" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideFillColor="{local:UIColor Gray6Color}" RenderTransformOrigin="0.5,0.5">
+                                            <svg:SVGImage.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform ScaleX="-1"/>
+                                                    <SkewTransform/>
+                                                    <RotateTransform/>
+                                                    <TranslateTransform/>
+                                                </TransformGroup>
+                                            </svg:SVGImage.RenderTransform>
+                                        </svg:SVGImage>
+                                    </AMUI:Button82>
+                                </StackPanel>
+                            </Border>
+                            <Border MaxHeight="45" Background="{local:UIColor Gray3}" Margin="20,5,5,5" CornerRadius="8" HorizontalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <AMUI:Button82 Accent82="{local:UIColor Gray3}" Foreground="{local:UIColor Foreground}" Width="30" Margin="5">
+                                        <svg:SVGImage UriSource="./Resources/image-square-svgrepo-com.svg" Width="16" Height="16" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" OverrideStrokeColor="{local:UIColor Gray6Color}"/>
+                                    </AMUI:Button82>
+                                    <TextBlock Text="t6_wpn_dsr50_view_lod0.glb" Foreground="{local:UIColor Foreground}" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0"/>
+                                </StackPanel>
+                            </Border>
+                            <TextBlock x:Name="PreviewPlaceholder" Grid.RowSpan="3" IsHitTestVisible="False" Text="Open a project and select an asset" Foreground="{local:UIColor Gray6}" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
                             <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right" Margin="0,0,20,0" >
                                 <Border Margin="5,5,5,5" Background="{local:UIColor Gray4}" BorderBrush="{local:UIColor Gray5}" BorderThickness="1" CornerRadius="8">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" ToolTip="{Binding Status.State}">

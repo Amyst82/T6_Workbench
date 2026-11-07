@@ -194,6 +194,8 @@
     <Resource Include="resources\fire-svgrepo-com.svg" />
     <Resource Include="resources\beer-mug-svgrepo-com.svg" />
     <Resource Include="resources\check-svgrepo-com.svg" />
+    <Resource Include="resources\cube-svgrepo-com.svg" />
+    <Resource Include="resources\code-file-svgrepo-com.svg" />
     <Content Include="resources\images\c_chn_mp_pla_lower_n.dds" />
     <Content Include="resources\images\c_mul_mp_pmc_glasses_n.dds" />
     <Content Include="resources\images\c_usa_mp_fbi_armor_vest_n.dds" />
@@ -220,6 +222,10 @@
     <Resource Include="resources\message-square-info-svgrepo-com.svg" />
     <Resource Include="resources\thinking-face-svgrepo-com.svg" />
     <Resource Include="resources\warning-symbol-svgrepo-com.svg" />
+    <Resource Include="resources\question-file-svgrepo-com.svg" />
+    <Resource Include="resources\sword-svgrepo-com.svg" />
+    <Resource Include="resources\undo-svgrepo-com.svg" />
+    <Resource Include="resources\walk-svgrepo-com.svg" />
     <Content Include="Resources\XAnim\*" Link="resources/xanim/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Resources\images\*" Link="resources/images/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="resources\XAnim\workbench_ik.py" />

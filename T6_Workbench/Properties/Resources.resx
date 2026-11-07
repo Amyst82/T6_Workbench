@@ -145,6 +145,12 @@
   <data name="code_alt_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\code-alt-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="code_file_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\code-file-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cube_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\cube-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="dock_left_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\dock-left-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -196,6 +202,9 @@
   <data name="message_square_info_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\message-square-info-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="question_file_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\question-file-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="refresh_ccw_clock_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\refresh-ccw-clock-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -208,11 +217,20 @@
   <data name="SF_Pro_Rounded_Regular" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SF-Pro-Rounded-Regular.otf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="sword_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\sword-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="thinking_face_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\thinking-face-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="trash_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\trash-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="undo_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\undo-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="walk_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\walk-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="warning_symbol_svgrepo_com" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\warning-symbol-svgrepo-com.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
